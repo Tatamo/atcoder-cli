@@ -1,5 +1,6 @@
 import request from "request-promise-native"
 import {JSDOM} from "jsdom";
+import inquirer from "inquirer";
 
 (async () => {
 	const uri = "https://beta.atcoder.jp/login";
@@ -21,18 +22,31 @@ import {JSDOM} from "jsdom";
 	for (const cookie of cookies) {
 		jar.setCookie(request.cookie(cookie)!, uri);
 	}
+
+	// ユーザーネームとパスワードを入力させる
+	const {username, password} = await inquirer.prompt([{
+		type: "input",
+		message: "username:",
+		name: "username"
+	}, {
+		type: "password",
+		message: "password:",
+		name: "password"
+	}]) as { username: string, password: string };
+
+
 	const options = {
 		uri,
 		jar,
-		followAllRedirects:true,
-		method:"POST",
+		followAllRedirects: true,
+		method: "POST",
 		resolveWithFullResponse: true,
 		formData: {
-			username: "username",
-			password: "wrong_password",
+			username,
+			password,
 			csrf_token: token
 		}
 	};
 	const response = await request(options);
-	console.log(response.body);
+	console.log(response.headers);
 })();
