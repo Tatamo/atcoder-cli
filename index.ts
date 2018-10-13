@@ -4,24 +4,21 @@ import inquirer from "inquirer";
 
 (async () => {
 	const uri = "https://beta.atcoder.jp/login";
-	// ログイン前にGETでアクセスしてCSRF Tokenを取得する
+	// ログイン前にGETでアクセスしてCookieとCSRF Tokenを取得する
 	const getSession = async () => {
+		const jar = request.jar();
 		const response = await
 			request({
 				uri,
+				jar,
 				resolveWithFullResponse: true
 			});
 
 		const {document} = new JSDOM(response.body).window;
 		const input: HTMLInputElement = (document.getElementsByName("csrf_token")[0]) as HTMLInputElement;
-		return {cookies: response.headers["set-cookie"], token: input.value};
+		return {jar, token: input.value};
 	};
-	const {cookies, token} = await getSession();
-	// 得られたCookieを渡す
-	const jar = request.jar();
-	for (const cookie of cookies) {
-		jar.setCookie(request.cookie(cookie)!, uri);
-	}
+	const {jar, token} = await getSession();
 
 	// ユーザーネームとパスワードを入力させる
 	const {username, password} = await inquirer.prompt([{
@@ -33,7 +30,6 @@ import inquirer from "inquirer";
 		message: "password:",
 		name: "password"
 	}]) as { username: string, password: string };
-
 
 	const options = {
 		uri,
@@ -48,5 +44,6 @@ import inquirer from "inquirer";
 		}
 	};
 	const response = await request(options);
+	// console.log(jar);
 	console.log(response.headers);
 })();
