@@ -31,8 +31,18 @@ export class Session {
 	 * ログインしている状態かどうかを取得する
 	 */
 	async check(): Promise<boolean> {
-		// UNDONE
-		return false;
+		// practice contestでログインせず提出ページにアクセスするとコンテストトップに飛ばされることを利用する
+		const uri = `${Session.base_url}contests/practice/submit`;
+		const response = await
+			request({
+				uri,
+				jar: this.jar,
+				resolveWithFullResponse: true
+			});
+
+		// console.log(response.request.uri.href);
+		// リダイレクトされなければログインしている
+		return response.request.uri.href === uri;
 	}
 
 	/**
