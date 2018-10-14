@@ -3,6 +3,12 @@ import inquirer from "inquirer";
 import {JSDOM} from "jsdom";
 import {ATCODER_BASE_URL, ATCODER_LOGIN_PATH} from "./definitions";
 
+export interface Task {
+	title: string,
+	label: string,
+	path: string
+}
+
 export class AtCoder {
 	static get base_url(): string {
 		return ATCODER_BASE_URL;
@@ -10,6 +16,10 @@ export class AtCoder {
 
 	static get login_url(): string {
 		return `${AtCoder.base_url}${ATCODER_LOGIN_PATH}`;
+	}
+
+	static getContestURL(contest: string) {
+		return `${AtCoder.base_url}contests/${contest}`;
 	}
 
 	private session: Session;
@@ -32,9 +42,9 @@ export class AtCoder {
 	}
 
 	/**
-	 * ログインしている状態かどうかを取得する
+	 * アクセスしてログインしている状態かどうかを取得する(結果をキャッシュしない)
 	 */
-	async check(): Promise<boolean> {
+	private async check(): Promise<boolean> {
 		// practice contestでログインせず提出ページにアクセスするとコンテストトップに飛ばされることを利用する
 		const uri = `${AtCoder.base_url}contests/practice/submit`;
 		const response = await this.session.fetch(uri);
@@ -86,4 +96,21 @@ export class AtCoder {
 		return input.value;
 	}
 
+	async tasks(contest: string): Promise<Array<Task>> {
+		const response = await this.session.fetch(`${AtCoder.getContestURL(contest)}/tasks`);
+
+		const {document} = new JSDOM(response.body).window;
+		// very very ad-hoc and not type-safe section
+		const tbody = document.querySelector("#main-div .row table>tbody");
+		if (tbody === null) return [];
+		const tasks: Array<Task> = [];
+		for (const tr of tbody.querySelectorAll("tr")) {
+			// tr>td>a
+			const path: string = tr.children[0].children[0].getAttribute("href")!.split("/").pop()!;
+			const label: string = (tr.children[0].children[0] as HTMLAnchorElement).text;
+			const title: string = (tr.children[1].children[0] as HTMLAnchorElement).text;
+			tasks.push({path, label, title});
+		}
+		return tasks;
+	}
 }
