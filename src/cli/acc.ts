@@ -1,15 +1,15 @@
 import commander from "commander";
 import {version} from "../../package.json";
-import {Session} from "../session";
+import {AtCoder} from "../atcoder";
 
 async function login() {
-	const session = new Session();
-	console.log(await session.login());
+	const atcoder = new AtCoder();
+	console.log(await atcoder.login());
 }
 
 async function session() {
-	const session = new Session();
-	console.log(await session.check());
+	const atcoder = new AtCoder();
+	console.log(await atcoder.checkSession());
 }
 
 async function tasks() {
