@@ -2,8 +2,17 @@ import rq from "request";
 import request from "request-promise-native"
 import {JSDOM} from "jsdom";
 import inquirer from "inquirer";
+import {ATCODER_BASE_URL, ATCODER_LOGIN_PATH} from "./definitions";
 
 export class Session {
+	static get base_url(): string {
+		return ATCODER_BASE_URL;
+	}
+
+	static get login_url(): string {
+		return `${Session.base_url}${ATCODER_LOGIN_PATH}`;
+	}
+
 	private _jar: rq.CookieJar;
 	get jar(): rq.CookieJar {
 		return this._jar;
@@ -30,7 +39,7 @@ export class Session {
 	 * ログイン処理します
 	 * あまりパスワード文字列を引き回したくないので、この中で標準入力からユーザー名とパスワードを尋ねる
 	 */
-	async login() {
+	async login(): Promise<boolean> {
 		const csrf_token = await this.getCSRFToken();
 
 		// ユーザーネームとパスワードを入力させる
@@ -45,7 +54,7 @@ export class Session {
 		}]) as { username: string, password: string };
 
 		const options = {
-			uri: "https://beta.atcoder.jp/login",
+			uri: Session.login_url,
 			jar: this.jar,
 			followAllRedirects: true,
 			method: "POST",
@@ -56,17 +65,18 @@ export class Session {
 				csrf_token
 			}
 		};
-		return await request(options);
+		const response = await request(options);
+		// トップページにリダイレクトされていればログイン成功とみなす
+		return response.request.uri.href === Session.base_url;
 	}
 
 	/**
 	 * ログインページにアクセスしてCSRFトークンを取得
 	 */
 	private async getCSRFToken(): Promise<string> {
-		const uri = "https://beta.atcoder.jp/login";
 		const response = await
 			request({
-				uri,
+				uri: Session.login_url,
 				jar: this.jar,
 				resolveWithFullResponse: true
 			});
