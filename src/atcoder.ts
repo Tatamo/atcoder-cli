@@ -22,6 +22,10 @@ export class AtCoder {
 		return `${AtCoder.base_url}contests/${contest}`;
 	}
 
+	static getTaskURL(contest: string, task: string) {
+		return `${AtCoder.getContestURL(contest)}/tasks/${task}`;
+	}
+
 	private session: Session;
 	// null:未検査 true/false: ログインしているかどうか
 	private _login: boolean | null;
