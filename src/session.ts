@@ -33,12 +33,7 @@ export class Session {
 	async check(): Promise<boolean> {
 		// practice contestでログインせず提出ページにアクセスするとコンテストトップに飛ばされることを利用する
 		const uri = `${Session.base_url}contests/practice/submit`;
-		const response = await
-			request({
-				uri,
-				jar: this.jar,
-				resolveWithFullResponse: true
-			});
+		const response = await this.fetch(uri);
 
 		// console.log(response.request.uri.href);
 		// リダイレクトされなければログインしている
@@ -64,18 +59,14 @@ export class Session {
 		}]) as { username: string, password: string };
 
 		const options = {
-			uri: Session.login_url,
-			jar: this.jar,
-			followAllRedirects: true,
 			method: "POST",
-			resolveWithFullResponse: true,
 			formData: {
 				username,
 				password,
 				csrf_token
 			}
 		};
-		const response = await request(options);
+		const response = await this.fetch(Session.login_url, options);
 		// トップページにリダイレクトされていればログイン成功とみなす
 		return response.request.uri.href === Session.base_url;
 	}
@@ -84,15 +75,21 @@ export class Session {
 	 * ログインページにアクセスしてCSRFトークンを取得
 	 */
 	private async getCSRFToken(): Promise<string> {
-		const response = await
-			request({
-				uri: Session.login_url,
-				jar: this.jar,
-				resolveWithFullResponse: true
-			});
+		const response = await this.fetch(Session.login_url);
 
 		const {document} = new JSDOM(response.body).window;
 		const input: HTMLInputElement = (document.getElementsByName("csrf_token")[0]) as HTMLInputElement;
 		return input.value;
+	}
+
+	async fetch(uri: string, options: rq.CoreOptions = {}): Promise<rq.Response> {
+		return await
+			request({
+				uri,
+				jar: this.jar,
+				followAllRedirects: true,
+				resolveWithFullResponse: true,
+				...options
+			});
 	}
 }
