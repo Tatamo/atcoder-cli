@@ -8,7 +8,8 @@
 	"noImplicitReturns": true,
 	"noFallthroughCasesInSwitch": true,
 	"esModuleInterop": true,
-	"resolveJsonModule": true
+	"resolveJsonModule": true,
+	"outDir": "./dist"
   },
   "exclude": [
 	"node_modules"
