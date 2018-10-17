@@ -2,6 +2,10 @@ import {Session} from "./session";
 import inquirer from "inquirer";
 import {JSDOM} from "jsdom";
 import {ATCODER_BASE_URL, ATCODER_LOGIN_PATH} from "./definitions";
+import request from "request-promise-native"
+import getConfig from "./config";
+import Conf from "conf";
+import {CookieJar} from "request";
 
 export interface Task {
 	title: string,
@@ -26,12 +30,14 @@ export class AtCoder {
 		return `${AtCoder.getContestURL(contest)}/tasks/${task}`;
 	}
 
+	private readonly conf: Conf;
 	private session: Session;
 	// null:未検査 true/false: ログインしているかどうか
 	private _login: boolean | null;
 
 	constructor() {
-		this.session = new Session();
+		this.conf = getConfig();
+		this.session = new Session(this.loadCookiesFromConfig());
 		this._login = null;
 	}
 
@@ -63,6 +69,10 @@ export class AtCoder {
 	 * あまりパスワード文字列を引き回したくないので、この中で標準入力からユーザー名とパスワードを尋ねる
 	 */
 	async login(): Promise<boolean> {
+		if (await this.checkSession()) {
+			console.error("you logged-in already");
+			return true;
+		}
 		const csrf_token = await this.getCSRFToken();
 
 		// ユーザーネームとパスワードを入力させる
@@ -86,7 +96,12 @@ export class AtCoder {
 		};
 		const response = await this.session.fetch(AtCoder.login_url, options);
 		// トップページにリダイレクトされていればログイン成功とみなす
-		return response.request.uri.href === AtCoder.base_url;
+		const result = response.request.uri.href === AtCoder.base_url;
+		if (result) {
+			// ログインに成功していた場合はセッション情報を保存する
+			this.exportCookiesToConfig(this.session.jar);
+		}
+		return result;
 	}
 
 	/**
@@ -100,6 +115,10 @@ export class AtCoder {
 		return input.value;
 	}
 
+	/**
+	 * 問題一覧を取得
+	 * @param contest
+	 */
 	async tasks(contest: string): Promise<Array<Task>> {
 		const response = await this.session.fetch(`${AtCoder.getContestURL(contest)}/tasks`);
 
@@ -116,5 +135,25 @@ export class AtCoder {
 			tasks.push({path, label, title});
 		}
 		return tasks;
+	}
+
+	/**
+	 * Configに保存されたCookie情報を読み込む
+	 * 引数として与えられたCookieJarの内部状態を書き換えるので、その場合戻り値を再代入する必要はない
+	 * @param jar 省略された場合は新しいCookieJarを作って返す
+	 */
+	private loadCookiesFromConfig(jar?: CookieJar): CookieJar {
+		if (jar === undefined) jar = request.jar();
+		// configからクッキー情報を取得
+		const cookies: string = this.conf.get("cookies", "");
+		for (const cookie of cookies.split(";")) {
+			jar.setCookie(cookie, AtCoder.base_url);
+		}
+		return jar;
+	}
+
+	private exportCookiesToConfig(jar: CookieJar) {
+		const cookies = jar.getCookieString(AtCoder.base_url);
+		this.conf.set("cookies", cookies);
 	}
 }

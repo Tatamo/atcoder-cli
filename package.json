@@ -15,6 +15,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "commander": "^2.19.0",
+    "conf": "^2.0.0",
     "inquirer": "^6.2.0",
     "jsdom": "^12.2.0",
     "request": "^2.88.0",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",
+    "@types/conf": "^1.4.0",
     "@types/inquirer": "0.0.43",
     "@types/jsdom": "^12.2.0",
     "@types/request": "^2.47.1",
