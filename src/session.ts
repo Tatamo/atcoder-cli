@@ -1,4 +1,4 @@
-import rq from "request";
+import {CookieJar, CoreOptions, Response} from "request";
 import request from "request-promise-native"
 
 /**
@@ -6,12 +6,12 @@ import request from "request-promise-native"
  * こいつでcookieを使いまわしてログイン認証した状態でデータをとってくる
  */
 export class Session {
-	private readonly _jar: rq.CookieJar;
-	get jar(): rq.CookieJar {
+	private readonly _jar: CookieJar;
+	get jar(): CookieJar {
 		return this._jar;
 	}
 
-	constructor(jar?: rq.CookieJar) {
+	constructor(jar?: CookieJar) {
 		if (jar === undefined) {
 			this._jar = request.jar();
 		}
@@ -20,7 +20,7 @@ export class Session {
 		}
 	}
 
-	async fetch(uri: string, options: rq.CoreOptions = {}): Promise<rq.Response> {
+	async fetch(uri: string, options: CoreOptions = {}): Promise<Response> {
 		// requestの呼び出しによってthis.jarの内部状態が書き換わる
 		return await
 			request({
