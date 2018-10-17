@@ -95,8 +95,8 @@ export class AtCoder {
 			}
 		};
 		const response = await this.session.fetch(AtCoder.login_url, options);
-		// トップページにリダイレクトされていればログイン成功とみなす
-		const result = response.request.uri.href === AtCoder.base_url;
+		// ログインページ以外にリダイレクトされていればログイン成功とみなす
+		const result = response.request.uri.href !== AtCoder.login_url && response.request.uri.href.indexOf(AtCoder.base_url) === 0;
 		if (result) {
 			// ログインに成功していた場合はセッション情報を保存する
 			this.exportCookiesToConfig(this.session.jar);
@@ -145,9 +145,11 @@ export class AtCoder {
 	private loadCookiesFromConfig(jar?: CookieJar): CookieJar {
 		if (jar === undefined) jar = request.jar();
 		// configからクッキー情報を取得
-		const cookies: string = this.conf.get("cookies", "");
-		for (const cookie of cookies.split(";")) {
-			jar.setCookie(cookie, AtCoder.base_url);
+		const cookies: string = this.conf.get("cookies", undefined);
+		if (cookies !== undefined) {
+			for (const cookie of cookies.split(";")) {
+				jar.setCookie(cookie, AtCoder.base_url);
+			}
 		}
 		return jar;
 	}

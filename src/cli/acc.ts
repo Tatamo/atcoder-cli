@@ -9,6 +9,7 @@ async function login() {
 
 async function session() {
 	const atcoder = new AtCoder();
+	console.log("check login status...");
 	console.log(await atcoder.checkSession());
 }
 
