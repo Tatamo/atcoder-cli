@@ -8,9 +8,10 @@ import Conf from "conf";
 import {CookieJar} from "request";
 
 export interface Task {
-	title: string,
+	id: string,
 	label: string,
-	path: string
+	title: string,
+	url: string
 }
 
 export class AtCoder {
@@ -129,10 +130,11 @@ export class AtCoder {
 		const tasks: Array<Task> = [];
 		for (const tr of tbody.querySelectorAll("tr")) {
 			// tr>td>a
-			const path: string = tr.children[0].children[0].getAttribute("href")!.split("/").pop()!;
+			const id: string = tr.children[0].children[0].getAttribute("href")!.split("/").pop()!;
 			const label: string = (tr.children[0].children[0] as HTMLAnchorElement).text;
 			const title: string = (tr.children[1].children[0] as HTMLAnchorElement).text;
-			tasks.push({path, label, title});
+			const url: string = `${AtCoder.base_url}${tr.children[0].children[0].getAttribute("href")!.substring(1)}`;
+			tasks.push({id, label, title, url});
 		}
 		return tasks;
 	}
