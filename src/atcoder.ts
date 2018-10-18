@@ -1,9 +1,8 @@
 import {Session} from "./session";
 import {ATCODER_BASE_URL, ATCODER_LOGIN_PATH} from "./definitions";
-import request from "request-promise-native"
 import getConfig from "./config";
 import Conf from "conf";
-import {CookieJar} from "request";
+import request, {CookieJar} from "request";
 
 export interface Task {
 	id: string,
