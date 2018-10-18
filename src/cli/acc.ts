@@ -14,6 +14,12 @@ async function session() {
 	console.log(await atcoder.checkSession());
 }
 
+async function contest(id: string) {
+	const atcoder = new AtCoder();
+	if (!await atcoder.checkSession()) await atcoder.login();
+	console.log(await atcoder.contest(id));
+}
+
 async function tasks(contest: string) {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
@@ -49,6 +55,11 @@ commander
 	.command("session")
 	.action(async () => await session())
 	.description("check login or not");
+
+commander
+	.command("contest <id>")
+	.action(async (arg: string) => await contest(arg))
+	.description("get contest title and url from contest id");
 
 commander
 	.command("tasks <contest>")

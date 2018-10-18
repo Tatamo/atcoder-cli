@@ -14,6 +14,12 @@ export interface Task {
 	url: string
 }
 
+export interface Contest {
+	id: string,
+	title: string,
+	url: string
+}
+
 export class AtCoder {
 	static get base_url(): string {
 		return ATCODER_BASE_URL;
@@ -114,6 +120,19 @@ export class AtCoder {
 		const {document} = new JSDOM(response.body).window;
 		const input: HTMLInputElement = (document.getElementsByName("csrf_token")[0]) as HTMLInputElement;
 		return input.value;
+	}
+
+	/**
+	 * コンテストIDからコンテストの情報を取得
+	 * @param id
+	 */
+	async contest(id: string): Promise<Contest> {
+		const url = AtCoder.getContestURL(id);
+		const response = await this.session.fetch(url);
+		const {document} = new JSDOM(response.body).window;
+		const regexp = /^(.*) - AtCoder$/;
+		const title = regexp.test(document.title) ? regexp.exec(document.title)![1] : document.title;
+		return {id, title, url};
 	}
 
 	/**
