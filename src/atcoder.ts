@@ -1,6 +1,4 @@
 import {Session} from "./session";
-import inquirer from "inquirer";
-import {JSDOM} from "jsdom";
 import {ATCODER_BASE_URL, ATCODER_LOGIN_PATH} from "./definitions";
 import request from "request-promise-native"
 import getConfig from "./config";
@@ -83,6 +81,7 @@ export class AtCoder {
 		const csrf_token = await this.getCSRFToken();
 
 		// ユーザーネームとパスワードを入力させる
+		const inquirer = await import("inquirer");
 		const {username, password} = await inquirer.prompt([{
 			type: "input",
 			message: "username:",
@@ -115,6 +114,7 @@ export class AtCoder {
 	 * ログインページにアクセスしてCSRFトークンを取得
 	 */
 	private async getCSRFToken(): Promise<string> {
+		const {JSDOM} = await import("jsdom");
 		const response = await this.session.fetch(AtCoder.login_url);
 
 		const {document} = new JSDOM(response.body).window;
@@ -129,6 +129,7 @@ export class AtCoder {
 	async contest(id: string): Promise<Contest> {
 		const url = AtCoder.getContestURL(id);
 		const response = await this.session.fetch(url);
+		const {JSDOM} = await import("jsdom");
 		const {document} = new JSDOM(response.body).window;
 		const regexp = /^(.*) - AtCoder$/;
 		const title = regexp.test(document.title) ? regexp.exec(document.title)![1] : document.title;
@@ -142,6 +143,7 @@ export class AtCoder {
 	async tasks(contest: string): Promise<Array<Task>> {
 		const response = await this.session.fetch(`${AtCoder.getContestURL(contest)}/tasks`);
 
+		const {JSDOM} = await import("jsdom");
 		const {document} = new JSDOM(response.body).window;
 		// very very ad-hoc and not type-safe section
 		const tbody = document.querySelector("#main-div .row table>tbody");
