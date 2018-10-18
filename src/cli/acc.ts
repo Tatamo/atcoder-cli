@@ -34,6 +34,7 @@ function url(contest?: string, task?: string) {
 
 async function oj() {
 	console.log(`online-judge-tools is ${(await OnlineJudge.checkAvailable()) ? "" : "not "}available.`);
+	// await OnlineJudge.call(["l", "http://atcoder.jp/"]);
 }
 
 commander

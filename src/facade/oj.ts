@@ -5,6 +5,9 @@ import {promisify} from "util";
 const exec = promisify(child_process.exec);
 
 export class OnlineJudge {
+	/**
+	 * online-judge-toolsの実行ファイルの絶対パスを返します 見つからなかった場合はnull
+	 */
 	static async getPath(): Promise<string | null> {
 		const config = getConfig();
 		let path = config.get("oj-path");
@@ -16,12 +19,28 @@ export class OnlineJudge {
 		return path === "" ? null : path;
 	}
 
-	static async checkAvailable() {
+	/**
+	 * online-judge-toolsがインストールされているかどうか調べます
+	 */
+	static async checkAvailable(): Promise<boolean> {
 		const path = OnlineJudge.getPath();
 		if (path === null) return false;
 		const result = (await exec(`${path} -h`).then(v => v.stdout).catch(() => "")).trim() !== "";
 		// うまくpathが通っていた場合はconfigに登録する
 		if (result && getConfig().get("oj-path") === undefined) getConfig().set("oj-path", path);
 		return result;
+	}
+
+	/**
+	 * ojコマンドを呼び出し、その標準入出力を共有します
+	 * @param args 引数の配列
+	 */
+	static async call(args: Array<string>): Promise<void> {
+		const path = await OnlineJudge.getPath();
+		if (path === null) throw new Error("online-judge-tools not installed.");
+		await new Promise((resolve) => {
+			const oj = child_process.spawn(path, args, {stdio: "inherit"});
+			oj.on("close", () => resolve());
+		});
 	}
 }
