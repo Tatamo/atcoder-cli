@@ -2,6 +2,7 @@ import commander from "commander";
 import {version} from "../../package.json";
 import {AtCoder} from "../atcoder";
 import {OnlineJudge} from "../facade/oj";
+import {init} from "../project";
 
 async function login() {
 	const atcoder = new AtCoder();
@@ -45,6 +46,11 @@ async function oj() {
 
 commander
 	.version(version, "-v, --version");
+
+commander
+	.command("new <contest>")
+	.action(async (arg: string) => await init(arg))
+	.description("create new contest project directory");
 
 commander
 	.command("login")
