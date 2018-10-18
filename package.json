@@ -2,9 +2,7 @@
   "name": "atcoder-cli",
   "version": "0.0.1",
   "description": "AtCoder command line tools",
-  "main": "index.js",
   "scripts": {
-    "test": "node index.js",
     "build": "tsc",
     "watch": "tsc --watch"
   },
