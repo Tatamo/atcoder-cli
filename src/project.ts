@@ -1,6 +1,8 @@
-import {AtCoder} from "./atcoder";
+import {AtCoder, Task} from "./atcoder";
 import {mkdir, writeFile} from "fs";
+import mkdirp from "mkdirp";
 import {promisify} from "util";
+import {OnlineJudge} from "./facade/oj";
 
 /**
  * コンテスト情報を取得し、プロジェクトディレクトリを作成する
@@ -26,4 +28,15 @@ export const init: (contest_id: string) => Promise<boolean> = async (contest_id:
 	await promisify(writeFile)("contest.json", JSON.stringify(data, undefined, 2));
 	console.log(`${contest_id}/contest.json created.`);
 	return true;
+};
+
+export const installTask = async (task: Task, project_path?: string) => {
+	if (project_path !== undefined) process.chdir(project_path);
+	await promisify(mkdirp)(task.id);
+	process.chdir(task.id);
+	if (OnlineJudge.checkAvailable()) {
+		OnlineJudge.call(["dl", task.url]);
+	} else {
+		console.error("online-judge-tools is not available. downloading of sample cases skipped.");
+	}
 };
