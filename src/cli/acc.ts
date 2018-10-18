@@ -1,6 +1,7 @@
 import commander from "commander";
 import {version} from "../../package.json";
 import {AtCoder} from "../atcoder";
+import {OnlineJudge} from "../facade/oj";
 
 async function login() {
 	const atcoder = new AtCoder();
@@ -31,6 +32,10 @@ function url(contest?: string, task?: string) {
 	}
 }
 
+async function oj() {
+	console.log(`online-judge-tools is ${(await OnlineJudge.checkAvailable()) ? "" : "not "}available.`);
+}
+
 commander
 	.version(version, "-v, --version");
 
@@ -55,5 +60,10 @@ commander
 	// .option("-c, --check", "check the specified contest and/or task id is valid")
 	.action(url)
 	.description("get contest or task URL");
+
+commander
+	.command("oj")
+	.action(async () => await oj())
+	.description("call online-judge");
 
 commander.parse(process.argv);
