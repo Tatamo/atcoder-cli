@@ -31,13 +31,13 @@ export class AtCoder {
 		return `${AtCoder.getContestURL(contest)}/tasks/${task}`;
 	}
 
-	private readonly conf: Conf;
+	private readonly config: Conf;
 	private session: Session;
 	// null:未検査 true/false: ログインしているかどうか
 	private _login: boolean | null;
 
 	constructor() {
-		this.conf = getConfig();
+		this.config = getConfig();
 		this.session = new Session(this.loadCookiesFromConfig());
 		this._login = null;
 	}
@@ -147,7 +147,7 @@ export class AtCoder {
 	private loadCookiesFromConfig(jar?: CookieJar): CookieJar {
 		if (jar === undefined) jar = request.jar();
 		// configからクッキー情報を取得
-		const cookies: string = this.conf.get("cookies", undefined);
+		const cookies: string = this.config.get("cookies");
 		if (cookies !== undefined) {
 			for (const cookie of cookies.split(";")) {
 				jar.setCookie(cookie, AtCoder.base_url);
@@ -158,6 +158,6 @@ export class AtCoder {
 
 	private exportCookiesToConfig(jar: CookieJar) {
 		const cookies = jar.getCookieString(AtCoder.base_url);
-		this.conf.set("cookies", cookies);
+		this.config.set("cookies", cookies);
 	}
 }
