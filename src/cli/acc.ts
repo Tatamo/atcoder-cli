@@ -3,10 +3,16 @@ import {version} from "../../package.json";
 import {AtCoder} from "../atcoder";
 import {OnlineJudge} from "../facade/oj";
 import {init} from "../project";
+import getConfig from "../config";
 
 async function login() {
 	const atcoder = new AtCoder();
 	console.log(await atcoder.login());
+}
+
+async function logout() {
+	getConfig().delete("cookies");
+	console.log("login session aborted.")
 }
 
 async function session() {
@@ -56,6 +62,11 @@ commander
 	.command("login")
 	.action(async () => await login())
 	.description("login to AtCoder");
+
+commander
+	.command("logout")
+	.action(async () => await logout())
+	.description("delete login session information");
 
 commander
 	.command("session")
