@@ -14,7 +14,7 @@ async function login() {
 
 async function logout() {
 	getConfig().delete("cookies");
-	console.log("login session aborted.")
+	console.log("login session aborted.");
 }
 
 async function session() {

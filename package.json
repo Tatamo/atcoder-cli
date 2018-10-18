@@ -3,8 +3,10 @@
 	"version": "0.0.1",
 	"description": "AtCoder command line tools",
 	"scripts": {
-		"build": "tsc",
-		"watch": "tsc --watch"
+		"build": "tsc && webpack --mode production",
+		"watch:tsc": "tsc --watch",
+		"watch:webpack": "webpack --mode development --watch",
+		"watch": "npm-run-all -p watch:*"
 	},
 	"bin": {
 		"acc": "bin/index.js"
