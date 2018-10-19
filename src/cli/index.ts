@@ -1,5 +1,7 @@
 import commander from "commander";
-import {version} from "../../package.json";
+// import {version} from "../../package.json";
+// work-around to avoid TS5505 error bug in TypeScript 3.1 https://github.com/Microsoft/TypeScript/issues/24715
+const {version} = require("../../package.json");
 import {AtCoder} from "../atcoder";
 import {OnlineJudge} from "../facade/oj";
 import {init} from "../project";
@@ -12,7 +14,7 @@ async function login() {
 
 async function logout() {
 	getConfig().delete("cookies");
-	console.log("login session aborted.")
+	console.log("login session aborted.");
 }
 
 async function session() {

@@ -1,5 +1,4 @@
-import {CookieJar, CoreOptions, Response} from "request";
-import request from "request-promise-native"
+import request, {CookieJar, CoreOptions, Response} from "request";
 
 /**
  * セッション管理用クラス
@@ -22,6 +21,7 @@ export class Session {
 
 	async fetch(uri: string, options: CoreOptions = {}): Promise<Response> {
 		// requestの呼び出しによってthis.jarの内部状態が書き換わる
+		const {default: request} = await import("request-promise-native");
 		return await
 			request({
 				uri,
