@@ -57,32 +57,32 @@ commander
 
 commander
 	.command("new <contest-id>")
-	.action(async (arg: string) => await init(arg))
+	.action(init)
 	.description("create new contest project directory");
 
 commander
 	.command("login")
-	.action(async () => await login())
+	.action(login)
 	.description("login to AtCoder");
 
 commander
 	.command("logout")
-	.action(async () => await logout())
+	.action(logout)
 	.description("delete login session information");
 
 commander
 	.command("session")
-	.action(async () => await session())
+	.action(session)
 	.description("check login or not");
 
 commander
 	.command("contest <contest-id>")
-	.action(async (arg: string) => await contest(arg))
+	.action(contest)
 	.description("get contest title and url from contest id");
 
 commander
 	.command("tasks <contest-id>")
-	.action(async (arg: string) => await tasks(arg))
+	.action(tasks)
 	.description("get tasks");
 
 commander
@@ -94,7 +94,7 @@ commander
 
 commander
 	.command("oj")
-	.action(async () => await oj())
+	.action(oj)
 	.description("call online-judge");
 
 commander.parse(process.argv);
