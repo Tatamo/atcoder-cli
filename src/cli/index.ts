@@ -56,7 +56,7 @@ commander
 	.version(version, "-v, --version");
 
 commander
-	.command("new <contest>")
+	.command("new <contest-id>")
 	.action(async (arg: string) => await init(arg))
 	.description("create new contest project directory");
 
@@ -76,12 +76,12 @@ commander
 	.description("check login or not");
 
 commander
-	.command("contest <id>")
+	.command("contest <contest-id>")
 	.action(async (arg: string) => await contest(arg))
 	.description("get contest title and url from contest id");
 
 commander
-	.command("tasks <contest>")
+	.command("tasks <contest-id>")
 	.action(async (arg: string) => await tasks(arg))
 	.description("get tasks");
 
