@@ -18,7 +18,7 @@ export class Cookie {
 	/**
 	 * @param load_from_config default=false trueなら設定ファイルからcookieを読み込む
 	 */
-	constructor(load_from_config: boolean = false) {
+	constructor(load_from_config: boolean = true) {
 		this.cookies = [];
 		if (load_from_config) this.loadConfigFile();
 	}
@@ -36,6 +36,14 @@ export class Cookie {
 	 */
 	set(cookies: Array<string>) {
 		this.cookies = cookies;
+	}
+
+	/**
+	 * Set-Cookieヘッダの配列からこのクラスで管理可能な形式のcookie配列に変換
+	 * @param cookies
+	 */
+	static convertSetCookies2CookieArray(cookies: Array<string>): Array<string> {
+		return cookies.map(cookie => /^\s*(?:Set-Cookie:\s*)?(.*)$/i.exec(cookie)![1].trim().split(";")[0])
 	}
 
 	/**
