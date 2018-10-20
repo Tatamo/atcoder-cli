@@ -1,5 +1,4 @@
 import {Session} from "./session";
-import {ATCODER_BASE_URL, ATCODER_LOGIN_PATH} from "./definitions";
 import {Cookie} from "./cookie";
 import querystring from "query-string";
 
@@ -16,21 +15,23 @@ export interface Contest {
 	url: string
 }
 
+const ATCODER_BASE_URL = "https://beta.atcoder.jp/";
+
 export class AtCoder {
 	static get base_url(): string {
 		return ATCODER_BASE_URL;
 	}
 
 	static get login_url(): string {
-		return `${AtCoder.base_url}${ATCODER_LOGIN_PATH}`;
+		return `${AtCoder.base_url}login`;
 	}
 
 	static getContestURL(contest: string) {
 		return `${AtCoder.base_url}contests/${contest}`;
 	}
 
-	static getTaskURL(contest: string, task: string) {
-		return `${AtCoder.getContestURL(contest)}/tasks/${task}`;
+	static getTaskURL(contest: string, task?: string) {
+		return `${AtCoder.getContestURL(contest)}/tasks${task === undefined ? "" : `/${task}`}`;
 	}
 
 	private session: Session;
@@ -57,7 +58,7 @@ export class AtCoder {
 	 */
 	private async check(): Promise<boolean> {
 		// practice contestでログインせず提出ページにアクセスするとコンテストトップに飛ばされることを利用する
-		const url = `${AtCoder.base_url}contests/practice/submit`;
+		const url = `${AtCoder.getContestURL("practice")}/submit`;
 		// リダイレクトを無効化・302コードを容認して通信
 		const response = await this.session.get(url, {
 			maxRedirects: 0,
@@ -147,7 +148,7 @@ export class AtCoder {
 	 * @param contest
 	 */
 	async tasks(contest: string): Promise<Array<Task>> {
-		const response = await this.session.get(`${AtCoder.getContestURL(contest)}/tasks`);
+		const response = await this.session.get(AtCoder.getTaskURL(contest));
 
 		const {JSDOM} = await import("jsdom");
 		const {document} = new JSDOM(response.data).window;
