@@ -1,8 +1,7 @@
 import {Session} from "./session";
 import {ATCODER_BASE_URL, ATCODER_LOGIN_PATH} from "./definitions";
-import getConfig from "./config";
-import Conf from "conf";
-import request, {CookieJar} from "request";
+import {Cookie} from "./cookie";
+import querystring from "query-string";
 
 export interface Task {
 	id: string,
@@ -34,14 +33,12 @@ export class AtCoder {
 		return `${AtCoder.getContestURL(contest)}/tasks/${task}`;
 	}
 
-	private readonly config: Conf;
 	private session: Session;
 	// null:未検査 true/false: ログインしているかどうか
 	private _login: boolean | null;
 
 	constructor() {
-		this.config = getConfig();
-		this.session = new Session(this.loadCookiesFromConfig());
+		this.session = new Session();
 		this._login = null;
 	}
 
@@ -60,12 +57,14 @@ export class AtCoder {
 	 */
 	private async check(): Promise<boolean> {
 		// practice contestでログインせず提出ページにアクセスするとコンテストトップに飛ばされることを利用する
-		const uri = `${AtCoder.base_url}contests/practice/submit`;
-		const response = await this.session.fetch(uri);
-
-		// console.log(response.request.uri.href);
+		const url = `${AtCoder.base_url}contests/practice/submit`;
+		// リダイレクトを無効化・302コードを容認して通信
+		const response = await this.session.get(url, {
+			maxRedirects: 0,
+			validateStatus: (status) => (status >= 200 && status < 300) || status === 302
+		});
 		// リダイレクトされなければログインしている
-		return response.request.uri.href === uri;
+		return response.status !== 302;
 	}
 
 	/**
@@ -77,7 +76,7 @@ export class AtCoder {
 			console.error("you logged-in already");
 			return true;
 		}
-		const csrf_token = await this.getCSRFToken();
+		const {csrf_token, cookies} = await this.getCSRFToken();
 
 		// ユーザーネームとパスワードを入力させる
 		const inquirer = await import("inquirer");
@@ -91,20 +90,26 @@ export class AtCoder {
 			name: "password"
 		}]) as { username: string, password: string };
 
-		const options = {
-			method: "POST",
-			formData: {
-				username,
-				password,
-				csrf_token
+		const response = await this.session.post(
+			AtCoder.login_url,
+			querystring.stringify({username, password, csrf_token}),
+			{
+				maxRedirects: 0,
+				validateStatus: (status) => (status >= 200 && status < 300) || status === 302,
+				headers: {
+					Cookie: cookies.join("; ")
+				}
 			}
-		};
-		const response = await this.session.fetch(AtCoder.login_url, options);
+		).catch(e => e);
+
+
 		// ログインページ以外にリダイレクトされていればログイン成功とみなす
-		const result = response.request.uri.href !== AtCoder.login_url && response.request.uri.href.indexOf(AtCoder.base_url) === 0;
+		const result = response.headers.location !== "/login";
 		if (result) {
 			// ログインに成功していた場合はセッション情報を保存する
-			this.exportCookiesToConfig(this.session.jar);
+			const new_cookies = Cookie.convertSetCookies2CookieArray(response.headers["set-cookie"]);
+			this.session.cookies.set(new_cookies);
+			this.session.cookies.saveConfigFile();
 		}
 		return result;
 	}
@@ -112,13 +117,14 @@ export class AtCoder {
 	/**
 	 * ログインページにアクセスしてCSRFトークンを取得
 	 */
-	private async getCSRFToken(): Promise<string> {
+	private async getCSRFToken(): Promise<{ csrf_token: string, cookies: Array<string> }> {
 		const {JSDOM} = await import("jsdom");
-		const response = await this.session.fetch(AtCoder.login_url);
+		// cookieなしでログインページにアクセス
+		const response = await this.session.get(AtCoder.login_url, {headers: {Cookie: ""}});
 
-		const {document} = new JSDOM(response.body).window;
+		const {document} = new JSDOM(response.data).window;
 		const input: HTMLInputElement = (document.getElementsByName("csrf_token")[0]) as HTMLInputElement;
-		return input.value;
+		return {csrf_token: input.value, cookies: Cookie.convertSetCookies2CookieArray(response.headers["set-cookie"])};
 	}
 
 	/**
@@ -127,9 +133,9 @@ export class AtCoder {
 	 */
 	async contest(id: string): Promise<Contest> {
 		const url = AtCoder.getContestURL(id);
-		const response = await this.session.fetch(url);
+		const response = await this.session.get(url);
 		const {JSDOM} = await import("jsdom");
-		const {document} = new JSDOM(response.body).window;
+		const {document} = new JSDOM(response.data).window;
 		const regexp = /^(.*) - AtCoder$/;
 		const title = regexp.test(document.title) ? regexp.exec(document.title)![1] : document.title;
 		return {id, title, url};
@@ -140,10 +146,10 @@ export class AtCoder {
 	 * @param contest
 	 */
 	async tasks(contest: string): Promise<Array<Task>> {
-		const response = await this.session.fetch(`${AtCoder.getContestURL(contest)}/tasks`);
+		const response = await this.session.get(`${AtCoder.getContestURL(contest)}/tasks`);
 
 		const {JSDOM} = await import("jsdom");
-		const {document} = new JSDOM(response.body).window;
+		const {document} = new JSDOM(response.data).window;
 		// very very ad-hoc and not type-safe section
 		const tbody = document.querySelector("#main-div .row table>tbody");
 		if (tbody === null) return [];
@@ -157,27 +163,5 @@ export class AtCoder {
 			tasks.push({id, label, title, url});
 		}
 		return tasks;
-	}
-
-	/**
-	 * Configに保存されたCookie情報を読み込む
-	 * 引数として与えられたCookieJarの内部状態を書き換えるので、その場合戻り値を再代入する必要はない
-	 * @param jar 省略された場合は新しいCookieJarを作って返す
-	 */
-	private loadCookiesFromConfig(jar?: CookieJar): CookieJar {
-		if (jar === undefined) jar = request.jar();
-		// configからクッキー情報を取得
-		const cookies: string = this.config.get("cookies");
-		if (cookies !== undefined) {
-			for (const cookie of cookies.split(";")) {
-				jar.setCookie(cookie, AtCoder.base_url);
-			}
-		}
-		return jar;
-	}
-
-	private exportCookiesToConfig(jar: CookieJar) {
-		const cookies = jar.getCookieString(AtCoder.base_url);
-		this.config.set("cookies", cookies);
 	}
 }

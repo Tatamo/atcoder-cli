@@ -9,7 +9,7 @@ export class OnlineJudge {
 	 * online-judge-toolsの実行ファイルの絶対パスを返します 見つからなかった場合はnull
 	 */
 	static async getPath(): Promise<string | null> {
-		const config = getConfig();
+		const config = await getConfig();
 		let path = config.get("oj-path");
 		// configにpathが設定されていない場合はwhichコマンドで探してみる
 		if (path === undefined || path.trim() === "") {
@@ -27,7 +27,8 @@ export class OnlineJudge {
 		if (path === null) return false;
 		const result = (await exec(`${path} -h`).then(v => v.stdout).catch(() => "")).trim() !== "";
 		// うまくpathが通っていた場合はconfigに登録する
-		if (result && getConfig().get("oj-path") === undefined) getConfig().set("oj-path", path);
+		const config = await getConfig();
+		if (result && config.get("oj-path") === undefined) config.set("oj-path", path);
 		return result;
 	}
 

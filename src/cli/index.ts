@@ -5,7 +5,7 @@ const {version} = require("../../package.json");
 import {AtCoder} from "../atcoder";
 import {OnlineJudge} from "../facade/oj";
 import {init} from "../project";
-import getConfig from "../config";
+import {Cookie} from "../cookie";
 
 async function login() {
 	const atcoder = new AtCoder();
@@ -13,7 +13,8 @@ async function login() {
 }
 
 async function logout() {
-	getConfig().delete("cookies");
+	// 空のcookieで設定ファイルを上書きする
+	new Cookie(false).saveConfigFile();
 	console.log("login session aborted.");
 }
 
