@@ -23,7 +23,7 @@ export class OnlineJudge {
 	 * online-judge-toolsがインストールされているかどうか調べます
 	 */
 	static async checkAvailable(): Promise<boolean> {
-		const path = OnlineJudge.getPath();
+		const path = await OnlineJudge.getPath();
 		if (path === null) return false;
 		const result = (await exec(`${path} -h`).then(v => v.stdout).catch(() => "")).trim() !== "";
 		// うまくpathが通っていた場合はconfigに登録する
