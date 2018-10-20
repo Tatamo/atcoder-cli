@@ -14,7 +14,7 @@ async function login() {
 
 async function logout() {
 	// 空のcookieで設定ファイルを上書きする
-	new Cookie(false).saveConfigFile();
+	await new Cookie().saveConfigFile();
 	console.log("login session aborted.");
 }
 

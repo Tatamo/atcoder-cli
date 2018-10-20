@@ -9,6 +9,12 @@ type AxiosResponse = import("axios").AxiosResponse;
  */
 export class Session {
 	private static _axios: import("axios").AxiosInstance | null = null;
+	private _cookies: Cookie | null;
+
+	constructor() {
+		this._cookies = null;
+	}
+
 	// 必要になった瞬間にaxiosをimportする
 	static async importAxios(): Promise<import("axios").AxiosInstance> {
 		if (Session._axios === null) {
@@ -19,19 +25,17 @@ export class Session {
 		return Session._axios;
 	}
 
-	private readonly _cookies: Cookie;
-	get cookies(): Cookie {
+	async getCookies(): Promise<Cookie> {
+		if (this._cookies === null) {
+			return this._cookies = await Cookie.createLoadedInstance();
+		}
 		return this._cookies;
-	}
-
-	constructor() {
-		this._cookies = new Cookie();
 	}
 
 	async get(url: string, options: AxiosRequestConfig = {}): Promise<AxiosResponse> {
 		return await (await Session.importAxios())(url, {
 			headers: {
-				Cookie: this.cookies.get().join("; ")
+				Cookie: (await this.getCookies()).get().join("; ")
 			},
 			...options
 		})
@@ -40,7 +44,7 @@ export class Session {
 	async post(url: string, data?: any, options: AxiosRequestConfig = {}): Promise<AxiosResponse> {
 		return await (await Session.importAxios()).post(url, data, {
 			headers: {
-				Cookie: this.cookies.get().join("; ")
+				Cookie: (await this.getCookies()).get().join("; ")
 			},
 			...options
 		})
