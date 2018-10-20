@@ -49,7 +49,12 @@ function url(contest?: string, task?: string) {
 }
 
 async function oj() {
-	console.log(`online-judge-tools is ${(await OnlineJudge.checkAvailable()) ? "" : "not "}available.`);
+	const available = await OnlineJudge.checkAvailable();
+	const path = await OnlineJudge.getPath();
+	console.log(`online-judge-tools is ${available ? "" : "not "}available. ${available ? "found at:" : ""}`);
+	if (available) {
+		console.log(path);
+	}
 	// await OnlineJudge.call(["l", "http://atcoder.jp/"]);
 }
 
