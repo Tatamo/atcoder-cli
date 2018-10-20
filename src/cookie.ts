@@ -1,5 +1,5 @@
 // yummy!
-import Conf from "conf";
+type Conf = import("conf");
 
 /**
  * Cookie管理用クラス
@@ -10,17 +10,23 @@ export class Cookie {
 	private cookies: Array<string>;
 	private static _cookie_conf: Conf | null = null;
 
-	protected static getCookieConfig(): Conf {
+	protected static async getCookieConfig(): Promise<Conf> {
 		if (Cookie._cookie_conf !== null) return Cookie._cookie_conf;
+		const Conf = (await import("conf")).default;
 		return Cookie._cookie_conf = new Conf({defaults: {cookies: []}, configName: "session"});
 	}
 
 	/**
-	 * @param load_from_config default=false trueなら設定ファイルからcookieを読み込む
+	 * 設定ファイルからcookie情報を読み込み済みのインスタンスを生成
 	 */
-	constructor(load_from_config: boolean = true) {
+	static async createLoadedInstance(): Promise<Cookie> {
+		const cookie = new Cookie();
+		await cookie.loadConfigFile();
+		return cookie;
+	}
+
+	constructor() {
 		this.cookies = [];
-		if (load_from_config) this.loadConfigFile();
 	}
 
 	/**
@@ -56,14 +62,14 @@ export class Cookie {
 	/**
 	 * 設定ファイルからcookieを読み込んで保持する
 	 */
-	loadConfigFile(): void {
-		this.cookies = Cookie.getCookieConfig().get("cookies");
+	async loadConfigFile(): Promise<void> {
+		this.cookies = (await Cookie.getCookieConfig()).get("cookies");
 	}
 
 	/**
 	 * 現在保持しているcookieを設定ファイルに書き出す
 	 */
-	saveConfigFile(): void {
-		Cookie.getCookieConfig().set("cookies", this.cookies);
+	async saveConfigFile(): Promise<void> {
+		(await Cookie.getCookieConfig()).set("cookies", this.cookies);
 	}
 }
