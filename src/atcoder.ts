@@ -1,9 +1,9 @@
 import {Session} from "./session";
 import {ATCODER_BASE_URL, ATCODER_LOGIN_PATH} from "./definitions";
 import getConfig from "./config";
-import Conf from "conf";
 import {Cookie} from "./cookie";
 import querystring from "query-string";
+type Conf = import("conf");
 
 export interface Task {
 	id: string,
