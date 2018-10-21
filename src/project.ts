@@ -88,7 +88,7 @@ export const installTask = async (task: Task, project_path?: string): Promise<vo
 	await promisify(mkdirp)(task.id);
 	process.chdir(task.id);
 	if (OnlineJudge.checkAvailable()) {
-		await OnlineJudge.call(["dl", task.url]);
+		await OnlineJudge.call(["dl", task.url, "-d", "tests"]);
 	} else {
 		console.error("online-judge-tools is not available. downloading of sample cases skipped.");
 	}
