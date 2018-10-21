@@ -4,6 +4,8 @@ import mkdirp from "mkdirp";
 import {promisify} from "util";
 import {OnlineJudge} from "./facade/oj";
 
+export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
+
 /**
  * コンテスト情報を取得し、プロジェクトディレクトリを作成する
  * @param contest_id
@@ -25,8 +27,8 @@ export const init: (contest_id: string) => Promise<boolean> = async (contest_id:
 	}
 	process.chdir(contest_id);
 	const data = {contest, tasks};
-	await promisify(writeFile)("contest.json", JSON.stringify(data, undefined, 2));
-	console.log(`${contest_id}/contest.json created.`);
+	await promisify(writeFile)(PROJECT_JSON_FILE_NAME, JSON.stringify(data, undefined, 2));
+	console.log(`${contest_id}/${PROJECT_JSON_FILE_NAME} created.`);
 	return true;
 };
 
