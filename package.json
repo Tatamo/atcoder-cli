@@ -17,6 +17,7 @@
   "author": "Tatamo",
   "license": "BSD-3-Clause",
   "dependencies": {
+    "ajv": "^6.5.4",
     "axios": "^0.18.0",
     "commander": "^2.19.0",
     "conf": "^2.0.0",

@@ -11,14 +11,16 @@ export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
  * カレントディレクトリから親を辿って最も近い位置にあるプロジェクトファイルを取得する
  * 見つからなかった場合は例外を発生させる
  */
-export const findProjectJSON = async (): Promise<{ path: string, data: string }> => {
+export const findProjectJSON = async (): Promise<{ path: string, data: any }> => {
 	const readFilePromise = promisify(readFile);
 	let cwd = process.cwd();
 
+	let data = null;
 	while (true) {
 		try {
 			let filepath = path.resolve(cwd, PROJECT_JSON_FILE_NAME);
-			return {path: cwd, data: await readFilePromise(filepath, "utf8")};
+			data = JSON.parse(await readFilePromise(filepath, "utf8"));
+			break;
 		} catch (e) {
 			if (e.code === "ENOENT") {
 				// ファイルが存在しないので上の階層を探す
@@ -33,6 +35,23 @@ export const findProjectJSON = async (): Promise<{ path: string, data: string }>
 			}
 		}
 	}
+	const [valid, error] = await validateProjectJSON(data);
+	if (valid) return {path: cwd, data};
+	else throw new Error(error!);
+};
+
+/**
+ * プロジェクトファイルが正しい形式に沿っているか調べます
+ * [valid:true, error:null] | [valid:false, error:string] valid=trueなら正しいJSON
+ * @param data
+ */
+export const validateProjectJSON = async (data: string): Promise<[true, null] | [false, string]> => {
+	const ajv = new ((await import("ajv")).default)();
+	const schema = (await import("./schema")).default;
+	const validate = ajv.compile(schema);
+	const valid = validate(data);
+	if (!valid) return [false, ajv.errorsText(validate.errors)];
+	return [true, null];
 };
 
 /**
