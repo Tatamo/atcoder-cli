@@ -1,19 +1,7 @@
 import {Session} from "./session";
 import {Cookie} from "./cookie";
 import querystring from "query-string";
-
-export interface Task {
-	id: string,
-	label: string,
-	title: string,
-	url: string
-}
-
-export interface Contest {
-	id: string,
-	title: string,
-	url: string
-}
+import {Contest, Task} from "./definitions";
 
 const ATCODER_BASE_URL = "https://beta.atcoder.jp/";
 

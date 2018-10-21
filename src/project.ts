@@ -1,4 +1,5 @@
-import {AtCoder, Task} from "./atcoder";
+import {Task} from "./definitions";
+import {AtCoder} from "./atcoder";
 import {mkdir, readFile, writeFile} from "fs";
 import path from "path";
 import mkdirp from "mkdirp";
