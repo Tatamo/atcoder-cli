@@ -1,4 +1,4 @@
-import {Task} from "./definitions";
+import {Task, ContestProject} from "./definitions";
 import {AtCoder} from "./atcoder";
 import {mkdir, readFile, writeFile} from "fs";
 import path from "path";
@@ -59,11 +59,11 @@ export const validateProjectJSON = async (data: string): Promise<[true, null] | 
  * コンテスト情報を取得し、プロジェクトディレクトリを作成する
  * @param contest_id
  */
-export const init = async (contest_id: string): Promise<boolean> => {
+export const init = async (contest_id: string): Promise<ContestProject | null> => {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => [null, null]);
-	if (contest === null && tasks === null) {
+	if (contest === null || tasks === null) {
 		throw new Error("failed to get contest information.");
 	}
 	try {
@@ -72,13 +72,13 @@ export const init = async (contest_id: string): Promise<boolean> => {
 	catch {
 		// throw new Error(`${contest_id} file/directory already exists.`)
 		console.error(`${contest_id} file/directory already exists.`);
-		return false;
+		return null;
 	}
 	process.chdir(contest_id);
 	const data = {contest, tasks};
 	await promisify(writeFile)(PROJECT_JSON_FILE_NAME, JSON.stringify(data, undefined, 2));
 	console.log(`${contest_id}/${PROJECT_JSON_FILE_NAME} created.`);
-	return true;
+	return data;
 };
 
 export const installTask = async (task: Task, project_path?: string): Promise<void> => {
