@@ -1,6 +1,7 @@
 import {AtCoder} from "./atcoder";
 import {OnlineJudge} from "./facade/oj";
 import {Cookie} from "./cookie";
+import * as project from "./project";
 
 export async function login() {
 	const atcoder = new AtCoder();
@@ -51,4 +52,12 @@ export async function oj() {
 		console.log(path);
 	}
 	// await OnlineJudge.call(["l", "http://atcoder.jp/"]);
+}
+
+export async function setup(contest_id: string) {
+	const {contest, tasks} = await project.init(contest_id);
+	console.log(`create project of ${contest.title}`);
+	for (const task of tasks) {
+		await project.installTask(task);
+	}
 }

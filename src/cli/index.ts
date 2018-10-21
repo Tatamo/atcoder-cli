@@ -2,7 +2,6 @@ import commander from "commander";
 // import {version} from "../../package.json";
 // work-around to avoid TS5505 error bug in TypeScript 3.1 https://github.com/Microsoft/TypeScript/issues/24715
 const {version} = require("../../package.json");
-import {init} from "../project";
 import * as commands from "../commands";
 
 commander
@@ -10,7 +9,8 @@ commander
 
 commander
 	.command("new <contest-id>")
-	.action(init)
+	.alias("setup")
+	.action(commands.setup)
 	.description("create new contest project directory");
 
 commander

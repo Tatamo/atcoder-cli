@@ -59,7 +59,7 @@ export const validateProjectJSON = async (data: string): Promise<[true, null] | 
  * コンテスト情報を取得し、プロジェクトディレクトリを作成する
  * @param contest_id
  */
-export const init = async (contest_id: string): Promise<ContestProject | null> => {
+export const init = async (contest_id: string): Promise<ContestProject> => {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => [null, null]);
@@ -70,9 +70,7 @@ export const init = async (contest_id: string): Promise<ContestProject | null> =
 		await promisify(mkdir)(contest_id);
 	}
 	catch {
-		// throw new Error(`${contest_id} file/directory already exists.`)
-		console.error(`${contest_id} file/directory already exists.`);
-		return null;
+		throw new Error(`${contest_id} file/directory already exists.`)
 	}
 	process.chdir(contest_id);
 	const data = {contest, tasks};
@@ -82,7 +80,11 @@ export const init = async (contest_id: string): Promise<ContestProject | null> =
 };
 
 export const installTask = async (task: Task, project_path?: string): Promise<void> => {
-	if (project_path !== undefined) process.chdir(project_path);
+	const pwd = process.cwd();
+	if (project_path !== undefined) {
+		await promisify(mkdirp)(project_path);
+		process.chdir(project_path);
+	}
 	await promisify(mkdirp)(task.id);
 	process.chdir(task.id);
 	if (OnlineJudge.checkAvailable()) {
@@ -90,4 +92,6 @@ export const installTask = async (task: Task, project_path?: string): Promise<vo
 	} else {
 		console.error("online-judge-tools is not available. downloading of sample cases skipped.");
 	}
+	// もとのディレクトリに戻る
+	process.chdir(pwd);
 };
