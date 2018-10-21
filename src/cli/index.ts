@@ -29,12 +29,12 @@ commander
 	.description("check login or not");
 
 commander
-	.command("contest <contest-id>")
+	.command("contest [contest-id]")
 	.action(commands.contest)
-	.description("get contest title and url from contest id");
+	.description("get contest information");
 
 commander
-	.command("tasks <contest-id>")
+	.command("tasks [contest-id]")
 	.action(commands.tasks)
 	.description("get tasks");
 

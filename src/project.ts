@@ -12,7 +12,7 @@ export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
  * カレントディレクトリから親を辿って最も近い位置にあるプロジェクトファイルを取得する
  * 見つからなかった場合は例外を発生させる
  */
-export const findProjectJSON = async (): Promise<{ path: string, data: any }> => {
+export const findProjectJSON = async (): Promise<{ path: string, data: ContestProject }> => {
 	const readFilePromise = promisify(readFile);
 	let cwd = process.cwd();
 

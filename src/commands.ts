@@ -2,6 +2,7 @@ import {AtCoder} from "./atcoder";
 import {OnlineJudge} from "./facade/oj";
 import {Cookie} from "./cookie";
 import * as project from "./project";
+import {PROJECT_JSON_FILE_NAME} from "./project";
 
 export async function login() {
 	const atcoder = new AtCoder();
@@ -20,16 +21,38 @@ export async function session() {
 	console.log(await atcoder.checkSession());
 }
 
-export async function contest(id: string) {
-	const atcoder = new AtCoder();
-	if (!await atcoder.checkSession()) await atcoder.login();
-	console.log(await atcoder.contest(id));
+export async function contest(id?: string) {
+	if (id === undefined) {
+		// idが与えられていない場合、プロジェクトファイルを探してコンテスト情報を表示
+		try {
+			const {data: {contest}} = await project.findProjectJSON();
+			console.log(contest);
+		} catch {
+			console.log(`${PROJECT_JSON_FILE_NAME} not found. specify contest id.`)
+		}
+	}
+	else {
+		const atcoder = new AtCoder();
+		if (!await atcoder.checkSession()) await atcoder.login();
+		console.log(await atcoder.contest(id));
+	}
 }
 
-export async function tasks(contest: string) {
-	const atcoder = new AtCoder();
-	if (!await atcoder.checkSession()) await atcoder.login();
-	console.log(await atcoder.tasks(contest));
+export async function tasks(contest_id?: string) {
+	if (contest_id === undefined) {
+		// idが与えられていない場合、プロジェクトファイルを探す
+		try {
+			const {data: {tasks}} = await project.findProjectJSON();
+			console.log(tasks);
+		} catch {
+			console.log(`${PROJECT_JSON_FILE_NAME} not found. specify contest and/or task id.`)
+		}
+	}
+	else {
+		const atcoder = new AtCoder();
+		if (!await atcoder.checkSession()) await atcoder.login();
+		console.log(await atcoder.tasks(contest_id));
+	}
 }
 
 export function url(contest?: string, task?: string) {
