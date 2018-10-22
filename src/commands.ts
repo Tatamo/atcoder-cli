@@ -3,6 +3,7 @@ import {OnlineJudge} from "./facade/oj";
 import {Cookie} from "./cookie";
 import * as project from "./project";
 import {PROJECT_JSON_FILE_NAME} from "./project";
+import {Contest, Task} from "./definitions";
 
 export async function login() {
 	const atcoder = new AtCoder();
@@ -22,11 +23,12 @@ export async function session() {
 }
 
 export async function contest(id?: string) {
+	const format = ({id, title, url}: Contest) => formatAsShellOutput([[id, title, url]]);
 	if (id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探してコンテスト情報を表示
 		try {
 			const {data: {contest}} = await project.findProjectJSON();
-			console.log(contest);
+			console.log(format(contest));
 		} catch {
 			console.log(`${PROJECT_JSON_FILE_NAME} not found. specify contest id.`)
 		}
@@ -34,16 +36,18 @@ export async function contest(id?: string) {
 	else {
 		const atcoder = new AtCoder();
 		if (!await atcoder.checkSession()) await atcoder.login();
-		console.log(await atcoder.contest(id));
+		const contest = await atcoder.contest(id);
+		console.log(format(contest));
 	}
 }
 
 export async function tasks(contest_id?: string) {
+	const format = (tasks: Array<Task>) => formatAsShellOutput(tasks.map(({id, label, title}) => [id, label, title]));
 	if (contest_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探す
 		try {
 			const {data: {tasks}} = await project.findProjectJSON();
-			console.log(tasks);
+			console.log(format(tasks));
 		} catch {
 			console.log(`${PROJECT_JSON_FILE_NAME} not found. specify contest and/or task id.`)
 		}
@@ -51,7 +55,8 @@ export async function tasks(contest_id?: string) {
 	else {
 		const atcoder = new AtCoder();
 		if (!await atcoder.checkSession()) await atcoder.login();
-		console.log(await atcoder.tasks(contest_id));
+		const tasks = await atcoder.tasks(contest_id);
+		console.log(format(tasks));
 	}
 }
 
@@ -83,4 +88,14 @@ export async function setup(contest_id: string) {
 	for (const task of tasks) {
 		await project.installTask(task);
 	}
+}
+
+/**
+ * 文字列の2次元配列を受け取り、行ごとにいい感じのスペースで結合して返す
+ * @param data
+ */
+export function formatAsShellOutput(data: Array<Array<string>>): string {
+	const padding = "  ";
+	const max_lengths = data.map(arr => arr.map(str => str.length)).reduce((a, b) => a.map((v, i) => Math.max(v, b[i])));
+	return data.map(line => line.reduceRight((p, c, i) => c.padEnd(max_lengths[i]) + padding + p)).join("\n");
 }
