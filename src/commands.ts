@@ -69,12 +69,46 @@ export async function tasks(contest_id: string | undefined, options: { id?: bool
 	}
 }
 
-export function url(contest?: string, task?: string) {
-	if (contest !== undefined && task !== undefined) {
-		console.log(AtCoder.getTaskURL(contest, task));
+export async function url(contest_id: string | undefined, task_id: string | undefined, options: { check?: boolean }) {
+	const f_check = options.check === true;
+	if (contest_id !== undefined && task_id !== undefined) {
+		if (f_check) {
+			const atcoder = new AtCoder();
+			try {
+				const tasks = await atcoder.tasks(contest_id);
+				// Task一覧から一致するURLを探す
+				for (const {url} of tasks) {
+					if (url === AtCoder.getTaskURL(contest_id, task_id)) {
+						console.log(url);
+						return;
+					}
+				}
+				// なかった
+				console.error(`task "${task_id}" not found.`);
+			} catch {
+				console.error(`contest "${contest_id}" not found.`);
+			}
+		}
+		else {
+			// URLの妥当性をチェックしない
+			console.log(AtCoder.getTaskURL(contest_id, task_id));
+		}
 	}
-	else if (contest !== undefined && task === undefined) {
-		console.log(AtCoder.getContestURL(contest));
+	else if (contest_id !== undefined && task_id === undefined) {
+		if (f_check) {
+			const atcoder = new AtCoder();
+			try {
+				// コンテストページの存在確認
+				const {url} = await atcoder.contest(contest_id);
+				console.log(url);
+			} catch {
+				console.error(`contest "${contest_id}" not found.`);
+			}
+		}
+		else {
+			// URLの妥当性をチェックしない
+			console.log(AtCoder.getContestURL(contest_id));
+		}
 	}
 	else {
 		console.log(AtCoder.base_url);

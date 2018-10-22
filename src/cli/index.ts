@@ -42,8 +42,7 @@ commander
 
 commander
 	.command("url [contest] [task]")
-	// UNDONE
-	// .option("-c, --check", "check the specified contest and/or task id is valid")
+	.option("-c, --check", "check the specified contest and/or task id is valid")
 	.action(commands.url)
 	.description("get contest or task URL");
 
