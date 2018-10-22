@@ -22,9 +22,10 @@ export async function session() {
 	console.log(await atcoder.checkSession());
 }
 
-export async function contest(id?: string) {
-	const format = ({id, title, url}: Contest) => formatAsShellOutput([[SGR(id, 37), SGR(title, 32, 1), url]]);
-	if (id === undefined) {
+export async function contest(contest_id: string | undefined, options: { id?: boolean }) {
+	const f_id = options.id === true;
+	const format = ({id, title, url}: Contest) => formatAsShellOutput([[f_id ? SGR(id, 37) : null, SGR(title, 32, 1), url].filter(e => e !== null) as Array<string>]);
+	if (contest_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探してコンテスト情報を表示
 		try {
 			const {data: {contest}} = await project.findProjectJSON();
@@ -36,13 +37,14 @@ export async function contest(id?: string) {
 	else {
 		const atcoder = new AtCoder();
 		if (!await atcoder.checkSession()) await atcoder.login();
-		const contest = await atcoder.contest(id);
+		const contest = await atcoder.contest(contest_id);
 		console.log(format(contest));
 	}
 }
 
-export async function tasks(contest_id?: string) {
-	const format = (tasks: Array<Task>) => formatAsShellOutput(tasks.map(({id, label, title}) => [SGR(id, 37), SGR(label, 32), SGR(title, 32, 1)]));
+export async function tasks(contest_id: string | undefined, options: { id?: boolean }) {
+	const f_id = options.id === true;
+	const format = (tasks: Array<Task>) => formatAsShellOutput(tasks.map(({id, label, title}) => [f_id ? SGR(id, 37) : null, SGR(label, 32), SGR(title, 32, 1)].filter(e => e !== null) as Array<string>));
 	if (contest_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探す
 		try {

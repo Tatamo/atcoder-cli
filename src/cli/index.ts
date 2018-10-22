@@ -31,11 +31,13 @@ commander
 commander
 	.command("contest [contest-id]")
 	.action(commands.contest)
+	.option("-i, --id", "show contest id")
 	.description("get contest information");
 
 commander
 	.command("tasks [contest-id]")
 	.action(commands.tasks)
+	.option("-i, --id", "show task id")
 	.description("get tasks");
 
 commander
