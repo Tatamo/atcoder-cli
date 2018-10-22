@@ -31,14 +31,18 @@ export async function contest(contest_id: string | undefined, options: { id?: bo
 			const {data: {contest}} = await project.findProjectJSON();
 			console.log(format(contest));
 		} catch {
-			console.log(`${PROJECT_JSON_FILE_NAME} not found. specify contest id.`)
+			console.error(`${PROJECT_JSON_FILE_NAME} not found. specify contest id.`)
 		}
 	}
 	else {
-		const atcoder = new AtCoder();
-		if (!await atcoder.checkSession()) await atcoder.login();
-		const contest = await atcoder.contest(contest_id);
-		console.log(format(contest));
+		try {
+			const atcoder = new AtCoder();
+			if (!await atcoder.checkSession()) await atcoder.login();
+			const contest = await atcoder.contest(contest_id);
+			console.log(format(contest));
+		} catch {
+			console.error(`contest "${contest_id}" not found.`);
+		}
 	}
 }
 
@@ -55,10 +59,14 @@ export async function tasks(contest_id: string | undefined, options: { id?: bool
 		}
 	}
 	else {
-		const atcoder = new AtCoder();
-		if (!await atcoder.checkSession()) await atcoder.login();
-		const tasks = await atcoder.tasks(contest_id);
-		console.log(format(tasks));
+		try {
+			const atcoder = new AtCoder();
+			if (!await atcoder.checkSession()) await atcoder.login();
+			const tasks = await atcoder.tasks(contest_id);
+			console.log(format(tasks));
+		} catch {
+			console.error(`contest "${contest_id}" not found.`);
+		}
 	}
 }
 

@@ -120,9 +120,11 @@ export class AtCoder {
 	/**
 	 * コンテストIDからコンテストの情報を取得
 	 * @param id
+	 * @throws Error
 	 */
 	async contest(id: string): Promise<Contest> {
 		const url = AtCoder.getContestURL(id);
+		// コンテストが見つからない場合エラーとなるがハンドルせず外に投げる
 		const response = await this.session.get(url);
 		const {JSDOM} = await import("jsdom");
 		const {document} = new JSDOM(response.data).window;
@@ -133,10 +135,12 @@ export class AtCoder {
 
 	/**
 	 * 問題一覧を取得
-	 * @param contest
+	 * @param contest_id
+	 * @throws Error
 	 */
-	async tasks(contest: string): Promise<Array<Task>> {
-		const response = await this.session.get(AtCoder.getTaskURL(contest));
+	async tasks(contest_id: string): Promise<Array<Task>> {
+		// コンテストが見つからない場合エラーとなるがハンドルせず外に投げる
+		const response = await this.session.get(AtCoder.getTaskURL(contest_id));
 
 		const {JSDOM} = await import("jsdom");
 		const {document} = new JSDOM(response.data).window;
