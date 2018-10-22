@@ -7,7 +7,7 @@ import {Contest, Task} from "./definitions";
 
 export async function login() {
 	const atcoder = new AtCoder();
-	console.log(await atcoder.login());
+	console.log(await atcoder.login() ? "OK" : "login failed");
 }
 
 export async function logout() {
@@ -19,7 +19,7 @@ export async function logout() {
 export async function session() {
 	const atcoder = new AtCoder();
 	console.log("check login status...");
-	console.log(await atcoder.checkSession());
+	console.log(await atcoder.checkSession() ? "OK" : "not login");
 }
 
 export async function contest(contest_id: string | undefined, options: { id?: boolean }) {
@@ -96,7 +96,7 @@ export async function setup(contest_id: string) {
  * 文字列の2次元配列を受け取り、行ごとにいい感じのスペースで結合して返す
  * @param data
  */
-export function formatAsShellOutput(data: Array<Array<string>>): string {
+function formatAsShellOutput(data: Array<Array<string>>): string {
 	const padding = "  ";
 	const max_lengths = data.map(arr => arr.map(str => str.length)).reduce((a, b) => a.map((v, i) => Math.max(v, b[i])));
 	return data.map(line => line.reduceRight((p, c, i) => c.padEnd(max_lengths[i]) + padding + p)).join("\n");
