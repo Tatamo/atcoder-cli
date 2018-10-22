@@ -2,7 +2,6 @@ import {AtCoder} from "./atcoder";
 import {OnlineJudge} from "./facade/oj";
 import {Cookie} from "./cookie";
 import * as project from "./project";
-import {PROJECT_JSON_FILE_NAME} from "./project";
 import {Contest, Task} from "./definitions";
 
 export async function login() {
@@ -30,8 +29,8 @@ export async function contest(contest_id: string | undefined, options: { id?: bo
 		try {
 			const {data: {contest}} = await project.findProjectJSON();
 			console.log(format(contest));
-		} catch {
-			console.error(`${PROJECT_JSON_FILE_NAME} not found. specify contest id.`)
+		} catch (e) {
+			console.error(e.message);
 		}
 	}
 	else {
@@ -54,8 +53,8 @@ export async function tasks(contest_id: string | undefined, options: { id?: bool
 		try {
 			const {data: {tasks}} = await project.findProjectJSON();
 			console.log(format(tasks));
-		} catch {
-			console.log(`${PROJECT_JSON_FILE_NAME} not found. specify contest and/or task id.`)
+		} catch (e) {
+			console.error(e.message);
 		}
 	}
 	else {

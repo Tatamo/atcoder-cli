@@ -27,7 +27,7 @@ export const findProjectJSON = async (): Promise<{ path: string, data: ContestPr
 				// ファイルが存在しないので上の階層を探す
 				const parent = path.resolve(cwd, "..");
 				if (parent === cwd) {
-					throw new Error(`${PROJECT_JSON_FILE_NAME} not found`);
+					throw new Error(`${PROJECT_JSON_FILE_NAME} not found.`);
 				}
 				cwd = parent;
 			}
@@ -38,7 +38,7 @@ export const findProjectJSON = async (): Promise<{ path: string, data: ContestPr
 	}
 	const [valid, error] = await validateProjectJSON(data);
 	if (valid) return {path: cwd, data};
-	else throw new Error(error!);
+	else throw new Error(`failed to validate JSON: ${error!}`);
 };
 
 /**
