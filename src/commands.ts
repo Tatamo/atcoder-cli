@@ -23,7 +23,7 @@ export async function session() {
 }
 
 export async function contest(id?: string) {
-	const format = ({id, title, url}: Contest) => formatAsShellOutput([[id, title, url]]);
+	const format = ({id, title, url}: Contest) => formatAsShellOutput([[SGR(id, 37), SGR(title, 32, 1), url]]);
 	if (id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探してコンテスト情報を表示
 		try {
@@ -42,7 +42,7 @@ export async function contest(id?: string) {
 }
 
 export async function tasks(contest_id?: string) {
-	const format = (tasks: Array<Task>) => formatAsShellOutput(tasks.map(({id, label, title}) => [id, label, title]));
+	const format = (tasks: Array<Task>) => formatAsShellOutput(tasks.map(({id, label, title}) => [SGR(id, 37), SGR(label, 32), SGR(title, 32, 1)]));
 	if (contest_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探す
 		try {
@@ -98,4 +98,14 @@ export function formatAsShellOutput(data: Array<Array<string>>): string {
 	const padding = "  ";
 	const max_lengths = data.map(arr => arr.map(str => str.length)).reduce((a, b) => a.map((v, i) => Math.max(v, b[i])));
 	return data.map(line => line.reduceRight((p, c, i) => c.padEnd(max_lengths[i]) + padding + p)).join("\n");
+}
+
+/**
+ * プロセスがTTYで実行されているならSGRでスタイルを適用する
+ * @param str 適用する文字列
+ * @param codes コード番号(可変長)
+ */
+function SGR(str: string, ...codes: Array<number>) {
+	if (!process.stdout.isTTY) return str;
+	return `${codes.map(code => `\x1b[${code}m`).join("")}${str}\x1b[0m`;
 }
