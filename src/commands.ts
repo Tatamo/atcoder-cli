@@ -179,11 +179,6 @@ export async function submit(filename: string, options: { task?: string, contest
 	await OnlineJudge.call(["s", url, filename]);
 }
 
-/*
-export async function submit() {
-	console.log(await project.detectTaskByPath());
-}*/
-
 export async function oj() {
 	const available = await OnlineJudge.checkAvailable();
 	const path = await OnlineJudge.getPath();
@@ -191,7 +186,6 @@ export async function oj() {
 	if (available) {
 		console.log(path);
 	}
-	// await OnlineJudge.call(["l", "http://atcoder.jp/"]);
 }
 
 export async function setup(contest_id: string) {
