@@ -14,6 +14,12 @@ commander
 	.description("create new contest project directory");
 
 commander
+	.command("add")
+	.alias("a")
+	.action(commands.add)
+	.description("add new directory for the task in the project directory");
+
+commander
 	.command("submit <filename>")
 	.alias("s")
 	.option("-c, --contest <contest-id>", "specify contest id to submit")
