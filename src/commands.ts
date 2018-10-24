@@ -202,10 +202,14 @@ export async function setup(contest_id: string) {
 }
 
 export async function add() {
-	const {data: {tasks}} = await project.findProjectJSON();
-	const choices = await inquireTasks(tasks);
-	for (const task of choices) {
-		await project.installTask(task);
+	try {
+		const {data: {tasks}} = await project.findProjectJSON();
+		const choices = await inquireTasks(tasks);
+		for (const task of choices) {
+			await project.installTask(task);
+		}
+	} catch (e) {
+		console.error(e.message);
 	}
 }
 
