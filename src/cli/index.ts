@@ -65,4 +65,9 @@ commander
 	.action(commands.checkOJAvailable)
 	.description("check whether online-judge-tools related functions are available or not");
 
+commander
+	.command("config-dir")
+	.action(commands.configDir)
+	.description("get the path of atcoder-cli config directory");
+
 commander.parse(process.argv);

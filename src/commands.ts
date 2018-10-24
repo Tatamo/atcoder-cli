@@ -3,6 +3,8 @@ import {OnlineJudge} from "./facade/oj";
 import {Cookie} from "./cookie";
 import * as project from "./project";
 import {Contest, Task} from "./definitions";
+import getConfig from "./config";
+import path from "path";
 
 export async function login() {
 	const atcoder = new AtCoder();
@@ -186,6 +188,11 @@ export async function checkOJAvailable() {
 	if (available) {
 		console.log(path);
 	}
+}
+
+export async function configDir() {
+	const conf = await getConfig();
+	console.log(path.resolve(conf.path,".."));
 }
 
 export async function setup(contest_id: string) {
