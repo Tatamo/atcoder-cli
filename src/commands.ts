@@ -196,9 +196,13 @@ export async function configDir() {
 }
 
 export async function setup(contest_id: string) {
-	const {contest} = await project.init(contest_id);
-	console.log(`create project of ${contest.title}`);
-	add();
+	try {
+		const {contest} = await project.init(contest_id);
+		console.log(`create project of ${contest.title}`);
+		add();
+	} catch (e) {
+		console.error(e.message);
+	}
 }
 
 export async function add() {
