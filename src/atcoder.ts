@@ -158,4 +158,18 @@ export class AtCoder {
 		}
 		return tasks;
 	}
+
+	/**
+	 * 単一の問題を取得
+	 * @param contest_id
+	 * @param task_id
+	 * @throws Error
+	 */
+	async task(contest_id: string, task_id: string): Promise<Task> {
+		const tasks = await this.tasks(contest_id);
+		for (const task of tasks) {
+			if (task.id === task_id) return task;
+		}
+		throw new Error(`Task ${task_id} not found.`);
+	}
 }
