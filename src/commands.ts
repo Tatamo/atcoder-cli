@@ -137,8 +137,14 @@ export async function submit(filename: string, options: { task?: string, contest
 		return;
 	}
 
-	const url = AtCoder.getTaskURL(contest_id, task_id);
+	// URLの妥当性をチェック
+	const url: string | null = (await new AtCoder().task(contest_id, task_id).catch(e => ({url: null}))).url;
+	if (url === null) {
+		console.error(`Task ${AtCoder.getTaskURL(contest_id, task_id)} not found.`);
+		return;
+	}
 	console.log(`submit to: ${url}`);
+	// 提出
 	await OnlineJudge.call(["s", url, filename]);
 }
 
