@@ -45,9 +45,40 @@ export async function contest(contest_id: string | undefined, options: { id?: bo
 	}
 }
 
+export async function task(contest_id: string | undefined, task_id: string | undefined, options: { id?: boolean }) {
+	const f_id = options.id === true;
+	const format = ({id, label, title, url}: Task) => formatAsShellOutput([[f_id ? SGR(id, 37) : null, SGR(label, 32), SGR(title, 32, 1), url].filter(e => e !== null) as Array<string>]);
+	if (contest_id === undefined && task_id === undefined) {
+		// idが与えられていない場合、プロジェクトファイルを探す
+		try {
+			const {task} = await project.detectTaskByPath();
+			if (task === null) {
+				console.error("failed to find the task.");
+				return;
+			}
+			console.log(format(task));
+		} catch (e) {
+			console.error(e.message);
+		}
+	}
+	else if (contest_id !== undefined && task_id !== undefined) {
+		try {
+			const atcoder = new AtCoder();
+			if (!await atcoder.checkSession()) await atcoder.login();
+			const task = await atcoder.task(contest_id, task_id);
+			console.log(format(task));
+		} catch {
+			console.error(`task "${task_id}" of contest "${contest_id}" not found.`);
+		}
+	}
+	else {
+		console.error("error: specify both the contest id and the task id.")
+	}
+}
+
 export async function tasks(contest_id: string | undefined, options: { id?: boolean }) {
 	const f_id = options.id === true;
-	const format = (tasks: Array<Task>) => formatAsShellOutput(tasks.map(({id, label, title}) => [f_id ? SGR(id, 37) : null, SGR(label, 32), SGR(title, 32, 1)].filter(e => e !== null) as Array<string>));
+	const format = (tasks: Array<Task>) => formatAsShellOutput(tasks.map(({id, label, title, url}) => [f_id ? SGR(id, 37) : null, SGR(label, 32), SGR(title, 32, 1), url].filter(e => e !== null) as Array<string>));
 	if (contest_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探す
 		try {
@@ -138,7 +169,7 @@ export async function submit(filename: string, options: { task?: string, contest
 	}
 
 	// URLの妥当性をチェック
-	const url: string | null = (await new AtCoder().task(contest_id, task_id).catch(e => ({url: null}))).url;
+	const url: string | null = (await new AtCoder().task(contest_id, task_id).catch(() => ({url: null}))).url;
 	if (url === null) {
 		console.error(`Task ${AtCoder.getTaskURL(contest_id, task_id)} not found.`);
 		return;

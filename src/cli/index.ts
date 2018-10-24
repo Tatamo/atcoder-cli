@@ -35,6 +35,12 @@ commander
 	.description("get contest information");
 
 commander
+	.command("task [contest-id] [task-id]")
+	.action(commands.task)
+	.option("-i, --id", "show task id")
+	.description("get task");
+
+commander
 	.command("tasks [contest-id]")
 	.action(commands.tasks)
 	.option("-i, --id", "show task id")
