@@ -1,4 +1,4 @@
-import {Task, ContestProject} from "./definitions";
+import {Task, ContestProject, Contest} from "./definitions";
 import {AtCoder} from "./atcoder";
 import {mkdir, readFile, writeFile} from "fs";
 import {sep, resolve} from "path";
@@ -46,24 +46,24 @@ export const findProjectJSON = async (path?: string): Promise<{ path: string, da
  * プロジェクトファイルを探し、現在のディレクトリ構造からコンテストと問題を特定する
  * @param path? 省略するとカレントディレクトリを使用
  */
-export const detectTaskByPath = async (path?: string): Promise<{ contest: string | null, task: string | null }> => {
+export const detectTaskByPath = async (path?: string): Promise<{ contest: Contest | null, task: Task | null }> => {
 	if (path === undefined) path = process.cwd();
 	try {
 		const {path: project_path, data: {contest, tasks}} = await findProjectJSON();
 		if (path === project_path) {
 			// ブロジェクトディレクトリとカレントディレクトリが一致
-			return {contest: contest.id, task: null};
+			return {contest, task: null};
 		}
 		// projectディレクトリの一つ下の階層のディレクトリ名を取得
 		const dirname = path.split(sep)[project_path.split(sep).length];
 		let task = null;
 		for (const t of tasks) {
 			if (t.id === dirname) {
-				task = t.id;
+				task = t;
 				break;
 			}
 		}
-		return {contest: contest.id, task};
+		return {contest, task};
 	} catch {
 		return {contest: null, task: null};
 	}
