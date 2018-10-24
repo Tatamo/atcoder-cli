@@ -179,7 +179,7 @@ export async function submit(filename: string, options: { task?: string, contest
 	await OnlineJudge.call(["s", url, filename]);
 }
 
-export async function oj() {
+export async function checkOJAvailable() {
 	const available = await OnlineJudge.checkAvailable();
 	const path = await OnlineJudge.getPath();
 	console.log(`online-judge-tools is ${available ? "" : "not "}available. ${available ? "found at:" : ""}`);

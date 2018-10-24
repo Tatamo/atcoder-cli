@@ -14,6 +14,14 @@ commander
 	.description("create new contest project directory");
 
 commander
+	.command("submit <filename>")
+	.alias("s")
+	.option("-c, --contest <contest-id>", "specify contest id to submit")
+	.option("-t, --task <task-id>", "specify task id to submit")
+	.action(commands.submit)
+	.description("submit the program");
+
+commander
 	.command("login")
 	.action(commands.login)
 	.description("login to AtCoder");
@@ -53,11 +61,8 @@ commander
 	.description("get contest or task URL");
 
 commander
-	.command("submit <filename>")
-	.alias("s")
-	.option("-c, --contest <contest-id>", "specify contest id to submit")
-	.option("-t, --task <task-id>", "specify task id to submit")
-	.action(commands.submit)
-	.description("submit the program");
+	.command("check-oj")
+	.action(commands.checkOJAvailable)
+	.description("check whether online-judge-tools related functions are available or not");
 
 commander.parse(process.argv);
