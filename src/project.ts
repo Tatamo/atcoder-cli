@@ -1,7 +1,7 @@
 import {Task, ContestProject} from "./definitions";
 import {AtCoder} from "./atcoder";
 import {mkdir, readFile, writeFile} from "fs";
-import path from "path";
+import {sep, resolve} from "path";
 import mkdirp from "mkdirp";
 import {promisify} from "util";
 import {OnlineJudge} from "./facade/oj";
@@ -9,23 +9,24 @@ import {OnlineJudge} from "./facade/oj";
 export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
 
 /**
- * カレントディレクトリから親を辿って最も近い位置にあるプロジェクトファイルを取得する
+ * 指定したディレクトリから親を辿って最も近い位置にあるプロジェクトファイルを取得する
  * 見つからなかった場合は例外を発生させる
+ * @param path 省略するとカレントディレクトリを使用
  */
-export const findProjectJSON = async (): Promise<{ path: string, data: ContestProject }> => {
+export const findProjectJSON = async (path?: string): Promise<{ path: string, data: ContestProject }> => {
 	const readFilePromise = promisify(readFile);
-	let cwd = process.cwd();
+	let cwd = path !== undefined ? path : process.cwd();
 
 	let data = null;
 	while (true) {
 		try {
-			let filepath = path.resolve(cwd, PROJECT_JSON_FILE_NAME);
+			let filepath = resolve(cwd, PROJECT_JSON_FILE_NAME);
 			data = JSON.parse(await readFilePromise(filepath, "utf8"));
 			break;
 		} catch (e) {
 			if (e.code === "ENOENT") {
 				// ファイルが存在しないので上の階層を探す
-				const parent = path.resolve(cwd, "..");
+				const parent = resolve(cwd, "..");
 				if (parent === cwd) {
 					throw new Error(`${PROJECT_JSON_FILE_NAME} not found.`);
 				}
@@ -39,6 +40,33 @@ export const findProjectJSON = async (): Promise<{ path: string, data: ContestPr
 	const [valid, error] = await validateProjectJSON(data);
 	if (valid) return {path: cwd, data};
 	else throw new Error(`failed to validate JSON: ${error!}`);
+};
+
+/**
+ * プロジェクトファイルを探し、現在のディレクトリ構造からコンテストと問題を特定する
+ * @param path? 省略するとカレントディレクトリを使用
+ */
+export const detectTaskByPath = async (path?: string): Promise<{ contest: string | null, task: string | null }> => {
+	if (path === undefined) path = process.cwd();
+	try {
+		const {path: project_path, data: {contest, tasks}} = await findProjectJSON();
+		if (path === project_path) {
+			// ブロジェクトディレクトリとカレントディレクトリが一致
+			return {contest: contest.id, task: null};
+		}
+		// projectディレクトリの一つ下の階層のディレクトリ名を取得
+		const dirname = path.split(sep)[project_path.split(sep).length];
+		let task = null;
+		for (const t of tasks) {
+			if (t.id === dirname) {
+				task = t.id;
+				break;
+			}
+		}
+		return {contest: contest.id, task};
+	} catch {
+		return {contest: null, task: null};
+	}
 };
 
 /**
