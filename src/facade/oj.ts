@@ -28,7 +28,7 @@ export class OnlineJudge {
 		const result = (await exec(`${path} -h`).then(v => v.stdout).catch(() => "")).trim() !== "";
 		// うまくpathが通っていた場合はconfigに登録する
 		const config = await getConfig();
-		if (result && config.get("oj-path") === undefined) config.set("oj-path", path);
+		if (result && config.get("oj-path") !== path) config.set("oj-path", path);
 		return result;
 	}
 

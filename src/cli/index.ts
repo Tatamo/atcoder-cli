@@ -9,7 +9,7 @@ commander
 
 commander
 	.command("new <contest-id>")
-	.alias("setup")
+	.alias("n")
 	.action(commands.setup)
 	.description("create new contest project directory");
 
@@ -47,8 +47,11 @@ commander
 	.description("get contest or task URL");
 
 commander
-	.command("oj")
-	.action(commands.oj)
-	.description("call online-judge");
+	.command("submit <filename>")
+	.alias("s")
+	.option("-c, --contest <contest-id>", "specify contest id to submit")
+	.option("-t, --task <task-id>", "specify task id to submit")
+	.action(commands.submit)
+	.description("submit the program");
 
 commander.parse(process.argv);

@@ -115,6 +115,38 @@ export async function url(contest_id: string | undefined, task_id: string | unde
 	}
 }
 
+export async function submit(filename: string, options: { task?: string, contest?: string }) {
+	let contest_id = options.contest;
+	let task_id = options.task;
+	if (contest_id === undefined || task_id === undefined) {
+		// コンテストまたはタスクが未指定の場合、カレントディレクトリのパスから提出先を調べる
+		const {contest, task} = await project.detectTaskByPath();
+		if (contest_id === undefined && contest !== null) contest_id = contest.id;
+		if (task_id === undefined && task !== null) task_id = task.id;
+
+		// 結局特定できなかった
+		if (contest_id === undefined || task_id === undefined) {
+			console.error(`cannot find the ${task_id === undefined ? "task" : "contest"} to submit.`);
+			console.error(`add ${task_id === undefined ? "-t" : "-c"} flag to specify it.`);
+			return;
+		}
+	}
+
+	if (!await OnlineJudge.checkAvailable()) {
+		console.error("online-judge-tools is not available.");
+		return;
+	}
+
+	const url = AtCoder.getTaskURL(contest_id, task_id);
+	console.log(`submit to: ${url}`);
+	await OnlineJudge.call(["s", url, filename]);
+}
+
+/*
+export async function submit() {
+	console.log(await project.detectTaskByPath());
+}*/
+
 export async function oj() {
 	const available = await OnlineJudge.checkAvailable();
 	const path = await OnlineJudge.getPath();
