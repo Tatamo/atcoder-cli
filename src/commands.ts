@@ -192,15 +192,31 @@ export async function checkOJAvailable() {
 
 export async function configDir() {
 	const conf = await getConfig();
-	console.log(path.resolve(conf.path,".."));
+	console.log(path.resolve(conf.path, ".."));
 }
 
 export async function setup(contest_id: string) {
-	const {contest, tasks} = await project.init(contest_id);
+	const {contest} = await project.init(contest_id);
 	console.log(`create project of ${contest.title}`);
-	for (const task of tasks) {
+	add();
+}
+
+export async function add() {
+	const {data: {tasks}} = await project.findProjectJSON();
+	const choices = await inquireTasks(tasks);
+	for (const task of choices) {
 		await project.installTask(task);
 	}
+}
+
+export async function inquireTasks(tasks: Array<Task>): Promise<Array<Task>> {
+	const inquirer = await import("inquirer");
+	return (await inquirer.prompt([{
+		type: "checkbox",
+		message: "select tasks",
+		name: "tasks",
+		choices: tasks.map(task => ({name: `${task.label} ${task.title}`, value: task}))
+	}]) as { tasks: Array<Task> }).tasks;
 }
 
 /**
