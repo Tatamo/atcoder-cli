@@ -1,16 +1,17 @@
 {
   "compilerOptions": {
-	"target": "es2018",
-	"module": "commonjs",
-	"moduleResolution": "node",
-	"noEmitOnError": true,
-	"strict": true,
-	"noImplicitReturns": true,
-	"noFallthroughCasesInSwitch": true,
-	"esModuleInterop": true,
-	"resolveJsonModule": true
+    "target": "es2018",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmitOnError": true,
+    "declaration": true,
+    "strict": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
   "exclude": [
-	"node_modules"
+    "node_modules"
   ]
 }

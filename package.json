@@ -4,7 +4,7 @@
   "description": "AtCoder command line tools",
   "scripts": {
     "build": "npm run clean && tsc && webpack --mode production",
-    "clean": "rimraf bin && rimraf src/**/*.js",
+    "clean": "rimraf bin src/**/*.{js,d.ts}",
     "watch:tsc": "tsc --watch",
     "watch:webpack": "webpack --mode development --watch",
     "watch": "tsc && npm-run-all -p watch:*",
