@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "description": "AtCoder command line tools",
   "scripts": {
-    "build": "tsc && webpack --mode production",
+    "build": "npm run clean && tsc && webpack --mode production",
+    "clean": "rimraf bin && rimraf src/**/*.js",
     "watch:tsc": "tsc --watch",
     "watch:webpack": "webpack --mode development --watch",
-    "watch": "npm-run-all -p watch:*"
+    "watch": "tsc && npm-run-all -p watch:*",
+    "prepare": "npm run build"
   },
   "bin": {
     "acc": "bin/index.js"
@@ -36,6 +38,7 @@
     "@types/mkdirp": "^0.5.2",
     "@types/query-string": "^6.1.1",
     "@types/request-promise-native": "^1.0.15",
+    "rimraf": "^2.6.2",
     "typescript": "^3.1.3",
     "webpack": "^4.21.0",
     "webpack-cli": "^3.1.2",
