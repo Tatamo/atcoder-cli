@@ -23,6 +23,18 @@ const schema = {
 				}
 			}
 		},
+		"directory": {
+			"$id": "#directory",
+			"type": "object",
+			"required": [
+				"path"
+			],
+			"properties": {
+				"path": {
+					"type": "string"
+				}
+			}
+		},
 		"task": {
 			"$id": "#task",
 			"type": "object",
@@ -44,6 +56,9 @@ const schema = {
 				},
 				"url": {
 					"type": "string"
+				},
+				"directory": {
+					"$ref": "#directory"
 				}
 			}
 		},

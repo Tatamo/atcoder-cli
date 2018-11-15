@@ -20,6 +20,18 @@
         }
       }
     },
+    "directory": {
+      "$id": "#directory",
+      "type": "object",
+      "required": [
+        "path"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      }
+    },
     "task": {
       "$id": "#task",
       "type": "object",
@@ -41,6 +53,9 @@
         },
         "url": {
           "type": "string"
+        },
+        "directory": {
+          "$ref": "#directory"
         }
       }
     },

@@ -9,6 +9,9 @@ export interface Task {
 	label: string;
 	title: string;
 	url: string;
+	directory?: {
+		path: string
+	}
 }
 
 export interface ContestProject {
