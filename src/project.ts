@@ -17,26 +17,29 @@ export const findProjectJSON = async (path?: string): Promise<{ path: string, da
 	const readFilePromise = promisify(readFile);
 	let cwd = path !== undefined ? path : process.cwd();
 
-	let data = null;
-	while (true) {
-		try {
-			let filepath = resolve(cwd, PROJECT_JSON_FILE_NAME);
-			data = JSON.parse(await readFilePromise(filepath, "utf8"));
-			break;
-		} catch (e) {
-			if (e.code === "ENOENT") {
-				// ファイルが存在しないので上の階層を探す
-				const parent = resolve(cwd, "..");
-				if (parent === cwd) {
-					throw new Error(`${PROJECT_JSON_FILE_NAME} not found.`);
+	const data: ContestProject =
+		await (async () => {
+			let data = null;
+			while (true) {
+				try {
+					let filepath = resolve(cwd, PROJECT_JSON_FILE_NAME);
+					data = JSON.parse(await readFilePromise(filepath, "utf8"));
+					return data;
+				} catch (e) {
+					if (e.code === "ENOENT") {
+						// ファイルが存在しないので上の階層を探す
+						const parent = resolve(cwd, "..");
+						if (parent === cwd) {
+							throw new Error(`${PROJECT_JSON_FILE_NAME} not found.`);
+						}
+						cwd = parent;
+					}
+					else {
+						throw e;
+					}
 				}
-				cwd = parent;
 			}
-			else {
-				throw e;
-			}
-		}
-	}
+		})();
 	const [valid, error] = await validateProjectJSON(data);
 	if (valid) return {path: cwd, data};
 	else throw new Error(`failed to validate JSON: ${error!}`);
@@ -70,11 +73,11 @@ export const detectTaskByPath = async (path?: string): Promise<{ contest: Contes
 };
 
 /**
- * プロジェクトファイルが正しい形式に沿っているか調べます
+ * プロジェクトファイルが正しい形式に沿っているか調べる
  * [valid:true, error:null] | [valid:false, error:string] valid=trueなら正しいJSON
  * @param data
  */
-export const validateProjectJSON = async (data: string): Promise<[true, null] | [false, string]> => {
+export const validateProjectJSON = async (data: ContestProject): Promise<[true, null] | [false, string]> => {
 	const ajv = new ((await import("ajv")).default)();
 	const schema = (await import("./schema")).default;
 	const validate = ajv.compile(schema);
