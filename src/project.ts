@@ -129,7 +129,7 @@ export const init = async (contest_id: string): Promise<ContestProject> => {
 	return data;
 };
 
-export const installTask = async (task: Task, project_path?: string): Promise<void> => {
+export const installTask = async (task: Task, project_path?: string): Promise<Task> => {
 	const pwd = process.cwd();
 	if (project_path !== undefined) {
 		await promisify(mkdirp)(project_path);
@@ -144,4 +144,5 @@ export const installTask = async (task: Task, project_path?: string): Promise<vo
 	}
 	// もとのディレクトリに戻る
 	process.chdir(pwd);
+	return Object.assign(task, {directory: {path: task.id}});
 };

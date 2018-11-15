@@ -5,6 +5,7 @@ import * as project from "./project";
 import {Contest, Task} from "./definitions";
 import getConfig from "./config";
 import path from "path";
+import {saveProjectJSON} from "./project";
 
 export async function login() {
 	const atcoder = new AtCoder();
@@ -207,24 +208,28 @@ export async function setup(contest_id: string) {
 
 export async function add() {
 	try {
-		const {path, data: {tasks}} = await project.findProjectJSON();
+		const {path, data} = await project.findProjectJSON();
+		const {tasks} = data;
 		const choices = await inquireTasks(tasks);
-		for (const task of choices) {
-			await project.installTask(task, path);
+		for (const {index, task} of choices) {
+			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
+			tasks[index] = await project.installTask(task, path);
 		}
+		// 更新されたContestProjectをファイルに書き出し
+		await saveProjectJSON(Object.assign(data, {tasks}));
 	} catch (e) {
 		console.error(e.message);
 	}
 }
 
-export async function inquireTasks(tasks: Array<Task>): Promise<Array<Task>> {
+export async function inquireTasks(tasks: Array<Task>): Promise<Array<{ index: number, task: Task }>> {
 	const inquirer = await import("inquirer");
 	return (await inquirer.prompt([{
 		type: "checkbox",
 		message: "select tasks",
 		name: "tasks",
-		choices: tasks.map(task => ({name: `${task.label} ${task.title}`, value: task}))
-	}]) as { tasks: Array<Task> }).tasks;
+		choices: tasks.map((task, index) => ({name: `${task.label} ${task.title}`, value: {index, task}}))
+	}]) as { tasks: Array<{ index: number, task: Task }> }).tasks;
 }
 
 /**
