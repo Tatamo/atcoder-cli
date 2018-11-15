@@ -207,10 +207,10 @@ export async function setup(contest_id: string) {
 
 export async function add() {
 	try {
-		const {data: {tasks}} = await project.findProjectJSON();
+		const {path, data: {tasks}} = await project.findProjectJSON();
 		const choices = await inquireTasks(tasks);
 		for (const task of choices) {
-			await project.installTask(task);
+			await project.installTask(task, path);
 		}
 	} catch (e) {
 		console.error(e.message);
