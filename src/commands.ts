@@ -224,11 +224,19 @@ export async function add() {
 
 export async function inquireTasks(tasks: Array<Task>): Promise<Array<{ index: number, task: Task }>> {
 	const inquirer = await import("inquirer");
+	// まだディレクトリが作成されていないもののうち、最も上のものをデフォルトで選択しておく
+	let default_checked_index: number | null = null;
+	for (let i = 0; i < tasks.length; i++) {
+		if (tasks[i].directory === undefined) {
+			default_checked_index = i;
+			break;
+		}
+	}
 	return (await inquirer.prompt([{
 		type: "checkbox",
 		message: "select tasks",
 		name: "tasks",
-		choices: tasks.map((task, index) => ({name: `${task.label} ${task.title}`, value: {index, task}}))
+		choices: tasks.map((task, index) => ({name: `${task.label} ${task.title}`, value: {index, task}, disabled: task.directory !== undefined ? () => "already installed" : () => false, checked: index === default_checked_index}))
 	}]) as { tasks: Array<{ index: number, task: Task }> }).tasks;
 }
 
