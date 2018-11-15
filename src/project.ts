@@ -78,7 +78,7 @@ export const detectTaskByPath = async (path?: string): Promise<{ contest: Contes
  * @param directory_path 省略した場合は自動的にプロジェクトディレクトリを探してプロジェクトファイルを上書きする
  */
 export const saveProjectJSON = async (data: ContestProject, directory_path?: string): Promise<void> => {
-	if (directory_path === undefined) (await findProjectJSON()).path;
+	if (directory_path === undefined) directory_path = (await findProjectJSON()).path;
 	if (directory_path === undefined) throw new Error("Cannot find project directory path");
 	const [valid, error] = await validateProjectJSON(data);
 	if (valid) {
