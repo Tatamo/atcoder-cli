@@ -61,9 +61,17 @@ export const detectTaskByPath = async (path?: string): Promise<{ contest: Contes
 		const dirname = path.split(sep)[project_path.split(sep).length];
 		let task = null;
 		for (const t of tasks) {
-			if (t.id === dirname) {
-				task = t;
-				break;
+			if (t.directory !== undefined) {
+				if (resolve(project_path, t.directory.path) === resolve(project_path, dirname)) {
+					task = t;
+					break;
+				}
+			} else {
+				// directoryプロパティが存在しない場合はidと一致していると仮定
+				if (t.id === dirname) {
+					task = t;
+					break;
+				}
 			}
 		}
 		return {contest, task};
