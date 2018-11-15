@@ -73,6 +73,25 @@ export const detectTaskByPath = async (path?: string): Promise<{ contest: Contes
 };
 
 /**
+ * プロジェクトJSONファイルを保存する
+ * @param data ContestProject
+ * @param directory_path 省略した場合は自動的にプロジェクトディレクトリを探してプロジェクトファイルを上書きする
+ */
+export const saveProjectJSON = async (data: ContestProject, directory_path?: string): Promise<void> => {
+	if (directory_path === undefined) (await findProjectJSON()).path;
+	if (directory_path === undefined) throw new Error("Cannot find project directory path");
+	const [valid, error] = await validateProjectJSON(data);
+	if (valid) {
+		const json_data = JSON.stringify(data, undefined, 2);
+		await promisify(writeFile)(resolve(directory_path, PROJECT_JSON_FILE_NAME), json_data);
+	}
+	else {
+		console.error("JSON validation failed:");
+		throw new Error(error!);
+	}
+};
+
+/**
  * プロジェクトファイルが正しい形式に沿っているか調べる
  * [valid:true, error:null] | [valid:false, error:string] valid=trueなら正しいJSON
  * @param data
@@ -105,7 +124,7 @@ export const init = async (contest_id: string): Promise<ContestProject> => {
 	}
 	process.chdir(contest_id);
 	const data = {contest, tasks};
-	await promisify(writeFile)(PROJECT_JSON_FILE_NAME, JSON.stringify(data, undefined, 2));
+	await saveProjectJSON(data, process.cwd());
 	console.log(`${contest_id}/${PROJECT_JSON_FILE_NAME} created.`);
 	return data;
 };
