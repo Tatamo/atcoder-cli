@@ -116,8 +116,9 @@ export const validateProjectJSON = async (data: ContestProject): Promise<[true, 
 /**
  * コンテスト情報を取得し、プロジェクトディレクトリを作成する
  * @param contest_id
+ * @param force default=false trueなら同名ディレクトリが存在していても上書きする
  */
-export const init = async (contest_id: string): Promise<ContestProject> => {
+export const init = async (contest_id: string, force: boolean = false): Promise<ContestProject> => {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => [null, null]);
@@ -128,7 +129,9 @@ export const init = async (contest_id: string): Promise<ContestProject> => {
 		await promisify(mkdir)(contest_id);
 	}
 	catch {
-		throw new Error(`${contest_id} file/directory already exists.`)
+		if (!force) {
+			throw new Error(`${contest_id} file/directory already exists.`)
+		}
 	}
 	process.chdir(contest_id);
 	const data = {contest, tasks};

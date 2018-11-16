@@ -196,22 +196,24 @@ export async function configDir() {
 	console.log(path.resolve(conf.path, ".."));
 }
 
-export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next" } = {choice: "inquire"}) {
+export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean }) {
 	try {
-		const {contest} = await project.init(contest_id);
+		const {contest} = await project.init(contest_id, options.force);
 		console.log(`create project of ${contest.title}`);
-		add(options);
+		await add(options);
 	} catch (e) {
 		console.error(e.message);
 	}
 }
 
-export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next" } = {choice: "inquire"}) {
+export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean }) {
 	try {
 		const {path, data} = await project.findProjectJSON();
 		const {tasks} = data;
-		const choices = await selectTasks(tasks, options.choice);
+		const choices = await selectTasks(tasks, options.choice, options.force);
 		for (const {index, task} of choices) {
+			// forceオプションが設定されていない場合、既にディレクトリが存在する問題はスキップする
+			if (options.force !== true && task.directory !== undefined) continue;
 			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
 			tasks[index] = await project.installTask(task, path);
 		}
@@ -222,10 +224,10 @@ export async function add(options: { choice: "inquire" | "all" | "none" | "rest"
 	}
 }
 
-export async function selectTasks(tasks: Array<Task>, choice: "inquire" | "all" | "none" | "rest" | "next"): Promise<Array<{ index: number, task: Task }>> {
+export async function selectTasks(tasks: Array<Task>, choice: "inquire" | "all" | "none" | "rest" | "next", force: boolean = false): Promise<Array<{ index: number, task: Task }>> {
 	switch (choice) {
 		case "inquire":
-			return await inquireTasks(tasks);
+			return await inquireTasks(tasks, force);
 		case "all":
 			return tasks.map((task, index) => ({index, task}));
 		case "none":
@@ -240,10 +242,11 @@ export async function selectTasks(tasks: Array<Task>, choice: "inquire" | "all" 
 	}
 }
 
-export async function inquireTasks(tasks: Array<Task>): Promise<Array<{ index: number, task: Task }>> {
+export async function inquireTasks(tasks: Array<Task>, force: boolean = false): Promise<Array<{ index: number, task: Task }>> {
 	const inquirer = await import("inquirer");
 	// まだディレクトリが作成されていない問題を一つだけ選択状態にしておく
 	const next = getNextTask2Install(tasks);
+	if (!force && next === null) throw new Error("all tasks are already installed. use --force option to override them.");
 	return (await inquirer.prompt([{
 		type: "checkbox",
 		message: "select tasks",
@@ -251,14 +254,15 @@ export async function inquireTasks(tasks: Array<Task>): Promise<Array<{ index: n
 		choices: tasks.map((task, index) => ({
 			name: `${task.label} ${task.title}`,
 			value: {index, task},
-			disabled: task.directory !== undefined ? () => "already installed" : () => false,
+			disabled: !force && task.directory !== undefined ? () => "already installed" : () => false,
 			checked: next !== null && index === next.index
 		}))
 	}]) as { tasks: Array<{ index: number, task: Task }> }).tasks;
 }
 
 /**
- *まだディレクトリが作成されていない問題のうち、最も上のものを得る
+ * まだディレクトリが作成されていない問題のうち、最も上のものを得る
+ * すべての問題のディレクトリが作成済みの場合はnullを返す
  * @param tasks
  */
 function getNextTask2Install(tasks: Array<Task>): { index: number, task: Task } | null {

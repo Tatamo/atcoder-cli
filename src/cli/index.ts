@@ -12,6 +12,7 @@ commander
 	.alias("n")
 	.action(commands.setup)
 	.option('-c --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i, "inquire")
+	.option("-f, --force", "ignore existent directories")
 	.description("create new contest project directory")
 	.on("--help", function () {
 		console.log("");
@@ -29,6 +30,7 @@ commander
 	.alias("a")
 	.action(commands.add)
 	.option('-c --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i, "inquire")
+	.option("-f, --force", "ignore existent directories")
 	.description("add new directory for the task in the project directory")
 	.on("--help", function () {
 		console.log("");
