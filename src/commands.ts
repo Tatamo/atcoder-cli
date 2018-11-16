@@ -196,21 +196,21 @@ export async function configDir() {
 	console.log(path.resolve(conf.path, ".."));
 }
 
-export async function setup(contest_id: string) {
+export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next" } = {choice: "inquire"}) {
 	try {
 		const {contest} = await project.init(contest_id);
 		console.log(`create project of ${contest.title}`);
-		add();
+		add(options);
 	} catch (e) {
 		console.error(e.message);
 	}
 }
 
-export async function add() {
+export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next" } = {choice: "inquire"}) {
 	try {
 		const {path, data} = await project.findProjectJSON();
 		const {tasks} = data;
-		const choices = await selectTasks(tasks, "inquire");
+		const choices = await selectTasks(tasks, options.choice);
 		for (const {index, task} of choices) {
 			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
 			tasks[index] = await project.installTask(task, path);

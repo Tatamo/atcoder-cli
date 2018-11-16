@@ -11,13 +11,35 @@ commander
 	.command("new <contest-id>")
 	.alias("n")
 	.action(commands.setup)
-	.description("create new contest project directory");
+	.option('-c --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i, "inquire")
+	.description("create new contest project directory")
+	.on("--help", function () {
+		console.log("");
+		console.log("Supported arguments for --choice:");
+		console.log("  inquire  inquire the tasks to add");
+		console.log("  all      select all tasks");
+		console.log("  none     select no tasks");
+		console.log("  rest     select all tasks not added yet");
+		console.log("           (without --force option, same with \"all\")");
+		console.log("  next     select the top task that is not added yet");
+	});
 
 commander
 	.command("add")
 	.alias("a")
 	.action(commands.add)
-	.description("add new directory for the task in the project directory");
+	.option('-c --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i, "inquire")
+	.description("add new directory for the task in the project directory")
+	.on("--help", function () {
+		console.log("");
+		console.log("Supported arguments for --choice:");
+		console.log("  inquire  inquire the tasks to add");
+		console.log("  all      select all tasks");
+		console.log("  none     select no tasks");
+		console.log("  rest     select all tasks not added yet");
+		console.log("           (without --force option, same with \"all\")");
+		console.log("  next     select the top task that is not added yet");
+	});
 
 commander
 	.command("submit <filename>")
