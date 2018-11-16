@@ -196,9 +196,9 @@ export async function configDir() {
 	console.log(path.resolve(conf.path, ".."));
 }
 
-export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean }) {
+export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string }) {
 	try {
-		const {contest} = await project.init(contest_id, options.force);
+		const {contest} = await project.init(contest_id, options);
 		console.log(`create project of ${contest.title}`);
 		await add(options);
 	} catch (e) {

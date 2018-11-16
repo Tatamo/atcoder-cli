@@ -116,27 +116,29 @@ export const validateProjectJSON = async (data: ContestProject): Promise<[true, 
 /**
  * コンテスト情報を取得し、プロジェクトディレクトリを作成する
  * @param contest_id
- * @param force default=false trueなら同名ディレクトリが存在していても上書きする
+ * @param options
  */
-export const init = async (contest_id: string, force: boolean = false): Promise<ContestProject> => {
+export const init = async (contest_id: string, options: { force?: boolean, contestDirnameFormat?: string }): Promise<ContestProject> => {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => [null, null]);
 	if (contest === null || tasks === null) {
 		throw new Error("failed to get contest information.");
 	}
+	const dirname = options.contestDirnameFormat !== undefined ? formatContestDirname(options.contestDirnameFormat, contest) : contest_id;
 	try {
-		await promisify(mkdir)(contest_id);
+		await promisify(mkdir)(dirname);
 	}
 	catch {
-		if (!force) {
-			throw new Error(`${contest_id} file/directory already exists.`)
+		// forceオプションがtrueでない場合のみエラーで停止する
+		if (options.force !== true) {
+			throw new Error(`${dirname} file/directory already exists.`)
 		}
 	}
-	process.chdir(contest_id);
+	process.chdir(dirname);
 	const data = {contest, tasks};
 	await saveProjectJSON(data, process.cwd());
-	console.log(`${contest_id}/${PROJECT_JSON_FILE_NAME} created.`);
+	console.log(`${dirname}/${PROJECT_JSON_FILE_NAME} created.`);
 	return data;
 };
 
@@ -156,4 +158,22 @@ export const installTask = async (task: Task, project_path?: string): Promise<Ta
 	// もとのディレクトリに戻る
 	process.chdir(pwd);
 	return Object.assign(task, {directory: {path: task.id}});
+};
+
+export const formatContestDirname = (format: string, contest: Contest): string => {
+	const convert = (pattern: string): string => {
+		switch (pattern) {
+			case "ContestID":
+				return contest.id;
+			case "CONTESTID":
+				return contest.id.toUpperCase();
+			case "TailNumberOfContestID":
+				const result = /\d+$/.exec(contest.id);
+				return result === null ? "" : result[0];
+			case "ContestTitle":
+				return contest.title;
+		}
+		throw new Error(`pattern "{${pattern}} is not defined. use --help option to get more information."`);
+	};
+	return format.replace(/{([a-zA-Z0-9]+)}/g, (_, p) => convert(p));
 };
