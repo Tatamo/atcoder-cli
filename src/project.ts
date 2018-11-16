@@ -142,14 +142,14 @@ export const init = async (contest_id: string, options: { force?: boolean, conte
 	return data;
 };
 
-export const installTask = async (task: Task, project_path?: string): Promise<Task> => {
+export const installTask = async (task: Task, dirname: string, project_path?: string): Promise<Task> => {
 	const pwd = process.cwd();
 	if (project_path !== undefined) {
 		await promisify(mkdirp)(project_path);
 		process.chdir(project_path);
 	}
-	await promisify(mkdirp)(task.id);
-	process.chdir(task.id);
+	await promisify(mkdirp)(dirname);
+	process.chdir(dirname);
 	if (OnlineJudge.checkAvailable()) {
 		await OnlineJudge.call(["dl", task.url, "-d", "tests"]);
 	} else {
@@ -157,7 +157,7 @@ export const installTask = async (task: Task, project_path?: string): Promise<Ta
 	}
 	// もとのディレクトリに戻る
 	process.chdir(pwd);
-	return Object.assign(task, {directory: {path: task.id}});
+	return Object.assign(task, {directory: {path: dirname}});
 };
 
 export const formatContestDirname = (format: string, contest: Contest): string => {
@@ -176,4 +176,56 @@ export const formatContestDirname = (format: string, contest: Contest): string =
 		throw new Error(`pattern "{${pattern}} is not defined. use --help option to get more information."`);
 	};
 	return format.replace(/{([a-zA-Z0-9]+)}/g, (_, p) => convert(p));
+};
+
+export const formatTaskDirname = (format: string, task: Task, index: number, contest: Contest): string => {
+	const convert = (pattern: string): string => {
+		switch (pattern) {
+			case "TaskLabel":
+				return task.label;
+			case "tasklabel":
+				return task.label.toLowerCase();
+			case "TASKLABEL":
+				return task.label.toUpperCase();
+			case "TaskID":
+				return task.id;
+			case "TASKID":
+				return task.id.toUpperCase();
+			case "TaskTitle":
+				return task.title;
+			case "ContestID":
+				return contest.id;
+			case "CONTESTID":
+				return contest.id.toUpperCase();
+			case "TailNumberOfContestID":
+				const result = /\d+$/.exec(contest.id);
+				return result === null ? "" : result[0];
+			case "ContestTitle":
+				return contest.title;
+			case "index0":
+				return index.toString();
+			case "index1":
+				return (index + 1).toString();
+			case "alphabet":
+				return convertNumber2Alphabet(index);
+			case "ALPHABET":
+				return convertNumber2Alphabet(index).toUpperCase();
+		}
+		throw new Error(`pattern "{${pattern}} is not defined. use --help option to get more information."`);
+	};
+	return format.replace(/{([a-zA-Z0-9]+)}/g, (_, p) => convert(p));
+};
+
+/**
+ * 数値をアルファベットに変換する
+ * 0,1,2,... => a,b,c,...,z,aa,ab,...
+ * @param num
+ */
+const convertNumber2Alphabet = (num: number): string => {
+	if (num < 0) throw new Error("invalid number");
+	let result = "";
+	do {
+		result = ((num % 26) + 10).toString(36) + result;
+	} while ((num = Math.floor(num / 26) - 1) >= 0);
+	return result;
 };

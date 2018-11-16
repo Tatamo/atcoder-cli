@@ -5,7 +5,7 @@ import * as project from "./project";
 import {Contest, Task} from "./definitions";
 import getConfig from "./config";
 import path from "path";
-import {saveProjectJSON} from "./project";
+import {formatTaskDirname, saveProjectJSON} from "./project";
 
 export async function login() {
 	const atcoder = new AtCoder();
@@ -196,7 +196,7 @@ export async function configDir() {
 	console.log(path.resolve(conf.path, ".."));
 }
 
-export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string }) {
+export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string }) {
 	try {
 		const {contest} = await project.init(contest_id, options);
 		console.log(`create project of ${contest.title}`);
@@ -206,16 +206,17 @@ export async function setup(contest_id: string, options: { choice: "inquire" | "
 	}
 }
 
-export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean }) {
+export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, taskDirnameFormat?: string }) {
 	try {
 		const {path, data} = await project.findProjectJSON();
-		const {tasks} = data;
+		const {contest, tasks} = data;
 		const choices = await selectTasks(tasks, options.choice, options.force);
 		for (const {index, task} of choices) {
 			// forceオプションが設定されていない場合、既にディレクトリが存在する問題はスキップする
 			if (options.force !== true && task.directory !== undefined) continue;
+			const dirname = options.taskDirnameFormat !== undefined ? formatTaskDirname(options.taskDirnameFormat, task, index, contest) : task.id;
 			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
-			tasks[index] = await project.installTask(task, path);
+			tasks[index] = await project.installTask(task, dirname, path);
 		}
 		// 更新されたContestProjectをファイルに書き出し
 		await saveProjectJSON(Object.assign(data, {tasks}));

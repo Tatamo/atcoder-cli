@@ -11,9 +11,10 @@ commander
 	.command("new <contest-id>")
 	.alias("n")
 	.action(commands.setup)
-	.option('-c --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i, "inquire")
+	.option('-c, --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i, "inquire")
 	.option("-f, --force", "ignore existent directories")
 	.option("-d, --contest-dirname-format <format>", "specify the format to name contest directory")
+	.option("-t, --task-dirname-format <format>", "specify the format to name task directories")
 	.description("create new contest project directory")
 	.on("--help", function () {
 		console.log("");
@@ -30,8 +31,9 @@ commander
 	.command("add")
 	.alias("a")
 	.action(commands.add)
-	.option('-c --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i, "inquire")
+	.option('-c, --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i, "inquire")
 	.option("-f, --force", "ignore existent directories")
+	.option("-t, --task-dirname-format <format>", "specify the format to name task directories")
 	.description("add new directory for the task in the project directory")
 	.on("--help", function () {
 		console.log("");
