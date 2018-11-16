@@ -13,7 +13,7 @@ commander
 	.action(commands.setup)
 	.option('-c --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i, "inquire")
 	.option("-f, --force", "ignore existent directories")
-	.option("--cdf, --contest-dirname-format <format>", "specify the format to name contest directory")
+	.option("-d, --contest-dirname-format <format>", "specify the format to name contest directory")
 	.description("create new contest project directory")
 	.on("--help", function () {
 		console.log("");
