@@ -125,7 +125,8 @@ export const init = async (contest_id: string, options: { force?: boolean, conte
 	if (contest === null || tasks === null) {
 		throw new Error("failed to get contest information.");
 	}
-	const dirname = options.contestDirnameFormat !== undefined ? formatContestDirname(options.contestDirnameFormat, contest) : contest_id;
+	const format = options.contestDirnameFormat !== undefined ? options.contestDirnameFormat : "{ContestID}";
+	const dirname = formatContestDirname(format, contest);
 	try {
 		await promisify(mkdir)(dirname);
 	}
