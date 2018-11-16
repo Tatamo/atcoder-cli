@@ -210,7 +210,7 @@ export async function add() {
 	try {
 		const {path, data} = await project.findProjectJSON();
 		const {tasks} = data;
-		const choices = await inquireTasks(tasks);
+		const choices = await selectTasks(tasks, "inquire");
 		for (const {index, task} of choices) {
 			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
 			tasks[index] = await project.installTask(task, path);
@@ -222,22 +222,52 @@ export async function add() {
 	}
 }
 
+export async function selectTasks(tasks: Array<Task>, choice: "inquire" | "all" | "none" | "rest" | "next"): Promise<Array<{ index: number, task: Task }>> {
+	switch (choice) {
+		case "inquire":
+			return await inquireTasks(tasks);
+		case "all":
+			return tasks.map((task, index) => ({index, task}));
+		case "none":
+			return [];
+		case "rest":
+			return tasks.filter(task => task.directory === undefined).map((task, index) => ({index, task}));
+		case "next":
+			const next = getNextTask2Install(tasks);
+			return next !== null ? [next] : [];
+		default:
+			throw new Error(`mode "${choice}" is not defined"`);
+	}
+}
+
 export async function inquireTasks(tasks: Array<Task>): Promise<Array<{ index: number, task: Task }>> {
 	const inquirer = await import("inquirer");
-	// まだディレクトリが作成されていないもののうち、最も上のものをデフォルトで選択しておく
-	let default_checked_index: number | null = null;
-	for (let i = 0; i < tasks.length; i++) {
-		if (tasks[i].directory === undefined) {
-			default_checked_index = i;
-			break;
-		}
-	}
+	// まだディレクトリが作成されていない問題を一つだけ選択状態にしておく
+	const next = getNextTask2Install(tasks);
 	return (await inquirer.prompt([{
 		type: "checkbox",
 		message: "select tasks",
 		name: "tasks",
-		choices: tasks.map((task, index) => ({name: `${task.label} ${task.title}`, value: {index, task}, disabled: task.directory !== undefined ? () => "already installed" : () => false, checked: index === default_checked_index}))
+		choices: tasks.map((task, index) => ({
+			name: `${task.label} ${task.title}`,
+			value: {index, task},
+			disabled: task.directory !== undefined ? () => "already installed" : () => false,
+			checked: next !== null && index === next.index
+		}))
 	}]) as { tasks: Array<{ index: number, task: Task }> }).tasks;
+}
+
+/**
+ *まだディレクトリが作成されていない問題のうち、最も上のものを得る
+ * @param tasks
+ */
+function getNextTask2Install(tasks: Array<Task>): { index: number, task: Task } | null {
+	for (let i = 0; i < tasks.length; i++) {
+		if (tasks[i].directory === undefined) {
+			return {index: i, task: tasks[i]};
+		}
+	}
+	return null;
 }
 
 /**
