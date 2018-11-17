@@ -3,7 +3,7 @@ import {OnlineJudge} from "./facade/oj";
 import {Cookie} from "./cookie";
 import * as project from "./project";
 import {Contest, Task} from "./definitions";
-import getConfig from "./config";
+import getConfig, {defaults} from "./config";
 import path from "path";
 import {formatTaskDirname, saveProjectJSON} from "./project";
 
@@ -194,6 +194,24 @@ export async function checkOJAvailable() {
 export async function configDir() {
 	const conf = await getConfig();
 	console.log(path.resolve(conf.path, ".."));
+}
+
+export async function getGlobalConfig(key?: string) {
+	const conf = await getConfig();
+	if (key === undefined) {
+		for (const key of Object.keys(defaults)) {
+			console.log(`${key}: ${conf.get(key)}`)
+		}
+	}
+	else {
+		if (!conf.has(key)) {
+			console.error(`invalid option "${key}".`)
+		}
+		else {
+			const value = conf.get(key);
+			console.log(value !== undefined && value !== null ? value : "");
+		}
+	}
 }
 
 export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string }) {
