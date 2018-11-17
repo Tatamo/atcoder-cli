@@ -196,7 +196,16 @@ export async function configDir() {
 	console.log(path.resolve(conf.path, ".."));
 }
 
-export async function getGlobalConfig(key?: string) {
+export async function config(key?: string, value?: string) {
+	if (key !== undefined && value !== undefined) {
+		await setGlobalConfig(key, value);
+	}
+	else {
+		await getGlobalConfig(key);
+	}
+}
+
+async function getGlobalConfig(key?: string) {
 	const conf = await getConfig();
 	if (key === undefined) {
 		for (const key of Object.keys(defaults)) {
@@ -213,7 +222,7 @@ export async function getGlobalConfig(key?: string) {
 	console.log(value !== undefined ? value : "");
 }
 
-export async function setGlobalConfig(key: string, value: string) {
+async function setGlobalConfig(key: string, value: string) {
 	const conf = await getConfig();
 	if (!(key in defaults)) {
 		console.error(`invalid option "${key}".`);

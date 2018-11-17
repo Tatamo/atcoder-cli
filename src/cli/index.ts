@@ -99,18 +99,13 @@ commander
 	.description("check whether online-judge-tools related functions are available or not");
 
 commander
+	.command("config [config] [value]")
+	.action(commands.config)
+	.description("get or set values of global options");
+
+commander
 	.command("config-dir")
 	.action(commands.configDir)
 	.description("get the path of atcoder-cli config directory");
-
-commander
-	.command("config-get [config]")
-	.action(commands.getGlobalConfig)
-	.description("get global options");
-
-commander
-	.command("config-set <config> <value>")
-	.action(commands.setGlobalConfig)
-	.description("set values of global options");
 
 commander.parse(process.argv);
