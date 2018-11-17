@@ -196,8 +196,11 @@ export async function configDir() {
 	console.log(path.resolve(conf.path, ".."));
 }
 
-export async function config(key?: string, value?: string) {
-	if (key !== undefined && value !== undefined) {
+export async function config(key: string | undefined, value: string | undefined, options: { D?: boolean }) {
+	if (options.D) {
+		await deleteGlobalConfig(key);
+	}
+	else if (key !== undefined && value !== undefined) {
 		await setGlobalConfig(key, value);
 	}
 	else {
@@ -228,6 +231,21 @@ async function setGlobalConfig(key: string, value: string) {
 	}
 	conf.set(key, value);
 	console.log(undef2empty`${key} = ${conf.get(key)}`);
+}
+
+async function deleteGlobalConfig(key?: string) {
+	const conf = await getConfig();
+	if (key !== undefined) {
+		if (!(key in defaults)) {
+			console.error(`invalid option "${key}".`);
+			return;
+		}
+		conf.delete(key);
+		console.log(`option "${key}" is set back to default.`);
+	}
+	else {
+		console.error("option key is not specified.");
+	}
 }
 
 /**

@@ -99,7 +99,8 @@ commander
 	.description("check whether online-judge-tools related functions are available or not");
 
 commander
-	.command("config [config] [value]")
+	.command("config [key] [value]")
+	.option("-d", "delete the option value and set back to the default")
 	.action(commands.config)
 	.description("get or set values of global options");
 
