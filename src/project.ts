@@ -14,7 +14,7 @@ export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
  * 見つからなかった場合は例外を発生させる
  * @param path 省略するとカレントディレクトリを使用
  */
-export const findProjectJSON = async (path?: string): Promise<{ path: string, data: ContestProject }> => {
+export async function findProjectJSON(path?: string): Promise<{ path: string, data: ContestProject }> {
 	const readFilePromise = promisify(readFile);
 	let cwd = path !== undefined ? path : process.cwd();
 
@@ -44,13 +44,13 @@ export const findProjectJSON = async (path?: string): Promise<{ path: string, da
 	const [valid, error] = await validateProjectJSON(data);
 	if (valid) return {path: cwd, data};
 	else throw new Error(`failed to validate JSON: ${error!}`);
-};
+}
 
 /**
  * プロジェクトファイルを探し、現在のディレクトリ構造からコンテストと問題を特定する
  * @param path? 省略するとカレントディレクトリを使用
  */
-export const detectTaskByPath = async (path?: string): Promise<{ contest: Contest | null, task: Task | null }> => {
+export async function detectTaskByPath(path?: string): Promise<{ contest: Contest | null, task: Task | null }> {
 	if (path === undefined) path = process.cwd();
 	try {
 		const {path: project_path, data: {contest, tasks}} = await findProjectJSON();
@@ -79,14 +79,14 @@ export const detectTaskByPath = async (path?: string): Promise<{ contest: Contes
 	} catch {
 		return {contest: null, task: null};
 	}
-};
+}
 
 /**
  * プロジェクトJSONファイルを保存する
  * @param data ContestProject
  * @param directory_path 省略した場合は自動的にプロジェクトディレクトリを探してプロジェクトファイルを上書きする
  */
-export const saveProjectJSON = async (data: ContestProject, directory_path?: string): Promise<void> => {
+export async function saveProjectJSON(data: ContestProject, directory_path?: string): Promise<void> {
 	if (directory_path === undefined) directory_path = (await findProjectJSON()).path;
 	if (directory_path === undefined) throw new Error("Cannot find project directory path");
 	const [valid, error] = await validateProjectJSON(data);
@@ -98,28 +98,28 @@ export const saveProjectJSON = async (data: ContestProject, directory_path?: str
 		console.error("JSON validation failed:");
 		throw new Error(error!);
 	}
-};
+}
 
 /**
  * プロジェクトファイルが正しい形式に沿っているか調べる
  * [valid:true, error:null] | [valid:false, error:string] valid=trueなら正しいJSON
  * @param data
  */
-export const validateProjectJSON = async (data: ContestProject): Promise<[true, null] | [false, string]> => {
+export async function validateProjectJSON(data: ContestProject): Promise<[true, null] | [false, string]> {
 	const ajv = new ((await import("ajv")).default)();
 	const schema = (await import("./schema")).default;
 	const validate = ajv.compile(schema);
 	const valid = validate(data);
 	if (!valid) return [false, ajv.errorsText(validate.errors)];
 	return [true, null];
-};
+}
 
 /**
  * コンテスト情報を取得し、プロジェクトディレクトリを作成する
  * @param contest_id
  * @param options
  */
-export const init = async (contest_id: string, options: { force?: boolean, contestDirnameFormat?: string }): Promise<ContestProject> => {
+export async function init(contest_id: string, options: { force?: boolean, contestDirnameFormat?: string }): Promise<ContestProject> {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => [null, null]);
@@ -142,9 +142,9 @@ export const init = async (contest_id: string, options: { force?: boolean, conte
 	await saveProjectJSON(data, process.cwd());
 	console.log(`${dirname}/${PROJECT_JSON_FILE_NAME} created.`);
 	return data;
-};
+}
 
-export const installTask = async (task: Task, dirname: string, project_path?: string): Promise<Task> => {
+export async function installTask(task: Task, dirname: string, project_path?: string): Promise<Task> {
 	const pwd = process.cwd();
 	if (project_path !== undefined) {
 		await promisify(mkdirp)(project_path);
@@ -160,9 +160,9 @@ export const installTask = async (task: Task, dirname: string, project_path?: st
 	// もとのディレクトリに戻る
 	process.chdir(pwd);
 	return Object.assign(task, {directory: {path: dirname}});
-};
+}
 
-export const formatContestDirname = (format: string, contest: Contest): string => {
+export function formatContestDirname(format: string, contest: Contest): string {
 	const convert = (pattern: string): string => {
 		switch (pattern) {
 			case "ContestID":
@@ -178,9 +178,9 @@ export const formatContestDirname = (format: string, contest: Contest): string =
 		throw new Error(`pattern "{${pattern}} is not defined. use --help option to get more information."`);
 	};
 	return format.replace(/{([a-zA-Z0-9]+)}/g, (_, p) => convert(p));
-};
+}
 
-export const formatTaskDirname = (format: string, task: Task, index: number, contest: Contest): string => {
+export function formatTaskDirname(format: string, task: Task, index: number, contest: Contest): string {
 	const convert = (pattern: string): string => {
 		switch (pattern) {
 			case "TaskLabel":
@@ -216,18 +216,18 @@ export const formatTaskDirname = (format: string, task: Task, index: number, con
 		throw new Error(`pattern "{${pattern}} is not defined. use --help option to get more information."`);
 	};
 	return format.replace(/{([a-zA-Z0-9]+)}/g, (_, p) => convert(p));
-};
+}
 
 /**
  * 数値をアルファベットに変換する
  * 0,1,2,... => a,b,c,...,z,aa,ab,...
  * @param num
  */
-const convertNumber2Alphabet = (num: number): string => {
+function convertNumber2Alphabet(num: number): string {
 	if (num < 0) throw new Error("invalid number");
 	let result = "";
 	do {
 		result = ((num % 26) + 10).toString(36) + result;
 	} while ((num = Math.floor(num / 26) - 1) >= 0);
 	return result;
-};
+}
