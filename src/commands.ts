@@ -204,12 +204,12 @@ export async function getGlobalConfig(key?: string) {
 		}
 		return;
 	}
-	if (!conf.has(key)) {
+	if (!(key in defaults)) {
 		console.error(`invalid option "${key}".`);
 		return;
 	}
 	const value = conf.get(key);
-	console.log(value !== undefined && value !== null ? value : "");
+	console.log(value !== undefined ? value : "");
 }
 
 export async function setGlobalConfig(key: string, value: string) {

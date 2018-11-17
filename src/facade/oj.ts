@@ -12,7 +12,7 @@ export class OnlineJudge {
 		const config = await getConfig();
 		let path = config.get("oj-path");
 		// configにpathが設定されていない場合はwhichコマンドで探してみる
-		if (path === undefined || path === null || path.trim() === "") {
+		if (path === undefined || path.trim() === "") {
 			const command = process.platform === "win32" ? "where oj" : "which oj";
 			path = (await exec(command).then(v => v.stdout.trim()).catch(() => ""));
 		}
