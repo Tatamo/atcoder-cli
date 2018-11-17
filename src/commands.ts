@@ -209,8 +209,7 @@ async function getGlobalConfig(key?: string) {
 	const conf = await getConfig();
 	if (key === undefined) {
 		for (const key of Object.keys(defaults)) {
-			const value = conf.get(key);
-			console.log(`${key}: ${value !== undefined ? value : ""}`)
+			console.log(undef2empty`${key}: ${conf.get(key)}`)
 		}
 		return;
 	}
@@ -218,8 +217,7 @@ async function getGlobalConfig(key?: string) {
 		console.error(`invalid option "${key}".`);
 		return;
 	}
-	const value = conf.get(key);
-	console.log(value !== undefined ? value : "");
+	console.log(undef2empty`${conf.get(key)}`);
 }
 
 async function setGlobalConfig(key: string, value: string) {
@@ -229,7 +227,17 @@ async function setGlobalConfig(key: string, value: string) {
 		return;
 	}
 	conf.set(key, value);
-	console.log(`${key} = ${conf.get(key)}`);
+	console.log(undef2empty`${key} = ${conf.get(key)}`);
+}
+
+/**
+ * テンプレート文字列に挿入された式がundefinedであった場合に"undefined"のかわりに空文字列に変換する
+ * @param strings
+ * @param values
+ */
+function undef2empty(strings: TemplateStringsArray, ...values: Array<any>): string {
+	values = values.map(value => value !== undefined ? value : "");
+	return String.raw(strings, ...values);
 }
 
 export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string }) {
