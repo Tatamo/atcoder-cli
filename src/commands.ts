@@ -200,7 +200,8 @@ export async function getGlobalConfig(key?: string) {
 	const conf = await getConfig();
 	if (key === undefined) {
 		for (const key of Object.keys(defaults)) {
-			console.log(`${key}: ${conf.get(key)}`)
+			const value = conf.get(key);
+			console.log(`${key}: ${value !== undefined ? value : ""}`)
 		}
 		return;
 	}
