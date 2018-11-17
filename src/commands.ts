@@ -202,16 +202,24 @@ export async function getGlobalConfig(key?: string) {
 		for (const key of Object.keys(defaults)) {
 			console.log(`${key}: ${conf.get(key)}`)
 		}
+		return;
 	}
-	else {
-		if (!conf.has(key)) {
-			console.error(`invalid option "${key}".`)
-		}
-		else {
-			const value = conf.get(key);
-			console.log(value !== undefined && value !== null ? value : "");
-		}
+	if (!conf.has(key)) {
+		console.error(`invalid option "${key}".`);
+		return;
 	}
+	const value = conf.get(key);
+	console.log(value !== undefined && value !== null ? value : "");
+}
+
+export async function setGlobalConfig(key: string, value: string) {
+	const conf = await getConfig();
+	if (!(key in defaults)) {
+		console.error(`invalid option "${key}".`);
+		return;
+	}
+	conf.set(key, value);
+	console.log(`${key} = ${conf.get(key)}`);
 }
 
 export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string }) {

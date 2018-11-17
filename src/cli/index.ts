@@ -108,4 +108,9 @@ commander
 	.action(commands.getGlobalConfig)
 	.description("get global options");
 
+commander
+	.command("config-set <config> <value>")
+	.action(commands.setGlobalConfig)
+	.description("set values of global options");
+
 commander.parse(process.argv);
