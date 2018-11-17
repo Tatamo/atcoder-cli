@@ -241,7 +241,7 @@ export async function add(options: { choice: "inquire" | "all" | "none" | "rest"
 		for (const {index, task} of choices) {
 			// forceオプションが設定されていない場合、既にディレクトリが存在する問題はスキップする
 			if (options.force !== true && task.directory !== undefined) continue;
-			const format = options.taskDirnameFormat !== undefined ? options.taskDirnameFormat : "{tasklabel}";
+			const format = options.taskDirnameFormat !== undefined ? options.taskDirnameFormat : (await getConfig()).get("default-task-dirname-format");
 			const dirname = formatTaskDirname(format, task, index, contest);
 			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
 			tasks[index] = await project.installTask(task, dirname, path);

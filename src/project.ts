@@ -5,6 +5,7 @@ import {sep, resolve} from "path";
 import mkdirp from "mkdirp";
 import {promisify} from "util";
 import {OnlineJudge} from "./facade/oj";
+import getConfig from "./config";
 
 export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
 
@@ -125,7 +126,7 @@ export const init = async (contest_id: string, options: { force?: boolean, conte
 	if (contest === null || tasks === null) {
 		throw new Error("failed to get contest information.");
 	}
-	const format = options.contestDirnameFormat !== undefined ? options.contestDirnameFormat : "{ContestID}";
+	const format = options.contestDirnameFormat !== undefined ? options.contestDirnameFormat : (await getConfig()).get("default-contest-dirname-format");
 	const dirname = formatContestDirname(format, contest);
 	try {
 		await promisify(mkdir)(dirname);
