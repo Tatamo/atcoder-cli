@@ -69,7 +69,7 @@
   },
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
-  "title": "atcoder-cli Project File",
+  "title": "atcoder-cli Contest Project File",
   "required": [
     "contest",
     "tasks"

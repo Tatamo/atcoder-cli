@@ -1,7 +1,7 @@
 /**
  * 普通にJSONファイルとして配置したいが https://github.com/Microsoft/TypeScript/issues/24715 の不具合のためのワークアラウンドとしてプログラム内で定義
  */
-const schema = {
+const project_schema = {
 	"definitions": {
 		"contest": {
 			"$id": "#contest",
@@ -86,4 +86,37 @@ const schema = {
 		}
 	}
 };
-export default schema;
+export default project_schema;
+
+export const template_schema = {
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"title": "atcoder-cli Task Template File",
+	"required": [
+		"submit",
+		"program"
+	],
+	"properties": {
+		"submit": {
+			"type": "string"
+		},
+		"program": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
+		"static": {
+			"type": "array",
+			"items": {
+				"type": "string"
+			}
+		},
+		"cmd": {
+			"type": "string"
+		},
+		"testdir": {
+			"type": "string"
+		}
+	}
+};

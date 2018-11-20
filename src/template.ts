@@ -9,6 +9,7 @@ export interface Template {
 	program: Array<string>;
 	static?: Array<string>;
 	cmd?: string;
+	testdir?: string;
 }
 
 /**

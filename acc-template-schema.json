@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "atcoder-cli Task Template File",
+  "required": [
+    "submit",
+    "program"
+  ],
+  "properties": {
+    "submit": {
+      "type": "string"
+    },
+    "program": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "static": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cmd": {
+      "type": "string"
+    },
+    "testdir": {
+      "type": "string"
+    }
+  }
+}
