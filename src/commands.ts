@@ -6,6 +6,7 @@ import {Contest, Task} from "./definitions";
 import getConfig, {defaults} from "./config";
 import path from "path";
 import {formatTaskDirname, saveProjectJSON} from "./project";
+import {getTemplates} from "./template";
 
 export async function login() {
 	const atcoder = new AtCoder();
@@ -336,6 +337,14 @@ function getNextTask2Install(tasks: Array<Task>): { index: number, task: Task } 
 		}
 	}
 	return null;
+}
+
+export async function getTemplateList() {
+	const conf = await getConfig();
+	const dirpath = path.resolve(conf.path, "..");
+	console.error(SGR(`search template directories in ${dirpath}`, 37));
+	const templates = await getTemplates(dirpath);
+	console.log(formatAsShellOutput([[SGR("NAME", 1), "SUBMIT-PROGRAM"]].concat(templates.map(({name, template}) => [SGR(name, 1), template.submit]))));
 }
 
 /**

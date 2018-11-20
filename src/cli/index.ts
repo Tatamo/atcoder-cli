@@ -109,4 +109,9 @@ commander
 	.action(commands.configDir)
 	.description("get the path of atcoder-cli config directory");
 
+commander
+	.command("templates")
+	.action(commands.getTemplateList)
+	.description("show user templates in the config directory");
+
 commander.parse(process.argv);
