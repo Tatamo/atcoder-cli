@@ -114,9 +114,6 @@ export const template_schema = {
 		},
 		"cmd": {
 			"type": "string"
-		},
-		"testdir": {
-			"type": "string"
 		}
 	}
 };

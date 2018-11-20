@@ -24,9 +24,6 @@
     },
     "cmd": {
       "type": "string"
-    },
-    "testdir": {
-      "type": "string"
     }
   }
 }
