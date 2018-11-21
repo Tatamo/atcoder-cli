@@ -5,7 +5,7 @@ import * as project from "./project";
 import {Contest, Task} from "./definitions";
 import getConfig, {defaults, getConfigDirectory} from "./config";
 import {formatTaskDirname, saveProjectJSON} from "./project";
-import {getTemplates} from "./template";
+import {getTemplate, getTemplates} from "./template";
 
 export async function login() {
 	const atcoder = new AtCoder();
@@ -257,7 +257,7 @@ function undef2empty(strings: TemplateStringsArray, ...values: Array<any>): stri
 	return String.raw(strings, ...values);
 }
 
-export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string }) {
+export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string, template?: string }) {
 	try {
 		const {contest} = await project.init(contest_id, options);
 		console.log(`create project of ${contest.title}`);
@@ -267,23 +267,26 @@ export async function setup(contest_id: string, options: { choice: "inquire" | "
 	}
 }
 
-export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, taskDirnameFormat?: string }) {
+export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, taskDirnameFormat?: string, template?: string }) {
 	try {
 		const {path, data} = await project.findProjectJSON();
 		const {contest, tasks} = data;
 		const choices = await selectTasks(tasks, options.choice, options.force);
+		const template = options.template !== undefined ? (await getTemplate(options.template).catch((e) => {
+			throw new Error(`Failed to load template "${options.template}".\n  ${e}`);
+		})) : undefined;
 		for (const {index, task} of choices) {
 			// forceオプションが設定されていない場合、既にディレクトリが存在する問題はスキップする
 			if (options.force !== true && task.directory !== undefined) continue;
 			const format = options.taskDirnameFormat !== undefined ? options.taskDirnameFormat : (await getConfig()).get("default-task-dirname-format");
 			const dirname = formatTaskDirname(format, task, index, contest);
 			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
-			tasks[index] = await project.installTask(task, dirname, path);
+			tasks[index] = await project.installTask(task, index, contest, dirname, path, template);
 		}
 		// 更新されたContestProjectをファイルに書き出し
 		await saveProjectJSON(Object.assign(data, {tasks}));
 	} catch (e) {
-		console.error(e.message);
+		console.error(SGR(e.message, 33));
 	}
 }
 

@@ -6,6 +6,7 @@ import mkdirp from "mkdirp";
 import {promisify} from "util";
 import {OnlineJudge} from "./facade/oj";
 import getConfig from "./config";
+import {Template} from "./template";
 
 export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
 
@@ -144,20 +145,24 @@ export async function init(contest_id: string, options: { force?: boolean, conte
 	return data;
 }
 
-export async function installTask(task: Task, dirname: string, project_path: string,): Promise<Task> {
+export async function installTask(task: Task, index: number, contest: Contest, dirname: string, project_path: string, template?: Template): Promise<Task> {
 	const pwd = process.cwd();
 	await promisify(mkdirp)(project_path);
 	process.chdir(project_path);
 	await promisify(mkdirp)(dirname);
 	process.chdir(dirname);
+
+	// TODO: configでデフォルト値を設定可能に
+	const testdir = formatTaskDirname(template !== undefined && template.testdir !== undefined ? template.testdir : "tests", task, index, contest);
+
 	if (OnlineJudge.checkAvailable()) {
-		await OnlineJudge.call(["dl", task.url, "-d", "tests"]);
+		await OnlineJudge.call(["dl", task.url, "-d", testdir]);
 	} else {
 		console.error("online-judge-tools is not available. downloading of sample cases skipped.");
 	}
 	// もとのディレクトリに戻る
 	process.chdir(pwd);
-	return Object.assign(task, {directory: {path: dirname}});
+	return Object.assign(task, {directory: {path: dirname, testdir}});
 }
 
 export function formatContestDirname(format: string, contest: Contest): string {
