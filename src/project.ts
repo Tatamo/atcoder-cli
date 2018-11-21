@@ -166,7 +166,15 @@ export async function init(contest_id: string, options: { force?: boolean, conte
 	return data;
 }
 
-export async function installTask(task: Task, index: number, contest: Contest, dirname: string, project_path: string, template?: Template): Promise<Task> {
+interface DetailedTask {
+	task: Task,
+	index: number,
+	contest: Contest,
+	template?: Template
+}
+
+export async function installTask(detailed_task: DetailedTask, dirname: string, project_path: string): Promise<Task> {
+	const {task, index, contest, template} = detailed_task;
 	const pwd = process.cwd();
 	await promisify(mkdirp)(project_path);
 	process.chdir(project_path);

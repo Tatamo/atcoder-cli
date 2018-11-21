@@ -279,7 +279,7 @@ export async function add(options: { choice: "inquire" | "all" | "none" | "rest"
 			const format = options.taskDirnameFormat !== undefined ? options.taskDirnameFormat : (await getConfig()).get("default-task-dirname-format");
 			const dirname = formatTaskDirname(format, task, index, contest);
 			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
-			tasks[index] = await installTask(task, index, contest, dirname, path, template);
+			tasks[index] = await installTask({task, index, contest, template}, dirname, path);
 		}
 		// 更新されたContestProjectをファイルに書き出し
 		await saveProjectJSON(Object.assign(data, {tasks}));
