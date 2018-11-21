@@ -47,6 +47,9 @@ const project_schema = {
 			"properties": {
 				"path": {
 					"type": "string"
+				},
+				"testdir": {
+					"type": "string"
 				}
 			}
 		},

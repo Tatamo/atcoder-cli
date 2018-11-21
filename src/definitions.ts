@@ -10,7 +10,8 @@ export interface Task {
 	title: string;
 	url: string;
 	directory?: {
-		path: string
+		path: string,
+		testdir?: string
 	}
 }
 
