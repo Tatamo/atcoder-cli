@@ -144,12 +144,10 @@ export async function init(contest_id: string, options: { force?: boolean, conte
 	return data;
 }
 
-export async function installTask(task: Task, dirname: string, project_path?: string): Promise<Task> {
+export async function installTask(task: Task, dirname: string, project_path: string,): Promise<Task> {
 	const pwd = process.cwd();
-	if (project_path !== undefined) {
-		await promisify(mkdirp)(project_path);
-		process.chdir(project_path);
-	}
+	await promisify(mkdirp)(project_path);
+	process.chdir(project_path);
 	await promisify(mkdirp)(dirname);
 	process.chdir(dirname);
 	if (OnlineJudge.checkAvailable()) {
