@@ -192,7 +192,7 @@ export async function checkOJAvailable() {
 }
 
 export async function configDir() {
-	console.log(await getConfigDirectory);
+	console.log(await getConfigDirectory());
 }
 
 export async function config(key: string | undefined, value: string | undefined, options: { D?: boolean }) {
