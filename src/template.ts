@@ -13,6 +13,7 @@ export interface Template {
 	program: Array<FileName2Copy>;
 	static?: Array<FileName2Copy>;
 	cmd?: string;
+	testdir?: string;
 }
 
 /**
