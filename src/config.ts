@@ -1,3 +1,5 @@
+import path from "path";
+
 type Conf = import("conf");
 
 export const defaults = {
@@ -20,3 +22,10 @@ const getConfig: () => Promise<Conf> = (() => {
 })();
 
 export default getConfig;
+
+/**
+ * コンフィグディレクトリを取得
+ */
+export async function getConfigDirectory(): Promise<string> {
+	return path.resolve((await getConfig()).path, "..");
+}

@@ -3,8 +3,7 @@ import {OnlineJudge} from "./facade/oj";
 import {Cookie} from "./cookie";
 import * as project from "./project";
 import {Contest, Task} from "./definitions";
-import getConfig, {defaults} from "./config";
-import path from "path";
+import getConfig, {defaults, getConfigDirectory} from "./config";
 import {formatTaskDirname, saveProjectJSON} from "./project";
 import {getTemplates} from "./template";
 
@@ -193,8 +192,7 @@ export async function checkOJAvailable() {
 }
 
 export async function configDir() {
-	const conf = await getConfig();
-	console.log(path.resolve(conf.path, ".."));
+	console.log(await getConfigDirectory);
 }
 
 export async function config(key: string | undefined, value: string | undefined, options: { D?: boolean }) {
@@ -340,10 +338,8 @@ function getNextTask2Install(tasks: Array<Task>): { index: number, task: Task } 
 }
 
 export async function getTemplateList() {
-	const conf = await getConfig();
-	const dirpath = path.resolve(conf.path, "..");
-	console.error(SGR(`search template directories in ${dirpath}`, 37));
-	const templates = await getTemplates(dirpath);
+	console.error(SGR(`search template directories in ${getConfigDirectory()}`, 37));
+	const templates = await getTemplates();
 	console.log(formatAsShellOutput([[SGR("NAME", 1), "SUBMIT-PROGRAM"]].concat(templates.map(({name, template}) => [SGR(name, 1), template.submit]))));
 }
 
