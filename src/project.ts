@@ -21,8 +21,9 @@ export interface Task {
 	title: string;
 	url: string;
 	directory?: {
-		path: string,
-		testdir?: string
+		path: string;
+		submit?: string;
+		testdir?: string;
 	}
 }
 

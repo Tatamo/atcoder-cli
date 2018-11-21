@@ -48,6 +48,9 @@ const project_schema = {
 				"path": {
 					"type": "string"
 				},
+				"submit": {
+					"type": "string"
+				},
 				"testdir": {
 					"type": "string"
 				}
