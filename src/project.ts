@@ -1,4 +1,3 @@
-import {Task, ContestProject, Contest} from "./definitions";
 import {AtCoder} from "./atcoder";
 import {mkdir, readFile, writeFile} from "fs";
 import {sep, resolve} from "path";
@@ -9,6 +8,28 @@ import getConfig from "./config";
 import {Template} from "./template";
 
 export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
+
+export interface Contest {
+	id: string;
+	title: string;
+	url: string;
+}
+
+export interface Task {
+	id: string;
+	label: string;
+	title: string;
+	url: string;
+	directory?: {
+		path: string,
+		testdir?: string
+	}
+}
+
+export interface ContestProject {
+	contest: Contest;
+	tasks: Array<Task>;
+}
 
 /**
  * 指定したディレクトリから親を辿って最も近い位置にあるプロジェクトファイルを取得する
