@@ -2,6 +2,21 @@
  * 普通にJSONファイルとして配置したいが https://github.com/Microsoft/TypeScript/issues/24715 の不具合のためのワークアラウンドとしてプログラム内で定義
  */
 const project_schema = {
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"title": "atcoder-cli Project File",
+	"required": [
+		"contest",
+		"tasks"
+	],
+	"properties": {
+		"contest": {
+			"$ref": "#contest"
+		},
+		"tasks": {
+			"$ref": "#tasks"
+		}
+	},
 	"definitions": {
 		"contest": {
 			"$id": "#contest",
@@ -68,21 +83,6 @@ const project_schema = {
 			"items": {
 				"$ref": "#task"
 			}
-		}
-	},
-	"$schema": "http://json-schema.org/draft-07/schema#",
-	"type": "object",
-	"title": "atcoder-cli Project File",
-	"required": [
-		"contest",
-		"tasks"
-	],
-	"properties": {
-		"contest": {
-			"$ref": "#contest"
-		},
-		"tasks": {
-			"$ref": "#tasks"
 		}
 	}
 };
