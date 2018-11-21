@@ -5,7 +5,8 @@ type Conf = import("conf");
 export const defaults = {
 	["oj-path"]: undefined,
 	["default-contest-dirname-format"]: "{ContestID}",
-	["default-task-dirname-format"]: "{tasklabel}"
+	["default-task-dirname-format"]: "{tasklabel}",
+	["default-test-dirname-format"]: "tests"
 };
 
 /**

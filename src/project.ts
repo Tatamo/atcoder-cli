@@ -152,8 +152,7 @@ export async function installTask(task: Task, index: number, contest: Contest, d
 	await promisify(mkdirp)(dirname);
 	process.chdir(dirname);
 
-	// TODO: configでデフォルト値を設定可能に
-	const testdir = formatTaskDirname(template !== undefined && template.testdir !== undefined ? template.testdir : "tests", task, index, contest);
+	const testdir = formatTaskDirname(template !== undefined && template.testdir !== undefined ? template.testdir : (await getConfig()).get("default-test-dirname-format"), task, index, contest);
 
 	if (OnlineJudge.checkAvailable()) {
 		await OnlineJudge.call(["dl", task.url, "-d", testdir]);
