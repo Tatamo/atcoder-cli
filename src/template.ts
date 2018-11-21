@@ -9,12 +9,16 @@ export const TEMPLATE_JSON_FILE_NAME = "template.json";
 // [string, string]: コピー元ファイル名、コピー先ファイル名(フォーマット形式含む)
 export type FileName2Copy = string | [string, string];
 
-export interface Template {
+export interface RawTemplate {
 	submit: string;
 	program: Array<FileName2Copy>;
 	static?: Array<FileName2Copy>;
 	cmd?: string;
 	testdir?: string;
+}
+
+export interface Template extends RawTemplate {
+	name: string;
 }
 
 /**
@@ -29,13 +33,13 @@ export async function getTemplate(name: string): Promise<Template> {
 	if (!valid) {
 		throw new Error(error!);
 	}
-	return template;
+	return {name, ...template};
 }
 
 /**
  * コンフィグディレクトリ全体を走査してテンプレートディレクトリを取得する
  */
-export async function getTemplates(): Promise<Array<{ name: string, template: Template }>> {
+export async function getTemplates(): Promise<Array<Template>> {
 	const configdir = await getConfigDirectory();
 	const files: Array<string> = await promisify(readdir)(configdir);
 	const templates = [];
@@ -43,7 +47,7 @@ export async function getTemplates(): Promise<Array<{ name: string, template: Te
 		try {
 			// ファイル名をディレクトリ名とみなして直下のJSONファイルを取得
 			const template = await getTemplate(name);
-			templates.push({name, template});
+			templates.push(template);
 		} catch (e) {
 			// ディレクトリでないファイルなど、ENOTDIR, ENOENTエラーが発生した場合はそのまま無視
 			if (e.code !== "ENOTDIR" && e.code !== "ENOENT") console.error(`Error occurred in ${resolve(name, TEMPLATE_JSON_FILE_NAME)}:\n  ${e.toString()}`);
@@ -57,7 +61,7 @@ export async function getTemplates(): Promise<Array<{ name: string, template: Te
  * [valid:true, error:null] | [valid:false, error:string] valid=trueなら正しいJSON
  * @param data
  */
-export async function validateTemplateJSON(data: Template): Promise<[true, null] | [false, string]> {
+export async function validateTemplateJSON(data: RawTemplate): Promise<[true, null] | [false, string]> {
 	const ajv = new ((await import("ajv")).default)();
 	const validate = ajv.compile((await import("./schema")).template_schema);
 	const valid = validate(data);
