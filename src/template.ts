@@ -18,6 +18,21 @@ export interface Template {
 }
 
 /**
+ * テンプレート名を指定してテンプレートを取得する
+ * @param name
+ * @throws Error バリデーションに失敗、またはファイル・ディレクトリが存在しない場合エラーとなる
+ */
+export async function getTemplate(name: string): Promise<Template> {
+	const configdir = await getConfigDirectory();
+	const template = JSON.parse(await promisify(readFile)(resolve(configdir, name, TEMPLATE_JSON_FILE_NAME), "utf8"));
+	const [valid, error] = await validateTemplateJSON(template);
+	if (!valid) {
+		throw new Error(error!);
+	}
+	return template;
+}
+
+/**
  * コンフィグディレクトリ全体を走査してテンプレートディレクトリを取得する
  */
 export async function getTemplates(): Promise<Array<{ name: string, template: Template }>> {
@@ -27,14 +42,8 @@ export async function getTemplates(): Promise<Array<{ name: string, template: Te
 	for (const name of files) {
 		try {
 			// ファイル名をディレクトリ名とみなして直下のJSONファイルを取得
-			const template = JSON.parse(await promisify(readFile)(resolve(configdir, name, TEMPLATE_JSON_FILE_NAME), "utf8"));
-			const [valid, error] = await validateTemplateJSON(template);
-			if (valid) {
-				templates.push({name, template});
-			}
-			else {
-				console.error(`validation error in ${resolve(name, TEMPLATE_JSON_FILE_NAME)}:\n  ${error}`);
-			}
+			const template = await getTemplate(name);
+			templates.push({name, template});
 		} catch (e) {
 			// ディレクトリでないファイルなど、ENOTDIR, ENOENTエラーが発生した場合はそのまま無視
 			if (e.code !== "ENOTDIR" && e.code !== "ENOENT") console.error(`Error occurred in ${resolve(name, TEMPLATE_JSON_FILE_NAME)}:\n  ${e.toString()}`);
