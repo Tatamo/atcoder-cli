@@ -4,10 +4,14 @@ import {resolve} from "path";
 
 export const TEMPLATE_JSON_FILE_NAME = "template.json";
 
+// string: ファイル名
+// [string, string]: コピー元ファイル名、コピー先ファイル名(フォーマット形式含む)
+export type FileName2Copy = string | [string, string];
+
 export interface Template {
 	submit: string;
-	program: Array<string>;
-	static?: Array<string>;
+	program: Array<FileName2Copy>;
+	static?: Array<FileName2Copy>;
 	cmd?: string;
 }
 

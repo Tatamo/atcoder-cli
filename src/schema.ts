@@ -103,17 +103,35 @@ export const template_schema = {
 		"program": {
 			"type": "array",
 			"items": {
-				"type": "string"
+				"$ref": "#copyfile"
 			}
 		},
 		"static": {
 			"type": "array",
 			"items": {
-				"type": "string"
+				"$ref": "#copyfile"
 			}
 		},
 		"cmd": {
 			"type": "string"
+		}
+	},
+	"definitions": {
+		"copyfile": {
+			"$id": "#copyfile",
+			"anyOf": [
+				{
+					"type": "string"
+				},
+				{
+					"type": "array",
+					"minItems": 2,
+					"maxItems": 2,
+					"items": {
+						"type": "string"
+					}
+				}
+			]
 		}
 	}
 };
