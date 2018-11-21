@@ -147,16 +147,21 @@ export async function url(contest_id: string | undefined, task_id: string | unde
 	}
 }
 
-export async function submit(filename: string, options: { task?: string, contest?: string }) {
+export async function submit(filename: string | undefined, options: { task?: string, contest?: string }) {
 	let contest_id = options.contest;
 	let task_id = options.task;
-	if (contest_id === undefined || task_id === undefined) {
-		// コンテストまたはタスクが未指定の場合、カレントディレクトリのパスから提出先を調べる
+	if (filename === undefined || contest_id === undefined || task_id === undefined) {
+		// ファイル名、タスク、コンテストのいずれかが未指定の場合、カレントディレクトリのパスから提出先を調べる
 		const {contest, task} = await detectTaskByPath();
+		if (filename === undefined && task !== null && task.directory !== undefined) filename = task.directory.submit;
 		if (contest_id === undefined && contest !== null) contest_id = contest.id;
 		if (task_id === undefined && task !== null) task_id = task.id;
 
 		// 結局特定できなかった
+		if (filename === undefined) {
+			console.error(`the program file to submit is not found.`);
+			return;
+		}
 		if (contest_id === undefined || task_id === undefined) {
 			console.error(`cannot find the ${task_id === undefined ? "task" : "contest"} to submit.`);
 			console.error(`add ${task_id === undefined ? "-t" : "-c"} flag to specify it.`);

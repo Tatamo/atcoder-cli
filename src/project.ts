@@ -197,7 +197,10 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 
 	// もとのディレクトリに戻る
 	process.chdir(pwd);
-	return Object.assign(task, {directory: {path: dirname, testdir}});
+	// 新しく情報を付与したTaskオブジェクトを返す
+	const s: any = {directory: {path: dirname, testdir}};
+	if (template !== undefined && template.submit !== undefined) s.directory.submit = template.submit;
+	return Object.assign(task, s);
 }
 
 /**
@@ -209,11 +212,12 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 export async function installTemplate(detailed_task: DetailedTask, path: string, log: boolean = false) {
 	const {task, index, contest, template} = detailed_task;
 	if (template === undefined) throw new Error("no template is given");
+	// 現在のディレクトリを記憶しつつ展開先ディレクトリに移動する
 	const pwd = process.cwd();
 	process.chdir(path);
 	const template_dir = resolve(await getConfigDirectory(), template.name);
-	// プログラムファイルのコピー
 	const fs = (await import("fs-extra"));
+	// プログラムファイルのコピー
 	for (const file of template.program) {
 		const source = resolve(template_dir, typeof file === "string" ? file : file[0]);
 		const dest = resolve(process.cwd(), typeof file === "string" ? file : formatTaskDirname(file[1], task, index, contest));

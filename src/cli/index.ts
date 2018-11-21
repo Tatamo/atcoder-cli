@@ -49,7 +49,7 @@ commander
 	});
 
 commander
-	.command("submit <filename>")
+	.command("submit [filename]")
 	.alias("s")
 	.option("-c, --contest <contest-id>", "specify contest id to submit")
 	.option("-t, --task <task-id>", "specify task id to submit")
