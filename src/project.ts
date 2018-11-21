@@ -237,7 +237,11 @@ export async function installTemplate(detailed_task: DetailedTask, path: string,
 		for (const file of template.static) {
 			const source = resolve(template_dir, typeof file === "string" ? file : file[0]);
 			const dest = resolve(process.cwd(), typeof file === "string" ? file : formatTaskDirname(file[1], task, index, contest));
-			await fs.copy(source, dest);
+			try {
+				await fs.copy(source, dest);
+			} catch (e) {
+				console.error(e.toString());
+			}
 			if (log) console.error(`"${source}" -> "${dest}"`)
 		}
 	}
