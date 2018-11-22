@@ -344,7 +344,7 @@ function getNextTask2Install(tasks: Array<Task>): { index: number, task: Task } 
 }
 
 export async function getTemplateList() {
-	console.error(SGR(`search template directories in ${getConfigDirectory()}`, 37));
+	console.error(SGR(`search template directories in ${await getConfigDirectory()}`, 37));
 	const templates = await getTemplates();
 	console.log(formatAsShellOutput([[SGR("NAME", 1), "SUBMIT-PROGRAM"]].concat(templates.map(template => [SGR(template.name, 1), template.submit]))));
 }
