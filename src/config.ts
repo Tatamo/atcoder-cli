@@ -7,7 +7,8 @@ export const defaults = {
 	["default-contest-dirname-format"]: "{ContestID}",
 	["default-task-dirname-format"]: "{tasklabel}",
 	["default-test-dirname-format"]: "tests",
-	["default-task-choice"]: "inquire"
+	["default-task-choice"]: "inquire",
+	["default-template"]: undefined
 };
 
 /**

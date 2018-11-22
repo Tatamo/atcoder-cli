@@ -15,8 +15,9 @@ commander
 	.option("-f, --force", "ignore existent directories")
 	.option("-d, --contest-dirname-format <format>", "specify the format to name contest directory. defaults to \"{ContestID}\"")
 	.option("-t, --task-dirname-format <format>", "specify the format to name task directories. defaults to \"{tasklabel}\"")
-	.option("--template <name>", "specify the provisioning template")
 	.option("--no-tests", "skip downloading sample cases by using online-judge-tools")
+	.option("--template <name>", "specify the provisioning template")
+	.option("--no-template", "do not use templates, even if specified by global config")
 	.description("create new contest project directory")
 	.on("--help", function () {
 		console.log("");
@@ -36,8 +37,9 @@ commander
 	.option('-c, --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i)
 	.option("-f, --force", "ignore existent directories")
 	.option("-t, --task-dirname-format <format>", "specify the format to name task directories. defaults to \"{tasklabel}\"")
-	.option("--template <name>", "specify the provisioning template")
 	.option("--no-tests", "skip downloading sample cases by using online-judge-tools")
+	.option("--template <name>", "specify the provisioning template")
+	.option("--no-template", "do not use templates, even if specified by global config")
 	.description("add new directory for the task in the project directory")
 	.on("--help", function () {
 		console.log("");
