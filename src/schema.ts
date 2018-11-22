@@ -1,7 +1,22 @@
 /**
  * 普通にJSONファイルとして配置したいが https://github.com/Microsoft/TypeScript/issues/24715 の不具合のためのワークアラウンドとしてプログラム内で定義
  */
-const schema = {
+const project_schema = {
+	"$schema": "http://json-schema.org/draft-07/schema#",
+	"type": "object",
+	"title": "atcoder-cli Project File",
+	"required": [
+		"contest",
+		"tasks"
+	],
+	"properties": {
+		"contest": {
+			"$ref": "#contest"
+		},
+		"tasks": {
+			"$ref": "#tasks"
+		}
+	},
 	"definitions": {
 		"contest": {
 			"$id": "#contest",
@@ -31,6 +46,12 @@ const schema = {
 			],
 			"properties": {
 				"path": {
+					"type": "string"
+				},
+				"submit": {
+					"type": "string"
+				},
+				"testdir": {
 					"type": "string"
 				}
 			}
@@ -69,21 +90,57 @@ const schema = {
 				"$ref": "#task"
 			}
 		}
-	},
+	}
+};
+export default project_schema;
+
+export const template_schema = {
 	"$schema": "http://json-schema.org/draft-07/schema#",
 	"type": "object",
-	"title": "atcoder-cli Project File",
+	"title": "atcoder-cli Task Template File",
 	"required": [
-		"contest",
-		"tasks"
+		"submit",
+		"program"
 	],
 	"properties": {
-		"contest": {
-			"$ref": "#contest"
+		"submit": {
+			"type": "string"
 		},
-		"tasks": {
-			"$ref": "#tasks"
+		"program": {
+			"type": "array",
+			"items": {
+				"$ref": "#copyfile"
+			}
+		},
+		"static": {
+			"type": "array",
+			"items": {
+				"$ref": "#copyfile"
+			}
+		},
+		"cmd": {
+			"type": "string"
+		},
+		"testdir": {
+			"type": "string"
+		}
+	},
+	"definitions": {
+		"copyfile": {
+			"$id": "#copyfile",
+			"anyOf": [
+				{
+					"type": "string"
+				},
+				{
+					"type": "array",
+					"minItems": 2,
+					"maxItems": 2,
+					"items": {
+						"type": "string"
+					}
+				}
+			]
 		}
 	}
 };
-export default schema;

@@ -1,7 +1,7 @@
 import {Session} from "./session";
 import {Cookie} from "./cookie";
 import querystring from "query-string";
-import {Contest, Task} from "./definitions";
+import {Contest, Task} from "./project";
 
 const ATCODER_BASE_URL = "https://beta.atcoder.jp/";
 

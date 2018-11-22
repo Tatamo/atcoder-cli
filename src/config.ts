@@ -1,9 +1,12 @@
+import path from "path";
+
 type Conf = import("conf");
 
 export const defaults = {
 	["oj-path"]: undefined,
 	["default-contest-dirname-format"]: "{ContestID}",
-	["default-task-dirname-format"]: "{tasklabel}"
+	["default-task-dirname-format"]: "{tasklabel}",
+	["default-test-dirname-format"]: "tests"
 };
 
 /**
@@ -20,3 +23,10 @@ const getConfig: () => Promise<Conf> = (() => {
 })();
 
 export default getConfig;
+
+/**
+ * コンフィグディレクトリを取得
+ */
+export async function getConfigDirectory(): Promise<string> {
+	return path.resolve((await getConfig()).path, "..");
+}

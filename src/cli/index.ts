@@ -15,6 +15,7 @@ commander
 	.option("-f, --force", "ignore existent directories")
 	.option("-d, --contest-dirname-format <format>", "specify the format to name contest directory. defaults to \"{ContestID}\"")
 	.option("-t, --task-dirname-format <format>", "specify the format to name task directories. defaults to \"{tasklabel}\"")
+	.option("--template <name>", "specify the provisioning template")
 	.description("create new contest project directory")
 	.on("--help", function () {
 		console.log("");
@@ -34,6 +35,7 @@ commander
 	.option('-c, --choice <choice>', "how to choice tasks to add", /^(inquire|all|none|rest|next)$/i, "inquire")
 	.option("-f, --force", "ignore existent directories")
 	.option("-t, --task-dirname-format <format>", "specify the format to name task directories. defaults to \"{tasklabel}\"")
+	.option("--template <name>", "specify the provisioning template")
 	.description("add new directory for the task in the project directory")
 	.on("--help", function () {
 		console.log("");
@@ -47,7 +49,7 @@ commander
 	});
 
 commander
-	.command("submit <filename>")
+	.command("submit [filename]")
 	.alias("s")
 	.option("-c, --contest <contest-id>", "specify contest id to submit")
 	.option("-t, --task <task-id>", "specify task id to submit")
@@ -108,5 +110,10 @@ commander
 	.command("config-dir")
 	.action(commands.configDir)
 	.description("get the path of atcoder-cli config directory");
+
+commander
+	.command("templates")
+	.action(commands.getTemplateList)
+	.description("show user templates in the config directory");
 
 commander.parse(process.argv);

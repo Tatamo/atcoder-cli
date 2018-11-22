@@ -1,11 +1,9 @@
 import {AtCoder} from "./atcoder";
 import {OnlineJudge} from "./facade/oj";
 import {Cookie} from "./cookie";
-import * as project from "./project";
-import {Contest, Task} from "./definitions";
-import getConfig, {defaults} from "./config";
-import path from "path";
-import {formatTaskDirname, saveProjectJSON} from "./project";
+import {Contest, Task, detectTaskByPath, findProjectJSON, formatTaskDirname, saveProjectJSON, init, installTask} from "./project";
+import getConfig, {defaults, getConfigDirectory} from "./config";
+import {getTemplate, getTemplates} from "./template";
 
 export async function login() {
 	const atcoder = new AtCoder();
@@ -30,7 +28,7 @@ export async function contest(contest_id: string | undefined, options: { id?: bo
 	if (contest_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探してコンテスト情報を表示
 		try {
-			const {data: {contest}} = await project.findProjectJSON();
+			const {data: {contest}} = await findProjectJSON();
 			console.log(format(contest));
 		} catch (e) {
 			console.error(e.message);
@@ -54,7 +52,7 @@ export async function task(contest_id: string | undefined, task_id: string | und
 	if (contest_id === undefined && task_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探す
 		try {
-			const {task} = await project.detectTaskByPath();
+			const {task} = await detectTaskByPath();
 			if (task === null) {
 				console.error("failed to find the task.");
 				return;
@@ -85,7 +83,7 @@ export async function tasks(contest_id: string | undefined, options: { id?: bool
 	if (contest_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探す
 		try {
-			const {data: {tasks}} = await project.findProjectJSON();
+			const {data: {tasks}} = await findProjectJSON();
 			console.log(format(tasks));
 		} catch (e) {
 			console.error(e.message);
@@ -149,16 +147,21 @@ export async function url(contest_id: string | undefined, task_id: string | unde
 	}
 }
 
-export async function submit(filename: string, options: { task?: string, contest?: string }) {
+export async function submit(filename: string | undefined, options: { task?: string, contest?: string }) {
 	let contest_id = options.contest;
 	let task_id = options.task;
-	if (contest_id === undefined || task_id === undefined) {
-		// コンテストまたはタスクが未指定の場合、カレントディレクトリのパスから提出先を調べる
-		const {contest, task} = await project.detectTaskByPath();
+	if (filename === undefined || contest_id === undefined || task_id === undefined) {
+		// ファイル名、タスク、コンテストのいずれかが未指定の場合、カレントディレクトリのパスから提出先を調べる
+		const {contest, task} = await detectTaskByPath();
+		if (filename === undefined && task !== null && task.directory !== undefined) filename = task.directory.submit;
 		if (contest_id === undefined && contest !== null) contest_id = contest.id;
 		if (task_id === undefined && task !== null) task_id = task.id;
 
 		// 結局特定できなかった
+		if (filename === undefined) {
+			console.error(`the program file to submit is not found.`);
+			return;
+		}
 		if (contest_id === undefined || task_id === undefined) {
 			console.error(`cannot find the ${task_id === undefined ? "task" : "contest"} to submit.`);
 			console.error(`add ${task_id === undefined ? "-t" : "-c"} flag to specify it.`);
@@ -192,8 +195,7 @@ export async function checkOJAvailable() {
 }
 
 export async function configDir() {
-	const conf = await getConfig();
-	console.log(path.resolve(conf.path, ".."));
+	console.log(await getConfigDirectory());
 }
 
 export async function config(key: string | undefined, value: string | undefined, options: { D?: boolean }) {
@@ -258,9 +260,9 @@ function undef2empty(strings: TemplateStringsArray, ...values: Array<any>): stri
 	return String.raw(strings, ...values);
 }
 
-export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string }) {
+export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string, template?: string }) {
 	try {
-		const {contest} = await project.init(contest_id, options);
+		const {contest} = await init(contest_id, options);
 		console.log(`create project of ${contest.title}`);
 		await add(options);
 	} catch (e) {
@@ -268,23 +270,26 @@ export async function setup(contest_id: string, options: { choice: "inquire" | "
 	}
 }
 
-export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, taskDirnameFormat?: string }) {
+export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, taskDirnameFormat?: string, template?: string }) {
 	try {
-		const {path, data} = await project.findProjectJSON();
+		const {path, data} = await findProjectJSON();
 		const {contest, tasks} = data;
 		const choices = await selectTasks(tasks, options.choice, options.force);
+		const template = options.template !== undefined ? (await getTemplate(options.template).catch((e) => {
+			throw new Error(`Failed to load template "${options.template}".\n  ${e}`);
+		})) : undefined;
 		for (const {index, task} of choices) {
 			// forceオプションが設定されていない場合、既にディレクトリが存在する問題はスキップする
 			if (options.force !== true && task.directory !== undefined) continue;
 			const format = options.taskDirnameFormat !== undefined ? options.taskDirnameFormat : (await getConfig()).get("default-task-dirname-format");
 			const dirname = formatTaskDirname(format, task, index, contest);
 			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
-			tasks[index] = await project.installTask(task, dirname, path);
+			tasks[index] = await installTask({task, index, contest, template}, dirname, path);
 		}
 		// 更新されたContestProjectをファイルに書き出し
 		await saveProjectJSON(Object.assign(data, {tasks}));
 	} catch (e) {
-		console.error(e.message);
+		console.error(SGR(e.message, 33));
 	}
 }
 
@@ -336,6 +341,12 @@ function getNextTask2Install(tasks: Array<Task>): { index: number, task: Task } 
 		}
 	}
 	return null;
+}
+
+export async function getTemplateList() {
+	console.error(SGR(`search template directories in ${await getConfigDirectory()}`, 37));
+	const templates = await getTemplates();
+	console.log(formatAsShellOutput([[SGR("NAME", 1), "SUBMIT-PROGRAM"]].concat(templates.map(template => [SGR(template.name, 1), template.submit]))));
 }
 
 /**

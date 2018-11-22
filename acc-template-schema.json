@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "atcoder-cli Task Template File",
+  "required": [
+    "submit",
+    "program"
+  ],
+  "properties": {
+    "submit": {
+      "type": "string"
+    },
+    "program": {
+      "type": "array",
+      "items": {
+        "$ref": "#copyfile"
+      }
+    },
+    "static": {
+      "type": "array",
+      "items": {
+        "$ref": "#copyfile"
+      }
+    },
+    "cmd": {
+      "type": "string"
+    },
+    "testdir": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "copyfile": {
+      "$id": "#copyfile",
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,4 +1,19 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "title": "atcoder-cli Contest Project File",
+  "required": [
+    "contest",
+    "tasks"
+  ],
+  "properties": {
+    "contest": {
+      "$ref": "#contest"
+    },
+    "tasks": {
+      "$ref": "#tasks"
+    }
+  },
   "definitions": {
     "contest": {
       "$id": "#contest",
@@ -28,6 +43,12 @@
       ],
       "properties": {
         "path": {
+          "type": "string"
+        },
+        "submit": {
+          "type": "string"
+        },
+        "testdir": {
           "type": "string"
         }
       }
@@ -65,21 +86,6 @@
       "items": {
         "$ref": "#task"
       }
-    }
-  },
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "title": "atcoder-cli Project File",
-  "required": [
-    "contest",
-    "tasks"
-  ],
-  "properties": {
-    "contest": {
-      "$ref": "#contest"
-    },
-    "tasks": {
-      "$ref": "#tasks"
     }
   }
 }
