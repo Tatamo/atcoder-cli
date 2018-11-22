@@ -328,18 +328,22 @@ export async function setup(contest_id: string, options: { choice: Choices, forc
 }
 
 export async function add(options: { choice?: Choices | boolean, force?: boolean, taskDirnameFormat?: string, template?: string, tests?: boolean }) {
-	let flg_default_choice = false;
-	if (options.choice === undefined) {
-		options.choice = (await getConfig()).get("default-task-choice");
-		flg_default_choice = true;
-	}
 	try {
-		if (!checkValidChoiceOption(options.choice)) {
-			throw new Error(`Invalid option is given with --choice. (inquire/all/none/rest/next)${flg_default_choice ? "\nIf you did not set the --choice option, check the \"default-task-choice\" option in global config by using `acc config`." : ""}`);
-		}
 		const {path, data} = await findProjectJSON();
 		const {contest, tasks} = data;
-		const choices = await selectTasks(tasks, options.choice, options.force);
+		const choices = await (async (c) => {
+			// choiceオプションが設定されていない場合はコンフィグからデフォルト値を取得
+			let flg_default_choice = false;
+			if (c === undefined) {
+				c = (await getConfig()).get("default-task-choice");
+				flg_default_choice = true;
+			}
+			// 有効な値が与えられているかどうかバリデーションを行う
+			if (!checkValidChoiceOption(c)) {
+				throw new Error(`Invalid option is given with --choice. (inquire/all/none/rest/next)${flg_default_choice ? "\nIf you did not set the --choice option, check the \"default-task-choice\" option in global config by using `acc config`." : ""}`);
+			}
+			return await selectTasks(tasks, c, options.force);
+		})(options.choice);
 		const template = options.template !== undefined ? (await getTemplate(options.template).catch((e) => {
 			throw new Error(`Failed to load template "${options.template}".\n  ${e}`);
 		})) : undefined;
