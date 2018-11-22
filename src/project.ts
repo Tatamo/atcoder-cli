@@ -1,6 +1,7 @@
 import {AtCoder} from "./atcoder";
 import {mkdir, readFile, writeFile} from "fs";
 import {sep, resolve} from "path";
+import child_process from "child_process";
 import mkdirp from "mkdirp";
 import {promisify} from "util";
 import {OnlineJudge} from "./facade/oj";
@@ -245,6 +246,24 @@ export async function installTemplate(detailed_task: DetailedTask, path: string,
 			if (log) console.error(`"${source}" -> "${dest}"`)
 		}
 	}
+
+	// コマンドの実行
+	if (template.cmd !== undefined) {
+		if (log) console.error(`Command:\n  exec \`${template.cmd}\``);
+		// 環境変数としてパラメータを利用可能にする
+		const env = {
+			...process.env,
+			TEMPLATE_DIR: template_dir,
+			TASK_DIR: path,
+			TASK_ID: task.id,
+			TASK_INDEX: index.toString(),
+			CONTEST_ID: contest.id
+		};
+		const {stdout, stderr} = await promisify(child_process.exec)(template.cmd, {env});
+		if (log && stdout !== "") console.log(stdout);
+		if (stderr !== "") console.error(stderr);
+	}
+
 	// もとのディレクトリに戻る
 	process.chdir(pwd);
 }
@@ -262,7 +281,9 @@ export function formatContestDirname(format: string, contest: Contest): string {
 			case "ContestTitle":
 				return contest.title;
 		}
-		throw new Error(`pattern "{${pattern}} is not defined. use --help option to get more information."`);
+		throw new Error(
+			`pattern "{${pattern}} is not defined. use --help option to get more information."`
+		);
 	};
 	return format.replace(/{([a-zA-Z0-9]+)}/g, (_, p) => convert(p));
 }
@@ -300,7 +321,9 @@ export function formatTaskDirname(format: string, task: Task, index: number, con
 			case "ALPHABET":
 				return convertNumber2Alphabet(index).toUpperCase();
 		}
-		throw new Error(`pattern "{${pattern}} is not defined. use --help option to get more information."`);
+		throw new Error(
+			`pattern "{${pattern}} is not defined. use --help option to get more information."`
+		);
 	};
 	return format.replace(/{([a-zA-Z0-9]+)}/g, (_, p) => convert(p));
 }
