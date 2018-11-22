@@ -328,9 +328,14 @@ export async function setup(contest_id: string, options: { choice: Choices, forc
 }
 
 export async function add(options: { choice?: Choices | boolean, force?: boolean, taskDirnameFormat?: string, template?: string, tests?: boolean }) {
+	let flg_default_choice = false;
+	if (options.choice === undefined) {
+		options.choice = (await getConfig()).get("default-task-choice");
+		flg_default_choice = true;
+	}
 	try {
 		if (!checkValidChoiceOption(options.choice)) {
-			throw new Error("invalid option is given with --choice. (inquire/all/none/rest/next)");
+			throw new Error(`Invalid option is given with --choice. (inquire/all/none/rest/next)${flg_default_choice ? "\nIf you did not set the --choice option, check the \"default-task-choice\" option in global config by using `acc config`." : ""}`);
 		}
 		const {path, data} = await findProjectJSON();
 		const {contest, tasks} = data;
@@ -351,7 +356,7 @@ export async function add(options: { choice?: Choices | boolean, force?: boolean
 		}
 		if (count === 0) {
 			// 問題が何も更新されなかった場合、その旨を通知する
-			console.error("no task directory were created.")
+			console.error(SGR("Skip: no task directories were created. use --force option to overwrite existent directries.", 33));
 		}
 		// 更新されたContestProjectをファイルに書き出し
 		await saveProjectJSON(Object.assign(data, {tasks}));
