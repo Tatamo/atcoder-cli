@@ -299,7 +299,25 @@ function undef2empty(strings: TemplateStringsArray, ...values: Array<any>): stri
 	return String.raw(strings, ...values);
 }
 
-export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string, template?: string, tests?: boolean }) {
+type Choices = "inquire" | "all" | "none" | "rest" | "next"
+
+/**
+ * --choiceオプションに渡される値として適切かどうかを判定する
+ * @param choice
+ */
+function checkValidChoiceOption(choice: any): choice is Choices {
+	switch (choice) {
+		case "inquire":
+		case "all":
+		case "none":
+		case "rest":
+		case "next":
+			return true;
+	}
+	return false;
+}
+
+export async function setup(contest_id: string, options: { choice: Choices, force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string, template?: string, tests?: boolean }) {
 	try {
 		const {contest} = await init(contest_id, options);
 		console.log(`create project of ${contest.title}`);
@@ -309,8 +327,11 @@ export async function setup(contest_id: string, options: { choice: "inquire" | "
 	}
 }
 
-export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, taskDirnameFormat?: string, template?: string, tests?: boolean }) {
+export async function add(options: { choice?: Choices | boolean, force?: boolean, taskDirnameFormat?: string, template?: string, tests?: boolean }) {
 	try {
+		if (!checkValidChoiceOption(options.choice)) {
+			throw new Error("invalid option is given with --choice. (inquire/all/none/rest/next)");
+		}
 		const {path, data} = await findProjectJSON();
 		const {contest, tasks} = data;
 		const choices = await selectTasks(tasks, options.choice, options.force);
@@ -339,7 +360,7 @@ export async function add(options: { choice: "inquire" | "all" | "none" | "rest"
 	}
 }
 
-export async function selectTasks(tasks: Array<Task>, choice: "inquire" | "all" | "none" | "rest" | "next", force: boolean = false): Promise<Array<{ index: number, task: Task }>> {
+export async function selectTasks(tasks: Array<Task>, choice: Choices, force: boolean = false): Promise<Array<{ index: number, task: Task }>> {
 	switch (choice) {
 		case "inquire":
 			return await inquireTasks(tasks, force);
