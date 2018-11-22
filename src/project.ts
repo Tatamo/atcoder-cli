@@ -208,7 +208,7 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
  * テンプレートを展開する
  * @param detailed_task
  * @param path 展開先
- * @param log default=false trueなら警告以外のログも標準エラー出力に表示させる
+ * @param log default=false trueなら通常ログを標準出力に表示させる falseの場合はエラーログのみをエラー出力に表示
  */
 export async function installTemplate(detailed_task: DetailedTask, path: string, log: boolean = false) {
 	const {task, index, contest, template} = detailed_task;
@@ -225,7 +225,7 @@ export async function installTemplate(detailed_task: DetailedTask, path: string,
 		try {
 			// ファイルの上書きは行わず、既にファイルが存在する場合はエラーを発生させる
 			await fs.copy(source, dest, {overwrite: false, errorOnExist: true});
-			if (log) console.error(`"${source}" -> "${dest}"`)
+			if (log) console.log(`"${source}" -> "${dest}"`)
 		} catch (e) {
 			// ファイルのコピーを行わなかったことを通知
 			console.error(`Skip: "${source}" -> "${dest}"`);
@@ -243,13 +243,13 @@ export async function installTemplate(detailed_task: DetailedTask, path: string,
 			} catch (e) {
 				console.error(e.toString());
 			}
-			if (log) console.error(`"${source}" -> "${dest}"`)
+			if (log) console.log(`"${source}" -> "${dest}"`)
 		}
 	}
 
 	// コマンドの実行
 	if (template.cmd !== undefined) {
-		if (log) console.error(`Command:\n  exec \`${template.cmd}\``);
+		if (log) console.log(`Command:\n  exec \`${template.cmd}\``);
 		// 環境変数としてパラメータを利用可能にする
 		const env = {
 			...process.env,
