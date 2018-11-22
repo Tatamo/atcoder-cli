@@ -91,12 +91,6 @@ export async function detectTaskByPath(path?: string): Promise<{ contest: Contes
 					task = t;
 					break;
 				}
-			} else {
-				// directoryプロパティが存在しない場合はidと一致していると仮定
-				if (t.id === dirname) {
-					task = t;
-					break;
-				}
 			}
 		}
 		return {contest, task};
