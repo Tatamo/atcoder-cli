@@ -299,7 +299,7 @@ function undef2empty(strings: TemplateStringsArray, ...values: Array<any>): stri
 	return String.raw(strings, ...values);
 }
 
-export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string, template?: string }) {
+export async function setup(contest_id: string, options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string, template?: string, tests?: boolean }) {
 	try {
 		const {contest} = await init(contest_id, options);
 		console.log(`create project of ${contest.title}`);
@@ -309,7 +309,7 @@ export async function setup(contest_id: string, options: { choice: "inquire" | "
 	}
 }
 
-export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, taskDirnameFormat?: string, template?: string }) {
+export async function add(options: { choice: "inquire" | "all" | "none" | "rest" | "next", force?: boolean, taskDirnameFormat?: string, template?: string, tests?: boolean }) {
 	try {
 		const {path, data} = await findProjectJSON();
 		const {contest, tasks} = data;
@@ -323,7 +323,7 @@ export async function add(options: { choice: "inquire" | "all" | "none" | "rest"
 			const format = options.taskDirnameFormat !== undefined ? options.taskDirnameFormat : (await getConfig()).get("default-task-dirname-format");
 			const dirname = formatTaskDirname(format, task, index, contest);
 			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
-			tasks[index] = await installTask({task, index, contest, template}, dirname, path);
+			tasks[index] = await installTask({task, index, contest, template}, dirname, path, {tests: options.tests});
 		}
 		// 更新されたContestProjectをファイルに書き出し
 		await saveProjectJSON(Object.assign(data, {tasks}));

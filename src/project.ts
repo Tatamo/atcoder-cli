@@ -175,7 +175,7 @@ interface DetailedTask {
 	template?: Template
 }
 
-export async function installTask(detailed_task: DetailedTask, dirname: string, project_path: string): Promise<Task> {
+export async function installTask(detailed_task: DetailedTask, dirname: string, project_path: string, options?: { tests?: boolean }): Promise<Task> {
 	const {task, index, contest, template} = detailed_task;
 	const pwd = process.cwd();
 	await promisify(mkdirp)(project_path);
@@ -183,12 +183,17 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 	await promisify(mkdirp)(dirname);
 	process.chdir(dirname);
 
-	const testdir = formatTaskDirname(template !== undefined && template.testdir !== undefined ? template.testdir : (await getConfig()).get("default-test-dirname-format"), task, index, contest);
+	const flg_tests = options !== undefined && options.tests === true;
+	let testdir = null;
 
-	if (OnlineJudge.checkAvailable()) {
-		await OnlineJudge.call(["dl", task.url, "-d", testdir]);
-	} else {
-		console.error("online-judge-tools is not available. downloading of sample cases skipped.");
+	// サンプルケースのダウンロードを行う
+	if (flg_tests) {
+		testdir = formatTaskDirname(template !== undefined && template.testdir !== undefined ? template.testdir : (await getConfig()).get("default-test-dirname-format"), task, index, contest);
+		if (OnlineJudge.checkAvailable()) {
+			await OnlineJudge.call(["dl", task.url, "-d", testdir]);
+		} else {
+			console.error("online-judge-tools is not available. downloading of sample cases skipped.");
+		}
 	}
 
 	// テンプレートの展開を行う
@@ -199,7 +204,8 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 	// もとのディレクトリに戻る
 	process.chdir(pwd);
 	// 新しく情報を付与したTaskオブジェクトを返す
-	const s: any = {directory: {path: dirname, testdir}};
+	const s: any = {directory: {path: dirname}};
+	if (flg_tests) s.directory.testdir = testdir;
 	if (template !== undefined && template.submit !== undefined) s.directory.submit = template.submit;
 	return Object.assign(task, s);
 }
