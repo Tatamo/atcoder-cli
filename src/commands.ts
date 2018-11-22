@@ -317,6 +317,8 @@ export async function add(options: { choice: "inquire" | "all" | "none" | "rest"
 		const template = options.template !== undefined ? (await getTemplate(options.template).catch((e) => {
 			throw new Error(`Failed to load template "${options.template}".\n  ${e}`);
 		})) : undefined;
+		// 更新があった問題の数を数えておく
+		let count = 0;
 		for (const {index, task} of choices) {
 			// forceオプションが設定されていない場合、既にディレクトリが存在する問題はスキップする
 			if (options.force !== true && task.directory !== undefined) continue;
@@ -324,6 +326,11 @@ export async function add(options: { choice: "inquire" | "all" | "none" | "rest"
 			const dirname = formatTaskDirname(format, task, index, contest);
 			// 新しいTaskが返ってくるので、もともとの配列の要素を更新する
 			tasks[index] = await installTask({task, index, contest, template}, dirname, path, {tests: options.tests});
+			count++;
+		}
+		if (count === 0) {
+			// 問題が何も更新されなかった場合、その旨を通知する
+			console.error("no task directory were created.")
 		}
 		// 更新されたContestProjectをファイルに書き出し
 		await saveProjectJSON(Object.assign(data, {tasks}));
@@ -354,7 +361,7 @@ export async function inquireTasks(tasks: Array<Task>, force: boolean = false): 
 	const inquirer = await import("inquirer");
 	// まだディレクトリが作成されていない問題を一つだけ選択状態にしておく
 	const next = getNextTask2Install(tasks);
-	if (!force && next === null) throw new Error("all tasks are already installed. use --force option to override them.");
+	if (!force && next === null) throw new Error("all tasks are already installed. use --force option to overwrite them.");
 	return (await inquirer.prompt([{
 		type: "checkbox",
 		message: "select tasks",
