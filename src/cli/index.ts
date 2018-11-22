@@ -96,6 +96,11 @@ commander
 	.description("get contest or task URL");
 
 commander
+	.command("format <format> <contest-id> [task-id]")
+	.action(commands.format)
+	.description("format string with contest and/or task information.");
+
+commander
 	.command("check-oj")
 	.action(commands.checkOJAvailable)
 	.description("check whether online-judge-tools related functions are available or not");

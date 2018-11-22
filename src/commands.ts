@@ -1,7 +1,7 @@
 import {AtCoder} from "./atcoder";
 import {OnlineJudge} from "./facade/oj";
 import {Cookie} from "./cookie";
-import {Contest, Task, detectTaskByPath, findProjectJSON, formatTaskDirname, saveProjectJSON, init, installTask} from "./project";
+import {Contest, Task, detectTaskByPath, findProjectJSON, formatTaskDirname, saveProjectJSON, init, installTask, formatContestDirname} from "./project";
 import getConfig, {defaults, getConfigDirectory} from "./config";
 import {getTemplate, getTemplates} from "./template";
 
@@ -144,6 +144,45 @@ export async function url(contest_id: string | undefined, task_id: string | unde
 	}
 	else {
 		console.log(AtCoder.base_url);
+	}
+}
+
+export async function format(format_string: string, contest_id: string, task_id?: string) {
+	const atcoder = new AtCoder();
+	if (!await atcoder.checkSession()) await atcoder.login();
+	if (task_id === undefined) {
+		// コンテスト情報のみを使用
+		try {
+			const contest = await atcoder.contest(contest_id);
+			console.log(formatContestDirname(format_string, contest));
+		} catch (e) {
+			console.error(e.toString());
+		}
+	}
+	else {
+		// コンテスト・問題情報を使用
+		const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => [null, null]);
+		if (contest === null || tasks === null) {
+			console.error("failed to get contest information.");
+			return;
+		}
+		// 問題番号を調べる
+		let index = -1;
+		for (let i = 0; i < tasks.length; i++) {
+			if (tasks[i].id === task_id) {
+				index = i;
+				break;
+			}
+		}
+		if (index < 0) {
+			console.error(`task ${task_id} not found.`);
+			return;
+		}
+		try {
+			console.log(formatTaskDirname(format_string, tasks[index], index, contest));
+		} catch (e) {
+			console.error(e.toString());
+		}
 	}
 }
 
