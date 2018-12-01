@@ -140,10 +140,9 @@ export async function validateProjectJSON(data: ContestProject): Promise<[true, 
 export async function init(contest_id: string, options: { force?: boolean, contestDirnameFormat?: string }): Promise<ContestProject> {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
-	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => [null, null]);
-	if (contest === null || tasks === null) {
+	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => {
 		throw new Error("failed to get contest information.");
-	}
+	});
 	const format = options.contestDirnameFormat !== undefined ? options.contestDirnameFormat : (await getConfig()).get("default-contest-dirname-format");
 	const dirname = formatContestDirname(format, contest);
 	try {

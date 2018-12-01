@@ -161,27 +161,28 @@ export async function format(format_string: string, contest_id: string, task_id?
 	}
 	else {
 		// コンテスト・問題情報を使用
-		const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => [null, null]);
-		if (contest === null || tasks === null) {
-			console.error("failed to get contest information.");
-			return;
-		}
-		// 問題番号を調べる
-		let index = -1;
-		for (let i = 0; i < tasks.length; i++) {
-			if (tasks[i].id === task_id) {
-				index = i;
-				break;
-			}
-		}
-		if (index < 0) {
-			console.error(`task ${task_id} not found.`);
-			return;
-		}
 		try {
-			console.log(formatTaskDirname(format_string, tasks[index], index, contest));
-		} catch (e) {
-			console.error(e.toString());
+			const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]);
+			// 問題番号を調べる
+			let index = -1;
+			for (let i = 0; i < tasks.length; i++) {
+				if (tasks[i].id === task_id) {
+					index = i;
+					break;
+				}
+			}
+			if (index < 0) {
+				console.error(`task ${task_id} not found.`);
+				return;
+			}
+			try {
+				console.log(formatTaskDirname(format_string, tasks[index], index, contest));
+			} catch (e) {
+				console.error(e.toString());
+			}
+		} catch {
+			// TODO: もう少し良いエラーハンドリングができないものか
+			console.error("failed to get contest information.");
 		}
 	}
 }
