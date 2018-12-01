@@ -181,10 +181,8 @@ export async function format(format_string: string, contest_id: string, task_id?
 				console.error(e.toString());
 			}
 		} catch {
-			if (contest === null || tasks === null) {
-				console.error("failed to get contest information.");
-				return;
-			}
+			// TODO: もう少し良いエラーハンドリングができないものか
+			console.error("failed to get contest information.");
 		}
 	}
 }
