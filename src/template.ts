@@ -57,13 +57,13 @@ export async function getTemplates(): Promise<Array<Template>> {
 }
 
 /**
- * プロジェクトファイルが正しい形式に沿っているか調べる
+ * テンプレートファイルが正しい形式に沿っているか調べる
  * [valid:true, error:null] | [valid:false, error:string] valid=trueなら正しいJSON
  * @param data
  */
 export async function validateTemplateJSON(data: RawTemplate): Promise<[true, null] | [false, string]> {
 	const ajv = new ((await import("ajv")).default)();
-	const validate = ajv.compile((await import("./schema")).template_schema);
+	const validate = ajv.compile(await import("../acc-template-schema.json"));
 	const valid = validate(data);
 	if (!valid) return [false, ajv.errorsText(validate.errors)];
 	return [true, null];
