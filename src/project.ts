@@ -140,26 +140,28 @@ export async function validateProjectJSON(data: ContestProject): Promise<[true, 
 export async function init(contest_id: string, options: { force?: boolean, contestDirnameFormat?: string }): Promise<ContestProject> {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
-	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => [null, null]);
-	if (contest === null || tasks === null) {
-		throw new Error("failed to get contest information.");
-	}
-	const format = options.contestDirnameFormat !== undefined ? options.contestDirnameFormat : (await getConfig()).get("default-contest-dirname-format");
-	const dirname = formatContestDirname(format, contest);
 	try {
-		await promisify(mkdir)(dirname);
+		const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]);
+		const format = options.contestDirnameFormat !== undefined ? options.contestDirnameFormat : (await getConfig()).get("default-contest-dirname-format");
+		const dirname = formatContestDirname(format, contest);
+		try {
+			await promisify(mkdir)(dirname);
+		}
+		catch {
+			// forceオプションがtrueでない場合のみエラーで停止する
+			if (options.force !== true) {
+				throw new Error(`${dirname} file/directory already exists.`)
+			}
+		}
+		process.chdir(dirname);
+		const data = {contest, tasks};
+		await saveProjectJSON(data, process.cwd());
+		console.log(`${dirname}/${PROJECT_JSON_FILE_NAME} created.`);
+		return data;
 	}
 	catch {
-		// forceオプションがtrueでない場合のみエラーで停止する
-		if (options.force !== true) {
-			throw new Error(`${dirname} file/directory already exists.`)
-		}
+		throw new Error("failed to get contest information.");
 	}
-	process.chdir(dirname);
-	const data = {contest, tasks};
-	await saveProjectJSON(data, process.cwd());
-	console.log(`${dirname}/${PROJECT_JSON_FILE_NAME} created.`);
-	return data;
 }
 
 interface DetailedTask {
