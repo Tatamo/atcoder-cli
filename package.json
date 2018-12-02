@@ -2,13 +2,16 @@
   "name": "atcoder-cli",
   "version": "1.0.0",
   "description": "AtCoder command line tools",
-  "scripts": {
-    "build": "npm run clean && tsc && webpack --mode production",
-    "clean": "rimraf bin src/**/*.{js,d.ts}",
-    "watch:tsc": "tsc --watch",
-    "watch:webpack": "webpack --mode development --watch",
-    "watch": "tsc && npm-run-all -p watch:*",
-    "prepare": "npm run build"
+  "keywords": [
+    "atcoder",
+    "competitive-programming",
+    "cli"
+  ],
+  "author": "Tatamo",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Tatamo/atcoder-cli.git"
   },
   "bin": {
     "acc": "bin/index.js"
@@ -20,11 +23,14 @@
     "LICENSE",
     "README.md"
   ],
-  "keywords": [
-    "atcoder"
-  ],
-  "author": "Tatamo",
-  "license": "BSD-3-Clause",
+  "scripts": {
+    "build": "npm run clean && tsc && webpack --mode production",
+    "clean": "rimraf bin src/**/*.{js,d.ts}",
+    "watch:tsc": "tsc --watch",
+    "watch:webpack": "webpack --mode development --watch",
+    "watch": "tsc && npm-run-all -p watch:*",
+    "prepare": "npm run build"
+  },
   "dependencies": {
     "ajv": "^6.6.1",
     "axios": "^0.18.0",
