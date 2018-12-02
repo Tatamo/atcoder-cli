@@ -1,6 +1,6 @@
 {
   "name": "atcoder-cli",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "AtCoder command line tools",
   "scripts": {
     "build": "npm run clean && tsc && webpack --mode production",
