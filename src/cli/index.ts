@@ -104,7 +104,11 @@ commander
 	.command("config [key] [value]")
 	.option("-d", "delete the option value and set back to the default")
 	.action(commands.config)
-	.description("get or set values of global options");
+	.description("get or set values of global options")
+	.on("--help", () => {
+		console.log("");
+		console.log(help.global_config);
+	});
 
 commander
 	.command("config-dir")

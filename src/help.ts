@@ -22,5 +22,13 @@ export const format_strings = `Supported format strings:
   {TailNumberOfContestID}  if contest id is arc100, 100 is the tail number. (this format string may be empty, some contests such as abs)
   {ContestTitle}  contest title`;
 
+export const global_config = `Global config options list:
+  oj-path                         install path of online-judge-tools (auto detected)
+  default-contest-dirname-format  default name of contest directory (created by \`acc new\` command)
+  default-task-dirname-format     default name of task directory (created by \`acc new|add\` command)
+  default-test-dirname-format     default name of sample cases directory
+  default-task-choice             default --choice option for \`acc new|add\` command (see also: \`acc new|add -h\`)
+  default-template                default template (see also: \`acc templates -h\`)`;
+
 export const provisioning_templates = `See also:
 https://github.com/Tatamo/atcoder-cli#provisioning-templates`;
