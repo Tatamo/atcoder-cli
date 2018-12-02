@@ -1,6 +1,7 @@
 import commander from "commander";
 import {version} from "../../package.json";
 import * as commands from "../commands";
+import * as help from "../help";
 
 commander
 	.version(version, "-v, --version");
@@ -17,15 +18,9 @@ commander
 	.option("--template <name>", "specify the provisioning template")
 	.option("--no-template", "do not use templates, even if specified by global config")
 	.description("create new contest project directory")
-	.on("--help", function () {
+	.on("--help", () => {
 		console.log("");
-		console.log("Supported arguments for --choice:");
-		console.log("  inquire  inquire the tasks to add");
-		console.log("  all      select all tasks");
-		console.log("  none     select no tasks");
-		console.log("  rest     select all tasks not added yet");
-		console.log("           (without --force option, same with \"all\")");
-		console.log("  next     select the top task that is not added yet");
+		console.log(help.task_choices);
 	});
 
 commander
@@ -39,15 +34,9 @@ commander
 	.option("--template <name>", "specify the provisioning template")
 	.option("--no-template", "do not use templates, even if specified by global config")
 	.description("add new directory for the task in the project directory")
-	.on("--help", function () {
+	.on("--help", () => {
 		console.log("");
-		console.log("Supported arguments for --choice:");
-		console.log("  inquire  inquire the tasks to add");
-		console.log("  all      select all tasks");
-		console.log("  none     select no tasks");
-		console.log("  rest     select all tasks not added yet");
-		console.log("           (without --force option, same with \"all\")");
-		console.log("  next     select the top task that is not added yet");
+		console.log(help.task_choices);
 	});
 
 commander
@@ -100,18 +89,30 @@ commander
 commander
 	.command("format <format> <contest-id> [task-id]")
 	.action(commands.format)
-	.description("format string with contest and/or task information.");
+	.description("format string with contest and/or task information.")
+	.on("--help", () => {
+		console.log("");
+		console.log(help.format_strings);
+	});
 
 commander
 	.command("check-oj")
 	.action(commands.checkOJAvailable)
-	.description("check whether online-judge-tools related functions are available or not");
+	.description("check whether online-judge-tools related functions are available or not")
+	.on("--help", () => {
+		console.log("");
+		console.log(help.online_judge_tools);
+	});
 
 commander
 	.command("config [key] [value]")
 	.option("-d", "delete the option value and set back to the default")
 	.action(commands.config)
-	.description("get or set values of global options");
+	.description("get or set values of global options")
+	.on("--help", () => {
+		console.log("");
+		console.log(help.global_config);
+	});
 
 commander
 	.command("config-dir")
@@ -121,6 +122,21 @@ commander
 commander
 	.command("templates")
 	.action(commands.getTemplateList)
-	.description("show user templates in the config directory");
+	.description("show user templates in the config directory")
+	.on("--help", () => {
+		console.log("");
+		console.log(help.provisioning_templates);
+	});
+
+
+commander.on("--help", () => {
+	console.log("");
+	console.log(help.default_help);
+});
+
+// error on unknown commands
+commander.on("command:*", function () {
+	console.error('Invalid command: %s\nUse `acc --help` for a list of available commands.', commander.args.join(' '));
+});
 
 commander.parse(process.argv);
