@@ -125,7 +125,7 @@ export async function saveProjectJSON(data: ContestProject, directory_path?: str
  */
 export async function validateProjectJSON(data: ContestProject): Promise<[true, null] | [false, string]> {
 	const ajv = new ((await import("ajv")).default)();
-	const schema = await import("../acc-project-schema.json");
+	const schema = await import("../schema/acc-project-schema.json");
 	const validate = ajv.compile(schema);
 	const valid = validate(data);
 	if (!valid) return [false, ajv.errorsText(validate.errors)];

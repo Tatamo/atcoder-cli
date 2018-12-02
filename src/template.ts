@@ -63,7 +63,7 @@ export async function getTemplates(): Promise<Array<Template>> {
  */
 export async function validateTemplateJSON(data: RawTemplate): Promise<[true, null] | [false, string]> {
 	const ajv = new ((await import("ajv")).default)();
-	const validate = ajv.compile(await import("../acc-template-schema.json"));
+	const validate = ajv.compile(await import("../schema/acc-template-schema.json"));
 	const valid = validate(data);
 	if (!valid) return [false, ajv.errorsText(validate.errors)];
 	return [true, null];
