@@ -18,7 +18,7 @@ commander
 	.option("--template <name>", "specify the provisioning template")
 	.option("--no-template", "do not use templates, even if specified by global config")
 	.description("create new contest project directory")
-	.on("--help", function () {
+	.on("--help", () => {
 		console.log("");
 		console.log(help.task_choices);
 	});
@@ -34,7 +34,7 @@ commander
 	.option("--template <name>", "specify the provisioning template")
 	.option("--no-template", "do not use templates, even if specified by global config")
 	.description("add new directory for the task in the project directory")
-	.on("--help", function () {
+	.on("--help", () => {
 		console.log("");
 		console.log(help.task_choices);
 	});
@@ -90,7 +90,7 @@ commander
 	.command("format <format> <contest-id> [task-id]")
 	.action(commands.format)
 	.description("format string with contest and/or task information.")
-	.on("--help", function () {
+	.on("--help", () => {
 		console.log("");
 		console.log(help.format_strings);
 	});
@@ -114,6 +114,10 @@ commander
 commander
 	.command("templates")
 	.action(commands.getTemplateList)
-	.description("show user templates in the config directory");
+	.description("show user templates in the config directory")
+	.on("--help", () => {
+		console.log("");
+		console.log(help.provisioning_templates);
+	});
 
 commander.parse(process.argv);

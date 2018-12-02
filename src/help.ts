@@ -20,5 +20,7 @@ export const format_strings = `Supported format strings:
   {ContestID}     contest id (shown as contest URL path, e.g. arc100)
   {CONTESTID}     contest id, upper case
   {TailNumberOfContestID}  if contest id is arc100, 100 is the tail number. (this format string may be empty, some contests such as abs)
-  {ContestTitle}  contest title
-`;
+  {ContestTitle}  contest title`;
+
+export const provisioning_templates = `See also:
+https://github.com/Tatamo/atcoder-cli#provisioning-templates`;
