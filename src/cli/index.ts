@@ -1,6 +1,7 @@
 import commander from "commander";
 import {version} from "../../package.json";
 import * as commands from "../commands";
+import * as help from "../help";
 
 commander
 	.version(version, "-v, --version");
@@ -19,13 +20,7 @@ commander
 	.description("create new contest project directory")
 	.on("--help", function () {
 		console.log("");
-		console.log("Supported arguments for --choice:");
-		console.log("  inquire  inquire the tasks to add");
-		console.log("  all      select all tasks");
-		console.log("  none     select no tasks");
-		console.log("  rest     select all tasks not added yet");
-		console.log("           (without --force option, same with \"all\")");
-		console.log("  next     select the top task that is not added yet");
+		console.log(help.task_choices);
 	});
 
 commander
@@ -41,13 +36,7 @@ commander
 	.description("add new directory for the task in the project directory")
 	.on("--help", function () {
 		console.log("");
-		console.log("Supported arguments for --choice:");
-		console.log("  inquire  inquire the tasks to add");
-		console.log("  all      select all tasks");
-		console.log("  none     select no tasks");
-		console.log("  rest     select all tasks not added yet");
-		console.log("           (without --force option, same with \"all\")");
-		console.log("  next     select the top task that is not added yet");
+		console.log(help.task_choices);
 	});
 
 commander
