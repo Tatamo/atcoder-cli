@@ -17,6 +17,7 @@ commander
 	.option("--no-tests", "skip downloading sample cases by using online-judge-tools")
 	.option("--template <name>", "specify the provisioning template")
 	.option("--no-template", "do not use templates, even if specified by global config")
+	.option("--cmd <command>", "shell command to be executed after making directory")
 	.description("create new contest project directory")
 	.on("--help", () => {
 		console.log("");

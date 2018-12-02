@@ -137,7 +137,7 @@ export async function validateProjectJSON(data: ContestProject): Promise<[true, 
  * @param contest_id
  * @param options
  */
-export async function init(contest_id: string, options: { force?: boolean, contestDirnameFormat?: string }): Promise<ContestProject> {
+export async function init(contest_id: string, options: { force?: boolean, contestDirnameFormat?: string, cmd?:string }): Promise<ContestProject> {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => {
@@ -158,6 +158,21 @@ export async function init(contest_id: string, options: { force?: boolean, conte
 	const data = {contest, tasks};
 	await saveProjectJSON(data, process.cwd());
 	console.log(`${dirname}/${PROJECT_JSON_FILE_NAME} created.`);
+
+	// コマンドの実行
+	if (options.cmd !== undefined) {
+		console.log(`Command:\n  exec \`${options.cmd}\``);
+		// 環境変数としてパラメータを利用可能にする
+		const env = {
+			...process.env,
+			CONTEST_DIR: process.cwd(),
+			CONTEST_ID: contest.id
+		};
+		const {stdout, stderr} = await promisify(child_process.exec)(options.cmd, {env});
+		if (stdout !== "") console.log(stdout);
+		if (stderr !== "") console.error(stderr);
+	}
+
 	return data;
 }
 
