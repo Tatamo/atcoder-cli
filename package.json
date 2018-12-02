@@ -15,6 +15,7 @@
   },
   "files": [
     "bin/",
+    "schema/",
     "package.json",
     "LICENSE",
     "README.md"
