@@ -89,7 +89,11 @@ commander
 commander
 	.command("format <format> <contest-id> [task-id]")
 	.action(commands.format)
-	.description("format string with contest and/or task information.");
+	.description("format string with contest and/or task information.")
+	.on("--help", function () {
+		console.log("");
+		console.log(help.format_strings);
+	});
 
 commander
 	.command("check-oj")
