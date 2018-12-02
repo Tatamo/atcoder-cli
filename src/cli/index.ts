@@ -98,7 +98,11 @@ commander
 commander
 	.command("check-oj")
 	.action(commands.checkOJAvailable)
-	.description("check whether online-judge-tools related functions are available or not");
+	.description("check whether online-judge-tools related functions are available or not")
+	.on("--help", () => {
+		console.log("");
+		console.log(help.online_judge_tools);
+	});
 
 commander
 	.command("config [key] [value]")

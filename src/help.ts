@@ -32,3 +32,7 @@ export const global_config = `Global config options list:
 
 export const provisioning_templates = `See also:
 https://github.com/Tatamo/atcoder-cli#provisioning-templates`;
+
+export const online_judge_tools = `Functions of online-judge-tools linkage:
+  downloading sample cases  \`acc new|add\` command
+  submit code               \`acc submit\` command`;
