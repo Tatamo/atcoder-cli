@@ -34,9 +34,7 @@
     "inquirer": "^6.2.1",
     "jsdom": "^13.0.0",
     "mkdirp": "^0.5.1",
-    "npm-run-all": "^4.1.5",
-    "query-string": "^6.2.0",
-    "request-promise-native": "^1.0.5"
+    "query-string": "^6.2.0"
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",
@@ -46,7 +44,7 @@
     "@types/jsdom": "^12.2.0",
     "@types/mkdirp": "^0.5.2",
     "@types/query-string": "^6.1.1",
-    "@types/request-promise-native": "^1.0.15",
+    "npm-run-all": "^4.1.5",
     "rimraf": "^2.6.2",
     "typescript": "^3.2.1",
     "webpack": "^4.26.1",
