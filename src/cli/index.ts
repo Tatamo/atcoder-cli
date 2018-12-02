@@ -128,4 +128,15 @@ commander
 		console.log(help.provisioning_templates);
 	});
 
+
+commander.on("--help", () => {
+	console.log("");
+	console.log(help.default_help);
+});
+
+// error on unknown commands
+commander.on("command:*", function () {
+	console.error('Invalid command: %s\nUse `acc --help` for a list of available commands.', commander.args.join(' '));
+});
+
 commander.parse(process.argv);

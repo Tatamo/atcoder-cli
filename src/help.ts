@@ -36,3 +36,5 @@ https://github.com/Tatamo/atcoder-cli#provisioning-templates`;
 export const online_judge_tools = `Functions of online-judge-tools linkage:
   downloading sample cases  \`acc new|add\` command
   submit code               \`acc submit\` command`;
+
+export const default_help = `to get detailed information, use \`acc <command> -h\``;
