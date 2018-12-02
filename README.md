@@ -11,7 +11,7 @@
 node.js  
 [online-judge-tools](https://github.com/kmyk/online-judge-tools) (optional, but recommended)
 
-## Install (NOT PUBLISHED YET)
+## Install
 ```sh
 $ npm install -g atcoder-cli
 ```
