@@ -159,16 +159,18 @@ export async function init(contest_id: string, options: { force?: boolean, conte
 	await saveProjectJSON(data, process.cwd());
 	console.log(`${dirname}/${PROJECT_JSON_FILE_NAME} created.`);
 
+	// --cmdオプションが指定されていない場合はコンフィグよりデフォルト値を取得
+	const cmd = options.cmd !== undefined? options.cmd : (await getConfig()).get("default-new-contest-cmd") as string | undefined;
 	// コマンドの実行
-	if (options.cmd !== undefined) {
-		console.log(`Command:\n  exec \`${options.cmd}\``);
+	if (cmd !== undefined) {
+		console.log(`Command:\n  exec \`${cmd}\``);
 		// 環境変数としてパラメータを利用可能にする
 		const env = {
 			...process.env,
 			CONTEST_DIR: process.cwd(),
 			CONTEST_ID: contest.id
 		};
-		const {stdout, stderr} = await promisify(child_process.exec)(options.cmd, {env});
+		const {stdout, stderr} = await promisify(child_process.exec)(cmd, {env});
 		if (stdout !== "") console.log(stdout);
 		if (stderr !== "") console.error(stderr);
 	}
