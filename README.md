@@ -48,8 +48,8 @@ $ cat config.json # global config file
 ## Provisioning Templates
 With using custom templates, you can automatically prepare your template program code or build environment.
 
-When you create new task directories, atcoder-tools can do:
-- copy the base program file
+When you create new task directories, atcoder-cli can do:
+- place the scaffold program file
 - copy static files
 - exec shell command
 
