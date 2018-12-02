@@ -22,6 +22,8 @@ commander
 	.on("--help", () => {
 		console.log("");
 		console.log(help.task_choices);
+		console.log("");
+		console.log(help.cmd_env_variables);
 	});
 
 commander
