@@ -3,7 +3,7 @@ import {OnlineJudge} from "./facade/oj";
 import {Cookie} from "./cookie";
 import {Contest, Task, detectTaskByPath, findProjectJSON, formatTaskDirname, saveProjectJSON, init, installTask, formatContestDirname} from "./project";
 import getConfig, {defaults, getConfigDirectory} from "./config";
-import {getTemplate, getTemplates} from "./template";
+import {getTemplate, getTemplates, Template} from "./template";
 
 export async function login() {
 	const atcoder = new AtCoder();
@@ -318,9 +318,22 @@ function checkValidChoiceOption(choice: any): choice is Choices {
 	return false;
 }
 
+async function getTemplateFromOption(template?: string | boolean): Promise<Template | undefined> {
+	// --no-templateオプションが指定された場合は何も選ばない
+	if (template === false) return undefined;
+	// 未指定の場合はコンフィグよりデフォルト値を取得
+	if (template === undefined || template === true) template = (await getConfig()).get("default-template") as string | undefined;
+	// デフォルト値も指定されていなければ何も選ばない
+	if (template === undefined) return undefined;
+	return await getTemplate(template).catch((e) => {
+		throw new Error(`Failed to load template "${template}".\n  ${e}`);
+	});
+}
+
 export async function setup(contest_id: string, options: { choice: Choices, force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string, template?: string | boolean, tests?: boolean }) {
 	try {
-		const {contest} = await init(contest_id, options);
+		const template = await getTemplateFromOption(options.template);
+		const {contest} = await init(contest_id, template, options);
 		console.log(`create project of ${contest.title}`);
 		await add(options);
 	} catch (e) {
@@ -345,17 +358,7 @@ export async function add(options: { choice?: Choices | boolean, force?: boolean
 			}
 			return await selectTasks(tasks, c, options.force);
 		})(options.choice);
-		const template = await (async t => {
-			// --no-templateオプションが指定された場合は何も選ばない
-			if (t === false) return undefined;
-			// 未指定の場合はコンフィグよりデフォルト値を取得
-			if (t === undefined || t === true) t = (await getConfig()).get("default-template") as string | undefined;
-			// デフォルト値も指定されていなければ何も選ばない
-			if (t === undefined) return undefined;
-			return await getTemplate(t).catch((e) => {
-				throw new Error(`Failed to load template "${t}".\n  ${e}`);
-			});
-		})(options.template);
+		const template = await getTemplateFromOption(options.template);
 		// 更新があった問題の数を数えておく
 		let count = 0;
 		for (const {index, task} of choices) {
@@ -431,7 +434,7 @@ function getNextTask2Install(tasks: Array<Task>): { index: number, task: Task } 
 export async function getTemplateList() {
 	console.error(SGR(`search template directories in ${await getConfigDirectory()}`, 37));
 	const templates = await getTemplates();
-	console.log(formatAsShellOutput([[SGR("NAME", 1), "SUBMIT-PROGRAM"]].concat(templates.map(template => [SGR(template.name, 1), template.submit]))));
+	console.log(formatAsShellOutput([[SGR("NAME", 1), "SUBMIT-PROGRAM"]].concat(templates.map(template => [SGR(template.name, 1), template.task.submit]))));
 }
 
 /**

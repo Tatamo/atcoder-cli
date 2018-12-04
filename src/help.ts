@@ -6,10 +6,6 @@ export const task_choices = `Supported arguments for --choice:
            (without --force option, same with "all")
   next     select the top task that is not added yet`;
 
-export const cmd_env_variables = `Environment variables available in --cmd option:
-  $CONTEST_DIR  the path of the contest directory
-  $CONTEST_ID   the contest id`;
-
 export const format_strings = `Supported format strings:
   {TaskLabel}     task label (e.g. A, B, C, D, ...)
   {tasklabel}     task label, lower case   

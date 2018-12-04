@@ -79,15 +79,24 @@ $ vim template.json # write your template settings
 ### Options in template.json
 ```json
 {
-  "program": ["main.cpp", ["foo.cpp", "{TaskID}.cpp"]],
-  "submit": "main.cpp",
-  "static": ["foo", ["gitignore",".gitignore"]],
-  "testdir": "tests_{TaskID}",
-  "cmd": "echo 'HI!'"
+  "task": {
+    "program": ["main.cpp", ["foo.cpp", "{TaskID}.cpp"]],
+    "submit": "main.cpp",
+    "static": ["foo", ["bar","bar_{TaskLabel}"]],
+    "testdir": "tests_{TaskID}",
+    "cmd": "echo Hi!"
+  },
+  "contest": {
+    "static": [["gitignore", ".gitignore"]],
+    "cmd": "echo Ho!"
+  }
 }
 ```
 
-#### `"program"` (required)
+#### `"task"` (required)
+executed for each tasks.
+
+##### `"program"` (required)
 ```ts
 "program": (string | [string, string])[]
 ```
@@ -107,7 +116,7 @@ The file name of the program file will be "A.cpp" if the task is problem A.
 
 To get detailed information about format strings, use `acc format -h`.
 
-#### `"submit"` (required)
+##### `"submit"` (required)
 ```ts
   "submit": string
 ```
@@ -117,7 +126,7 @@ It enables to omit the filename argument to submit file, so you can run `acc sub
 
 Format strings are supported.
 
-#### `"static"` (optional)
+##### `"static"` (optional)
 ```ts
 "static": (string | [string, string])[]
 ```
@@ -127,7 +136,7 @@ The difference between `"program"` and `"static"` is:
   - `"program"` files won't be overwrited when using `acc add --force`.
   - `"static"` files will be overwrited when using `acc add --force`.
 
-#### `"testdir"` (optional)
+##### `"testdir"` (optional)
 ```ts
   "testdir": string
 ```
@@ -137,7 +146,7 @@ Without this, the directory name will be the value of `acc config default-test-d
 
 Format strings are supported.
 
-#### `"cmd"` (optional)
+##### `"cmd"` (optional)
 ```ts
   "cmd": string
 ```
@@ -146,4 +155,13 @@ After copying files and downloading sample cases, the specified command will be 
 The working directory is the task directory.
 
 Parameters are given as enviromental variables:  
-`$TEMPLATE_DIR`, `$TASK_DIR`, `$TASK_ID`, `$TASK_INDEX` and `$CONTEST_ID`
+`$TEMPLATE_DIR`, `$TASK_DIR`, `$TASK_ID`, `$TASK_INDEX`, `$CONTEST_DIR` and `$CONTEST_ID`
+
+#### `contest` (optional)
+executed only once when `acc new` command runs.
+
+##### `"static"` (optional)
+Same as `tasks.static`.
+
+##### `"cmd"` (optional)
+Same as `tasks.cmd`, but `$TASK_*` variables do not exist.
