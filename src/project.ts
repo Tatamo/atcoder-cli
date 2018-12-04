@@ -6,7 +6,7 @@ import mkdirp from "mkdirp";
 import {promisify} from "util";
 import {OnlineJudge} from "./facade/oj";
 import getConfig from "./config";
-import {installTaskTemplate, Template} from "./template";
+import {installContestTemplate, installTaskTemplate, Template} from "./template";
 
 export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
 
@@ -142,9 +142,10 @@ export async function validateProjectJSON(data: ContestProject): Promise<[true, 
 /**
  * コンテスト情報を取得し、プロジェクトディレクトリを作成する
  * @param contest_id
+ * @param template
  * @param options
  */
-export async function init(contest_id: string, options: { force?: boolean, contestDirnameFormat?: string, cmd?: string }): Promise<ContestProject> {
+export async function init(contest_id: string, template: Template | undefined, options: { force?: boolean, contestDirnameFormat?: string, cmd?: string }): Promise<ContestProject> {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => {
@@ -162,6 +163,8 @@ export async function init(contest_id: string, options: { force?: boolean, conte
 		}
 	}
 	process.chdir(dirname);
+	// プロジェクトディレクトリのpathを保持
+	const contest_path = process.cwd();
 	const data = {contest, tasks};
 	await saveProjectJSON(data, process.cwd());
 	console.log(`${dirname}/${PROJECT_JSON_FILE_NAME} created.`);
@@ -182,6 +185,10 @@ export async function init(contest_id: string, options: { force?: boolean, conte
 		if (stderr !== "") console.error(stderr);
 	}
 
+	// テンプレートの展開を行う
+	if (template !== undefined) {
+		await installContestTemplate(contest, template, contest_path, true);
+	}
 	return data;
 }
 

@@ -3,7 +3,7 @@ import {readFile, readdir} from "fs";
 import {resolve} from "path";
 import {getConfigDirectory} from "./config";
 import child_process from "child_process";
-import {DetailedTask, formatTaskDirname} from "./project";
+import {Contest, DetailedTask, formatContestDirname, formatTaskDirname} from "./project";
 
 export const TEMPLATE_JSON_FILE_NAME = "template.json";
 
@@ -78,9 +78,59 @@ export async function validateTemplateJSON(data: RawTemplate): Promise<[true, nu
 }
 
 /**
- * テンプレートを展開する
+ * コンテストテンプレートを展開する
+ * @param contest
+ * @param template
+ * @param contest_path
+ * @param log default=false trueなら通常ログを標準出力に表示させる falseの場合はエラーログのみをエラー出力に表示
+ */
+export async function installContestTemplate(contest: Contest, template: Template, contest_path: string, log: boolean = false) {
+	const contest_template = template.contest;
+	if (contest_template === undefined) throw new Error("no contest template is given");
+	// 現在のディレクトリを記憶しつつ展開先ディレクトリに移動する
+	const pwd = process.cwd();
+	process.chdir(contest_path);
+	const template_dir = resolve(await getConfigDirectory(), template.name);
+	const fs = (await import("fs-extra"));
+
+	// 静的ファイルのコピー
+	// 同名ファイルが存在した場合は上書きされる
+	if (contest_template.static !== undefined) {
+		for (const file of contest_template.static) {
+			const source = resolve(template_dir, typeof file === "string" ? file : file[0]);
+			const dest = resolve(process.cwd(), typeof file === "string" ? file : formatContestDirname(file[1], contest));
+			try {
+				await fs.copy(source, dest);
+			} catch (e) {
+				console.error(e.toString());
+			}
+			if (log) console.log(`"${source}" -> "${dest}"`)
+		}
+	}
+
+	// コマンドの実行
+	if (contest_template.cmd !== undefined) {
+		if (log) console.log(`Command:\n  exec \`${contest_template.cmd}\``);
+		// 環境変数としてパラメータを利用可能にする
+		const env = {
+			...process.env,
+			TEMPLATE_DIR: template_dir,
+			CONTEST_DIR: contest_path,
+			CONTEST_ID: contest.id
+		};
+		const {stdout, stderr} = await promisify(child_process.exec)(contest_template.cmd, {env});
+		if (log && stdout !== "") console.log(stdout);
+		if (stderr !== "") console.error(stderr);
+	}
+
+	// もとのディレクトリに戻る
+	process.chdir(pwd);
+}
+
+/**
+ * 問題テンプレートを展開する
  * @param detailed_task
- * @param paths 展開先
+ * @param paths コンテストおよび展開先の問題ディレクトリ
  * @param log default=false trueなら通常ログを標準出力に表示させる falseの場合はエラーログのみをエラー出力に表示
  */
 export async function installTaskTemplate(detailed_task: DetailedTask, paths: { contest: string, task: string }, log: boolean = false) {
