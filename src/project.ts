@@ -5,8 +5,8 @@ import child_process from "child_process";
 import mkdirp from "mkdirp";
 import {promisify} from "util";
 import {OnlineJudge} from "./facade/oj";
-import getConfig, {getConfigDirectory} from "./config";
-import {Template} from "./template";
+import getConfig from "./config";
+import {installTaskTemplate, Template} from "./template";
 
 export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
 
@@ -31,6 +31,13 @@ export interface Task {
 export interface ContestProject {
 	contest: Contest;
 	tasks: Array<Task>;
+}
+
+export interface DetailedTask {
+	task: Task,
+	index: number,
+	contest: Contest,
+	template?: Template
 }
 
 /**
@@ -178,13 +185,6 @@ export async function init(contest_id: string, options: { force?: boolean, conte
 	return data;
 }
 
-interface DetailedTask {
-	task: Task,
-	index: number,
-	contest: Contest,
-	template?: Template
-}
-
 export async function installTask(detailed_task: DetailedTask, dirname: string, project_path: string, options?: { tests?: boolean }): Promise<Task> {
 	const {task, index, contest, template} = detailed_task;
 	const task_template = template !== undefined ? template.task : undefined;
@@ -219,72 +219,6 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 	if (flg_tests) s.directory.testdir = testdir;
 	if (task_template !== undefined && task_template.submit !== undefined) s.directory.submit = task_template.submit;
 	return Object.assign(task, s);
-}
-
-/**
- * テンプレートを展開する
- * @param detailed_task
- * @param paths 展開先
- * @param log default=false trueなら通常ログを標準出力に表示させる falseの場合はエラーログのみをエラー出力に表示
- */
-export async function installTaskTemplate(detailed_task: DetailedTask, paths: { contest: string, task: string }, log: boolean = false) {
-	const {task, index, contest, template} = detailed_task;
-	if (template === undefined) throw new Error("no template is given");
-	const task_template = template.task;
-	// 現在のディレクトリを記憶しつつ展開先ディレクトリに移動する
-	const pwd = process.cwd();
-	process.chdir(paths.task);
-	const template_dir = resolve(await getConfigDirectory(), template.name);
-	const fs = (await import("fs-extra"));
-	// プログラムファイルのコピー
-	for (const file of task_template.program) {
-		const source = resolve(template_dir, typeof file === "string" ? file : file[0]);
-		const dest = resolve(process.cwd(), typeof file === "string" ? file : formatTaskDirname(file[1], task, index, contest));
-		try {
-			// ファイルの上書きは行わず、既にファイルが存在する場合はエラーを発生させる
-			await fs.copy(source, dest, {overwrite: false, errorOnExist: true});
-			if (log) console.log(`"${source}" -> "${dest}"`)
-		} catch (e) {
-			// ファイルのコピーを行わなかったことを通知
-			console.error(`Skip: "${source}" -> "${dest}"`);
-		}
-	}
-
-	// 静的ファイルのコピー
-	// 同名ファイルが存在した場合は上書きされる
-	if (task_template.static !== undefined) {
-		for (const file of task_template.static) {
-			const source = resolve(template_dir, typeof file === "string" ? file : file[0]);
-			const dest = resolve(process.cwd(), typeof file === "string" ? file : formatTaskDirname(file[1], task, index, contest));
-			try {
-				await fs.copy(source, dest);
-			} catch (e) {
-				console.error(e.toString());
-			}
-			if (log) console.log(`"${source}" -> "${dest}"`)
-		}
-	}
-
-	// コマンドの実行
-	if (task_template.cmd !== undefined) {
-		if (log) console.log(`Command:\n  exec \`${task_template.cmd}\``);
-		// 環境変数としてパラメータを利用可能にする
-		const env = {
-			...process.env,
-			TEMPLATE_DIR: template_dir,
-			TASK_DIR: paths.task,
-			TASK_ID: task.id,
-			TASK_INDEX: index.toString(),
-			CONTEST_DIR: paths.contest,
-			CONTEST_ID: contest.id
-		};
-		const {stdout, stderr} = await promisify(child_process.exec)(task_template.cmd, {env});
-		if (log && stdout !== "") console.log(stdout);
-		if (stderr !== "") console.error(stderr);
-	}
-
-	// もとのディレクトリに戻る
-	process.chdir(pwd);
 }
 
 export function formatContestDirname(format: string, contest: Contest): string {
