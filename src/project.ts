@@ -1,7 +1,6 @@
 import {AtCoder} from "./atcoder";
 import {mkdir, readFile, writeFile} from "fs";
 import {sep, resolve} from "path";
-import child_process from "child_process";
 import mkdirp from "mkdirp";
 import {promisify} from "util";
 import {OnlineJudge} from "./facade/oj";
@@ -145,7 +144,7 @@ export async function validateProjectJSON(data: ContestProject): Promise<[true, 
  * @param template
  * @param options
  */
-export async function init(contest_id: string, template: Template | undefined, options: { force?: boolean, contestDirnameFormat?: string, cmd?: string }): Promise<ContestProject> {
+export async function init(contest_id: string, template: Template | undefined, options: { force?: boolean, contestDirnameFormat?: string }): Promise<ContestProject> {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => {
@@ -168,22 +167,6 @@ export async function init(contest_id: string, template: Template | undefined, o
 	const data = {contest, tasks};
 	await saveProjectJSON(data, process.cwd());
 	console.log(`${dirname}/${PROJECT_JSON_FILE_NAME} created.`);
-
-	// --cmdオプションが指定されていない場合はコンフィグよりデフォルト値を取得
-	const cmd = options.cmd !== undefined ? options.cmd : (await getConfig()).get("default-new-contest-cmd") as string | undefined;
-	// コマンドの実行
-	if (cmd !== undefined) {
-		console.log(`Command:\n  exec \`${cmd}\``);
-		// 環境変数としてパラメータを利用可能にする
-		const env = {
-			...process.env,
-			CONTEST_DIR: process.cwd(),
-			CONTEST_ID: contest.id
-		};
-		const {stdout, stderr} = await promisify(child_process.exec)(cmd, {env});
-		if (stdout !== "") console.log(stdout);
-		if (stderr !== "") console.error(stderr);
-	}
 
 	// テンプレートの展開を行う
 	if (template !== undefined) {
