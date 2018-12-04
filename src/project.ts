@@ -209,7 +209,7 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 
 	// テンプレートの展開を行う
 	if (task_template !== undefined) {
-		await installTaskTemplate(detailed_task, process.cwd(), true);
+		await installTaskTemplate(detailed_task, {contest: project_path, task: process.cwd()}, true);
 	}
 
 	// もとのディレクトリに戻る
@@ -224,16 +224,16 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 /**
  * テンプレートを展開する
  * @param detailed_task
- * @param path 展開先
+ * @param paths 展開先
  * @param log default=false trueなら通常ログを標準出力に表示させる falseの場合はエラーログのみをエラー出力に表示
  */
-export async function installTaskTemplate(detailed_task: DetailedTask, path: string, log: boolean = false) {
+export async function installTaskTemplate(detailed_task: DetailedTask, paths: { contest: string, task: string }, log: boolean = false) {
 	const {task, index, contest, template} = detailed_task;
 	if (template === undefined) throw new Error("no template is given");
 	const task_template = template.task;
 	// 現在のディレクトリを記憶しつつ展開先ディレクトリに移動する
 	const pwd = process.cwd();
-	process.chdir(path);
+	process.chdir(paths.task);
 	const template_dir = resolve(await getConfigDirectory(), template.name);
 	const fs = (await import("fs-extra"));
 	// プログラムファイルのコピー
@@ -272,9 +272,10 @@ export async function installTaskTemplate(detailed_task: DetailedTask, path: str
 		const env = {
 			...process.env,
 			TEMPLATE_DIR: template_dir,
-			TASK_DIR: path,
+			TASK_DIR: paths.task,
 			TASK_ID: task.id,
 			TASK_INDEX: index.toString(),
+			CONTEST_DIR: paths.contest,
 			CONTEST_ID: contest.id
 		};
 		const {stdout, stderr} = await promisify(child_process.exec)(task_template.cmd, {env});
