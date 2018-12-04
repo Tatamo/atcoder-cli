@@ -137,7 +137,7 @@ export async function validateProjectJSON(data: ContestProject): Promise<[true, 
  * @param contest_id
  * @param options
  */
-export async function init(contest_id: string, options: { force?: boolean, contestDirnameFormat?: string, cmd?:string }): Promise<ContestProject> {
+export async function init(contest_id: string, options: { force?: boolean, contestDirnameFormat?: string, cmd?: string }): Promise<ContestProject> {
 	const atcoder = new AtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => {
@@ -160,7 +160,7 @@ export async function init(contest_id: string, options: { force?: boolean, conte
 	console.log(`${dirname}/${PROJECT_JSON_FILE_NAME} created.`);
 
 	// --cmdオプションが指定されていない場合はコンフィグよりデフォルト値を取得
-	const cmd = options.cmd !== undefined? options.cmd : (await getConfig()).get("default-new-contest-cmd") as string | undefined;
+	const cmd = options.cmd !== undefined ? options.cmd : (await getConfig()).get("default-new-contest-cmd") as string | undefined;
 	// コマンドの実行
 	if (cmd !== undefined) {
 		console.log(`Command:\n  exec \`${cmd}\``);
@@ -187,6 +187,7 @@ interface DetailedTask {
 
 export async function installTask(detailed_task: DetailedTask, dirname: string, project_path: string, options?: { tests?: boolean }): Promise<Task> {
 	const {task, index, contest, template} = detailed_task;
+	const task_template = template !== undefined ? template.task : undefined;
 	const pwd = process.cwd();
 	await promisify(mkdirp)(project_path);
 	process.chdir(project_path);
@@ -198,7 +199,7 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 
 	// サンプルケースのダウンロードを行う
 	if (flg_tests) {
-		testdir = formatTaskDirname(template !== undefined && template.testdir !== undefined ? template.testdir : (await getConfig()).get("default-test-dirname-format"), task, index, contest);
+		testdir = formatTaskDirname(task_template !== undefined && task_template.testdir !== undefined ? task_template.testdir : (await getConfig()).get("default-test-dirname-format"), task, index, contest);
 		if (OnlineJudge.checkAvailable()) {
 			await OnlineJudge.call(["dl", task.url, "-d", testdir]);
 		} else {
@@ -207,8 +208,8 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 	}
 
 	// テンプレートの展開を行う
-	if (template !== undefined) {
-		await installTemplate(detailed_task, process.cwd(), true);
+	if (task_template !== undefined) {
+		await installTaskTemplate(detailed_task, process.cwd(), true);
 	}
 
 	// もとのディレクトリに戻る
@@ -216,7 +217,7 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 	// 新しく情報を付与したTaskオブジェクトを返す
 	const s: any = {directory: {path: dirname}};
 	if (flg_tests) s.directory.testdir = testdir;
-	if (template !== undefined && template.submit !== undefined) s.directory.submit = template.submit;
+	if (task_template !== undefined && task_template.submit !== undefined) s.directory.submit = task_template.submit;
 	return Object.assign(task, s);
 }
 
@@ -226,16 +227,17 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
  * @param path 展開先
  * @param log default=false trueなら通常ログを標準出力に表示させる falseの場合はエラーログのみをエラー出力に表示
  */
-export async function installTemplate(detailed_task: DetailedTask, path: string, log: boolean = false) {
+export async function installTaskTemplate(detailed_task: DetailedTask, path: string, log: boolean = false) {
 	const {task, index, contest, template} = detailed_task;
 	if (template === undefined) throw new Error("no template is given");
+	const task_template = template.task;
 	// 現在のディレクトリを記憶しつつ展開先ディレクトリに移動する
 	const pwd = process.cwd();
 	process.chdir(path);
 	const template_dir = resolve(await getConfigDirectory(), template.name);
 	const fs = (await import("fs-extra"));
 	// プログラムファイルのコピー
-	for (const file of template.program) {
+	for (const file of task_template.program) {
 		const source = resolve(template_dir, typeof file === "string" ? file : file[0]);
 		const dest = resolve(process.cwd(), typeof file === "string" ? file : formatTaskDirname(file[1], task, index, contest));
 		try {
@@ -250,8 +252,8 @@ export async function installTemplate(detailed_task: DetailedTask, path: string,
 
 	// 静的ファイルのコピー
 	// 同名ファイルが存在した場合は上書きされる
-	if (template.static !== undefined) {
-		for (const file of template.static) {
+	if (task_template.static !== undefined) {
+		for (const file of task_template.static) {
 			const source = resolve(template_dir, typeof file === "string" ? file : file[0]);
 			const dest = resolve(process.cwd(), typeof file === "string" ? file : formatTaskDirname(file[1], task, index, contest));
 			try {
@@ -264,8 +266,8 @@ export async function installTemplate(detailed_task: DetailedTask, path: string,
 	}
 
 	// コマンドの実行
-	if (template.cmd !== undefined) {
-		if (log) console.log(`Command:\n  exec \`${template.cmd}\``);
+	if (task_template.cmd !== undefined) {
+		if (log) console.log(`Command:\n  exec \`${task_template.cmd}\``);
 		// 環境変数としてパラメータを利用可能にする
 		const env = {
 			...process.env,
@@ -275,7 +277,7 @@ export async function installTemplate(detailed_task: DetailedTask, path: string,
 			TASK_INDEX: index.toString(),
 			CONTEST_ID: contest.id
 		};
-		const {stdout, stderr} = await promisify(child_process.exec)(template.cmd, {env});
+		const {stdout, stderr} = await promisify(child_process.exec)(task_template.cmd, {env});
 		if (log && stdout !== "") console.log(stdout);
 		if (stderr !== "") console.error(stderr);
 	}

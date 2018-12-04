@@ -3,33 +3,61 @@
   "type": "object",
   "title": "atcoder-cli Task Template File",
   "required": [
-    "submit",
-    "program"
+    "task"
   ],
   "properties": {
-    "submit": {
-      "type": "string"
+    "contest": {
+      "$ref": "#contest"
     },
-    "program": {
-      "type": "array",
-      "items": {
-        "$ref": "#copyfile"
-      }
-    },
-    "static": {
-      "type": "array",
-      "items": {
-        "$ref": "#copyfile"
-      }
-    },
-    "cmd": {
-      "type": "string"
-    },
-    "testdir": {
-      "type": "string"
+    "task": {
+      "$ref": "#task"
     }
   },
   "definitions": {
+    "contest": {
+      "$id": "#contest",
+      "type": "object",
+      "properties": {
+        "static": {
+          "$ref": "#copyfile-list"
+        },
+        "cmd": {
+          "type": "string"
+        }
+      }
+    },
+    "task": {
+      "$id": "#task",
+      "type": "object",
+      "required": [
+        "submit",
+        "program"
+      ],
+      "properties": {
+        "submit": {
+          "type": "string"
+        },
+        "program": {
+          "$ref": "#copyfile-list"
+        },
+        "static": {
+          "$ref": "#copyfile-list"
+        },
+        "cmd": {
+          "type": "string"
+        },
+        "testdir": {
+          "type": "string"
+        }
+      }
+    },
+    "copyfile-list": {
+      "$id": "#copyfile-list",
+      "type": "array",
+      "items": {
+        "$ref": "#copyfile"
+      }
+    },
     "copyfile": {
       "$id": "#copyfile",
       "anyOf": [

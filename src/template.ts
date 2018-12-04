@@ -10,11 +10,17 @@ export const TEMPLATE_JSON_FILE_NAME = "template.json";
 export type FileName2Copy = string | [string, string];
 
 export interface RawTemplate {
-	submit: string;
-	program: Array<FileName2Copy>;
-	static?: Array<FileName2Copy>;
-	cmd?: string;
-	testdir?: string;
+	contest?: {
+		static?: Array<FileName2Copy>;
+		cmd?: string;
+	}
+	task: {
+		submit: string;
+		program: Array<FileName2Copy>;
+		static?: Array<FileName2Copy>;
+		cmd?: string;
+		testdir?: string;
+	}
 }
 
 export interface Template extends RawTemplate {
