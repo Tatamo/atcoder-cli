@@ -7,6 +7,8 @@
     - submit your code without specified URL
     - auto downloading of sample inputs/outputs
 
+[解説記事(日本語)](http://tatamo.81.la/blog/2018/12/07/atcoder-cli/)
+
 ## Requirements
 node.js  
 [online-judge-tools](https://github.com/kmyk/online-judge-tools) (optional, but recommended)
