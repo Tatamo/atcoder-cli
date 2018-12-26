@@ -1,5 +1,5 @@
 # atcoder-cli
-[AtCoder](https://beta.atcoder.jp/) command line tools
+[AtCoder](https://atcoder.jp/) command line tools
 - get contest information
 - create a project directory for contests
   - auto provisioning with custom templates

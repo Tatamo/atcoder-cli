@@ -3,7 +3,7 @@ import {Cookie} from "./cookie";
 import querystring from "query-string";
 import {Contest, Task} from "./project";
 
-const ATCODER_BASE_URL = "https://beta.atcoder.jp/";
+const ATCODER_BASE_URL = "https://atcoder.jp/";
 
 export class AtCoder {
 	static get base_url(): string {
