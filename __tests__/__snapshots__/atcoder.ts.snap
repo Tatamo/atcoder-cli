@@ -1,0 +1,102 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AtCoder contest abc101 1`] = `
+Object {
+  "id": "abc101",
+  "title": "AtCoder Beginner Contest 101",
+  "url": "https://atcoder.jp/contests/abc101",
+}
+`;
+
+exports[`AtCoder contest arc101 1`] = `
+Object {
+  "id": "arc101",
+  "title": "AtCoder Regular Contest 101",
+  "url": "https://atcoder.jp/contests/arc101",
+}
+`;
+
+exports[`AtCoder task abc101 abc101_a 1`] = `
+Object {
+  "id": "abc101_a",
+  "label": "A",
+  "title": "Eating Symbols Easy",
+  "url": "https://atcoder.jp/contests/abc101/tasks/abc101_a",
+}
+`;
+
+exports[`AtCoder task abc101 abc101_b 1`] = `
+Object {
+  "id": "abc101_b",
+  "label": "B",
+  "title": "Digit Sums",
+  "url": "https://atcoder.jp/contests/abc101/tasks/abc101_b",
+}
+`;
+
+exports[`AtCoder task arc101 arc101_a 1`] = `
+Object {
+  "id": "arc101_a",
+  "label": "C",
+  "title": "Candles",
+  "url": "https://atcoder.jp/contests/arc101/tasks/arc101_a",
+}
+`;
+
+exports[`AtCoder tasks abc101 1`] = `
+Array [
+  Object {
+    "id": "abc101_a",
+    "label": "A",
+    "title": "Eating Symbols Easy",
+    "url": "https://atcoder.jp/contests/abc101/tasks/abc101_a",
+  },
+  Object {
+    "id": "abc101_b",
+    "label": "B",
+    "title": "Digit Sums",
+    "url": "https://atcoder.jp/contests/abc101/tasks/abc101_b",
+  },
+  Object {
+    "id": "arc099_a",
+    "label": "C",
+    "title": "Minimization",
+    "url": "https://atcoder.jp/contests/abc101/tasks/arc099_a",
+  },
+  Object {
+    "id": "arc099_b",
+    "label": "D",
+    "title": "Snuke Numbers",
+    "url": "https://atcoder.jp/contests/abc101/tasks/arc099_b",
+  },
+]
+`;
+
+exports[`AtCoder tasks arc101 1`] = `
+Array [
+  Object {
+    "id": "arc101_a",
+    "label": "C",
+    "title": "Candles",
+    "url": "https://atcoder.jp/contests/arc101/tasks/arc101_a",
+  },
+  Object {
+    "id": "arc101_b",
+    "label": "D",
+    "title": "Median of Medians",
+    "url": "https://atcoder.jp/contests/arc101/tasks/arc101_b",
+  },
+  Object {
+    "id": "arc101_c",
+    "label": "E",
+    "title": "Ribbons on Tree",
+    "url": "https://atcoder.jp/contests/arc101/tasks/arc101_c",
+  },
+  Object {
+    "id": "arc101_d",
+    "label": "F",
+    "title": "Robots and Exits",
+    "url": "https://atcoder.jp/contests/arc101/tasks/arc101_d",
+  },
+]
+`;

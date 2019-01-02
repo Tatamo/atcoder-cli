@@ -1,3 +1,4 @@
+jest.useFakeTimers();
 import {username, password} from "./auth.json";
 import inquirer from "inquirer";
 import {AtCoder} from "../src/atcoder";
@@ -33,4 +34,43 @@ test("AtCoder Login", async () => {
 
 	expect(await atcoder.login()).toBe(true);
 	expect(await atcoder.checkSession(true)).toBe(true);
+});
+
+describe("AtCoder", async () => {
+	let atcoder: AtCoder;
+	beforeEach(async () => {
+		atcoder = new AtCoder();
+		// @ts-ignore
+		inquirer.prompt.mockResolvedValueOnce({username, password});
+		await atcoder.login();
+	});
+	const contests = ["abc101", "arc101"];
+	describe("contest", async () => {
+		test.each(contests)("%s", async (contest_id) => {
+			expect(await atcoder.contest(contest_id)).toMatchSnapshot();
+		});
+		test("invalid contest id", async()=>{
+			await expect(atcoder.contest("abc0xx")).rejects.toThrow();
+		});
+	});
+	describe("tasks", async () => {
+		test.each(contests)("%s", async (contest_id) => {
+			expect(await atcoder.tasks(contest_id)).toMatchSnapshot();
+		});
+		test("invalid contest id", async()=>{
+			await expect(atcoder.tasks("abc0xx")).rejects.toThrow();
+		});
+	});
+	const tasks = [["abc101", "abc101_a"], ["abc101", "abc101_b"], ["arc101", "arc101_a"]];
+	describe("task", async () => {
+		test.each(tasks)("%s %s", async (contest_id, task_id) => {
+			expect(await atcoder.task(contest_id, task_id)).toMatchSnapshot();
+		});
+		test("invalid contest id", async()=>{
+			await expect(atcoder.task("abc0xx", "abc0xx_z")).rejects.toThrow();
+		});
+		test("invalid task id", async()=>{
+			await expect(atcoder.task("abc101", "abc102_a")).rejects.toThrow();
+		});
+	});
 });
