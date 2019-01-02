@@ -2,3 +2,4 @@ node_modules/
 bin/
 src/**/*.js
 src/**/*.d.ts
+__tests__/auth.json
