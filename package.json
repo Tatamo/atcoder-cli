@@ -25,6 +25,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test-w": "jest --watchAll",
     "build": "npm run clean && tsc && webpack --mode production",
     "clean": "rimraf bin src/**/*.{js,d.ts}",
     "watch:tsc": "tsc --watch",
