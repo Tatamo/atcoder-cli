@@ -24,6 +24,7 @@
     "README.md"
   ],
   "scripts": {
+    "test": "jest",
     "build": "npm run clean && tsc && webpack --mode production",
     "clean": "rimraf bin src/**/*.{js,d.ts}",
     "watch:tsc": "tsc --watch",
@@ -47,14 +48,21 @@
     "@types/conf": "^1.4.0",
     "@types/fs-extra": "^5.0.4",
     "@types/inquirer": "0.0.43",
+    "@types/jest": "^23.3.11",
     "@types/jsdom": "^12.2.0",
     "@types/mkdirp": "^0.5.2",
     "@types/query-string": "^6.1.1",
+    "jest": "^23.6.0",
     "npm-run-all": "^4.1.5",
     "rimraf": "^2.6.2",
+    "ts-jest": "^23.10.5",
     "typescript": "^3.2.1",
     "webpack": "^4.26.1",
     "webpack-cli": "^3.1.2",
     "webpack-node-externals": "^1.7.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   }
 }
