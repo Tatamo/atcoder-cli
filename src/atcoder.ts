@@ -45,8 +45,8 @@ export class AtCoder {
 	 * アクセスしてログインしている状態かどうかを取得する(結果をキャッシュしない)
 	 */
 	private async check(): Promise<boolean> {
-		// practice contestでログインせず提出ページにアクセスするとコンテストトップに飛ばされることを利用する
-		const url = `${AtCoder.getContestURL("practice")}/submit`;
+		// ログインせず提出ページにアクセスするとコンテストトップに飛ばされることを利用する
+		const url = `${AtCoder.getContestURL("abc001")}/submit`;
 		// リダイレクトを無効化・302コードを容認して通信
 		const response = await this.session.get(url, {
 			maxRedirects: 0,
