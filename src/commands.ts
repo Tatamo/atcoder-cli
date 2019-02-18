@@ -222,7 +222,7 @@ export async function submit(filename: string | undefined, options: { task?: str
 	}
 	console.log(`submit to: ${url}`);
 	// 提出
-	await OnlineJudge.call(["s", url, filename]);
+	await OnlineJudge.call(["s", "-y", url, filename]);
 }
 
 export async function checkOJAvailable() {
