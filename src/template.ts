@@ -85,8 +85,7 @@ export async function validateTemplateJSON(data: RawTemplate): Promise<[true, nu
  * @param log default=false trueなら通常ログを標準出力に表示させる falseの場合はエラーログのみをエラー出力に表示
  */
 export async function installContestTemplate(contest: Contest, template: Template, contest_path: string, log: boolean = false) {
-	const contest_template = template.contest;
-	if (contest_template === undefined) throw new Error("no contest template is given");
+	const contest_template = template.contest !== undefined ? template.contest : {};
 	// 現在のディレクトリを記憶しつつ展開先ディレクトリに移動する
 	const pwd = process.cwd();
 	process.chdir(contest_path);
