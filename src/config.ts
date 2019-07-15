@@ -1,14 +1,14 @@
 import path from "path";
 
-type Conf = import("conf")<any>;
+type Conf = import("conf")<string>;
 
 export const defaults = {
-	["oj-path"]: undefined,
+	["oj-path"]: "",
 	["default-contest-dirname-format"]: "{ContestID}",
 	["default-task-dirname-format"]: "{tasklabel}",
 	["default-test-dirname-format"]: "tests",
 	["default-task-choice"]: "inquire",
-	["default-template"]: undefined
+	["default-template"]: ""
 };
 
 /**

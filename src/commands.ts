@@ -322,7 +322,7 @@ async function getTemplateFromOption(template?: string | boolean): Promise<Templ
 	// --no-templateオプションが指定された場合は何も選ばない
 	if (template === false) return undefined;
 	// 未指定の場合はコンフィグよりデフォルト値を取得
-	if (template === undefined || template === true) template = (await getConfig()).get("default-template") as string | undefined;
+	if (template === undefined || template === true) template = (await getConfig()).get("default-template") as string;
 	// デフォルト値も指定されていなければ何も選ばない
 	if (template === undefined) return undefined;
 	return await getTemplate(template).catch((e) => {
@@ -341,11 +341,11 @@ export async function setup(contest_id: string, options: { choice: Choices, forc
 	}
 }
 
-export async function add(options: { choice?: Choices | boolean, force?: boolean, taskDirnameFormat?: string, template?: string | boolean, tests?: boolean }) {
+export async function add(options: { choice?: Choices, force?: boolean, taskDirnameFormat?: string, template?: string | boolean, tests?: boolean }) {
 	try {
 		const {path, data} = await findProjectJSON();
 		const {contest, tasks} = data;
-		const choices = await (async (c) => {
+		const choices = await (async (c: string | undefined) => {
 			// choiceオプションが設定されていない場合はコンフィグからデフォルト値を取得
 			let flg_default_choice = false;
 			if (c === undefined) {
