@@ -1,29 +1,10 @@
 jest.useFakeTimers();
 import {username, password} from "./auth.json";
-import inquirer from "inquirer";
-import {AtCoder} from "../src/atcoder";
-import {Cookie} from "../src/cookie";
+import {AtCoder} from "../../src/atcoder";
+import {disableCookieFileIO, mockLogin} from "../utils";
 
-jest.mock("inquirer");
-
-/*
- * Cookieファイルの実装を差し替えておく
- * コンフィグファイルとの読み書きを行わず、必ず空のセッションが返るようにする
- */
-Cookie.prototype.loadConfigFile = jest.fn(async function () {
-	// @ts-ignore
-	this.cookies = []
-});
-Cookie.prototype.saveConfigFile = jest.fn(async function () {
-});
-
-// 標準入力を求めることなくログインを行う
-const mockLogin = async (atcoder: AtCoder) => {
-	// ユーザー名とパスワードを標準入力で受け付けるかわりに、JSONファイルから取得した情報を流し込む
-	// @ts-ignore
-	inquirer.prompt.mockResolvedValueOnce({username, password});
-	return await atcoder.login();
-};
+// ログイン情報が実際にコンフィグファイルに書き込まれないようにする
+disableCookieFileIO();
 
 /*
  このテストが失敗する場合、まず以下の点を確認してください
@@ -35,17 +16,16 @@ const mockLogin = async (atcoder: AtCoder) => {
 test("AtCoder Login", async () => {
 	const atcoder = new AtCoder();
 	expect(await atcoder.checkSession()).toBe(false);
-
-	expect(await mockLogin(atcoder)).toBe(true);
+	expect(await mockLogin(atcoder, {username, password})).toBe(true);
 	expect(await atcoder.checkSession(true)).toBe(true);
 });
 
-describe("AtCoder", async () => {
+describe("AtCoder get information", async () => {
 	const atcoder = new AtCoder();
 	beforeAll(async () => {
-		await mockLogin(atcoder);
+		await mockLogin(atcoder, {username, password});
 	});
-	describe("get contest and task information", async()=> {
+	describe("contest and tasks", async()=> {
 		const contests = ["abc101", "arc101"];
 		describe("contest", async () => {
 			test.each(contests)("%s", async (contest_id) => {
