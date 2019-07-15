@@ -24,6 +24,8 @@
     "README.md"
   ],
   "scripts": {
+    "test": "jest",
+    "test-w": "jest --watchAll",
     "build": "npm run clean && tsc && webpack --mode production",
     "clean": "rimraf bin src/**/*.{js,d.ts}",
     "watch:tsc": "tsc --watch",
@@ -32,29 +34,34 @@
     "prepare": "npm run build"
   },
   "dependencies": {
-    "ajv": "^6.6.1",
-    "axios": "^0.18.0",
-    "commander": "^2.19.0",
-    "conf": "^2.1.0",
-    "fs-extra": "^7.0.1",
+    "ajv": "^6.10.2",
+    "axios": "^0.19.0",
+    "commander": "^2.20.0",
+    "conf": "^5.0.0",
+    "fs-extra": "^8.1.0",
     "inquirer": "^6.2.1",
-    "jsdom": "^13.0.0",
+    "jsdom": "^15.1.1",
     "mkdirp": "^0.5.1",
-    "query-string": "^6.2.0"
+    "query-string": "^6.8.1"
   },
   "devDependencies": {
     "@types/commander": "^2.12.2",
-    "@types/conf": "^1.4.0",
-    "@types/fs-extra": "^5.0.4",
-    "@types/inquirer": "0.0.43",
-    "@types/jsdom": "^12.2.0",
+    "@types/fs-extra": "^8.0.0",
+    "@types/inquirer": "0.0.44",
+    "@types/jest": "^24.0.15",
+    "@types/jsdom": "^12.2.4",
     "@types/mkdirp": "^0.5.2",
-    "@types/query-string": "^6.1.1",
+    "jest": "^24.8.0",
     "npm-run-all": "^4.1.5",
-    "rimraf": "^2.6.2",
-    "typescript": "^3.2.1",
-    "webpack": "^4.26.1",
-    "webpack-cli": "^3.1.2",
+    "rimraf": "^2.6.3",
+    "ts-jest": "^24.0.2",
+    "typescript": "^3.5.3",
+    "webpack": "^4.35.3",
+    "webpack-cli": "^3.3.6",
     "webpack-node-externals": "^1.7.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node"
   }
 }

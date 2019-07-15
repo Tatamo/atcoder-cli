@@ -1,5 +1,5 @@
 // yummy!
-type Conf = import("conf");
+type Conf = import("conf")<Array<string>>;
 
 /**
  * Cookie管理用クラス

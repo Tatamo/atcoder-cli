@@ -1,6 +1,6 @@
 import path from "path";
 
-type Conf = import("conf");
+type Conf = import("conf")<any>;
 
 export const defaults = {
 	["oj-path"]: undefined,
