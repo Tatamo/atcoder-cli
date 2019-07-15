@@ -322,9 +322,9 @@ async function getTemplateFromOption(template?: string | boolean): Promise<Templ
 	// --no-templateオプションが指定された場合は何も選ばない
 	if (template === false) return undefined;
 	// 未指定の場合はコンフィグよりデフォルト値を取得
-	if (template === undefined || template === true) template = (await getConfig()).get("default-template") as string;
+	if (template === undefined || template === true) template = (await getConfig()).get("default-template");
 	// デフォルト値も指定されていなければ何も選ばない
-	if (template === undefined) return undefined;
+	if (template === "") return undefined;
 	return await getTemplate(template).catch((e) => {
 		throw new Error(`Failed to load template "${template}".\n  ${e}`);
 	});
