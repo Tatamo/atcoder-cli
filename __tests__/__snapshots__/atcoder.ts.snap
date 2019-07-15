@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AtCoder contest abc101 1`] = `
+exports[`AtCoder get contest and task information contest abc101 1`] = `
 Object {
   "id": "abc101",
   "title": "AtCoder Beginner Contest 101",
@@ -8,7 +8,7 @@ Object {
 }
 `;
 
-exports[`AtCoder contest arc101 1`] = `
+exports[`AtCoder get contest and task information contest arc101 1`] = `
 Object {
   "id": "arc101",
   "title": "AtCoder Regular Contest 101",
@@ -16,7 +16,7 @@ Object {
 }
 `;
 
-exports[`AtCoder task abc101 abc101_a 1`] = `
+exports[`AtCoder get contest and task information task abc101 abc101_a 1`] = `
 Object {
   "id": "abc101_a",
   "label": "A",
@@ -25,7 +25,7 @@ Object {
 }
 `;
 
-exports[`AtCoder task abc101 abc101_b 1`] = `
+exports[`AtCoder get contest and task information task abc101 abc101_b 1`] = `
 Object {
   "id": "abc101_b",
   "label": "B",
@@ -34,7 +34,7 @@ Object {
 }
 `;
 
-exports[`AtCoder task arc101 arc101_a 1`] = `
+exports[`AtCoder get contest and task information task arc101 arc101_a 1`] = `
 Object {
   "id": "arc101_a",
   "label": "C",
@@ -43,7 +43,7 @@ Object {
 }
 `;
 
-exports[`AtCoder tasks abc101 1`] = `
+exports[`AtCoder get contest and task information tasks abc101 1`] = `
 Array [
   Object {
     "id": "abc101_a",
@@ -72,7 +72,7 @@ Array [
 ]
 `;
 
-exports[`AtCoder tasks arc101 1`] = `
+exports[`AtCoder get contest and task information tasks arc101 1`] = `
 Array [
   Object {
     "id": "arc101_a",

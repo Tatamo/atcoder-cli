@@ -17,6 +17,14 @@ Cookie.prototype.loadConfigFile = jest.fn(async function () {
 Cookie.prototype.saveConfigFile = jest.fn(async function () {
 });
 
+// 標準入力を求めることなくログインを行う
+const mockLogin = async (atcoder: AtCoder) => {
+	// ユーザー名とパスワードを標準入力で受け付けるかわりに、JSONファイルから取得した情報を流し込む
+	// @ts-ignore
+	inquirer.prompt.mockResolvedValueOnce({username, password});
+	return await atcoder.login();
+};
+
 /*
  このテストが失敗する場合、まず以下の点を確認してください
  - __tests__/auth.json が存在し、正しいユーザー名とパスワードが記述されていること
@@ -28,49 +36,44 @@ test("AtCoder Login", async () => {
 	const atcoder = new AtCoder();
 	expect(await atcoder.checkSession()).toBe(false);
 
-	// ユーザー名とパスワードを標準入力で受け付けるかわりにファイルから流し込むようモックする
-	// @ts-ignore
-	inquirer.prompt.mockResolvedValueOnce({username, password});
-
-	expect(await atcoder.login()).toBe(true);
+	expect(await mockLogin(atcoder)).toBe(true);
 	expect(await atcoder.checkSession(true)).toBe(true);
 });
 
 describe("AtCoder", async () => {
-	let atcoder: AtCoder;
-	beforeEach(async () => {
-		atcoder = new AtCoder();
-		// @ts-ignore
-		inquirer.prompt.mockResolvedValueOnce({username, password});
-		await atcoder.login();
+	const atcoder = new AtCoder();
+	beforeAll(async () => {
+		await mockLogin(atcoder);
 	});
-	const contests = ["abc101", "arc101"];
-	describe("contest", async () => {
-		test.each(contests)("%s", async (contest_id) => {
-			expect(await atcoder.contest(contest_id)).toMatchSnapshot();
+	describe("get contest and task information", async()=> {
+		const contests = ["abc101", "arc101"];
+		describe("contest", async () => {
+			test.each(contests)("%s", async (contest_id) => {
+				expect(await atcoder.contest(contest_id)).toMatchSnapshot();
+			});
+			test("invalid contest id", async () => {
+				await expect(atcoder.contest("abc0xx")).rejects.toThrow();
+			});
 		});
-		test("invalid contest id", async()=>{
-			await expect(atcoder.contest("abc0xx")).rejects.toThrow();
+		describe("tasks", async () => {
+			test.each(contests)("%s", async (contest_id) => {
+				expect(await atcoder.tasks(contest_id)).toMatchSnapshot();
+			});
+			test("invalid contest id", async () => {
+				await expect(atcoder.tasks("abc0xx")).rejects.toThrow();
+			});
 		});
-	});
-	describe("tasks", async () => {
-		test.each(contests)("%s", async (contest_id) => {
-			expect(await atcoder.tasks(contest_id)).toMatchSnapshot();
-		});
-		test("invalid contest id", async()=>{
-			await expect(atcoder.tasks("abc0xx")).rejects.toThrow();
-		});
-	});
-	const tasks = [["abc101", "abc101_a"], ["abc101", "abc101_b"], ["arc101", "arc101_a"]];
-	describe("task", async () => {
-		test.each(tasks)("%s %s", async (contest_id, task_id) => {
-			expect(await atcoder.task(contest_id, task_id)).toMatchSnapshot();
-		});
-		test("invalid contest id", async()=>{
-			await expect(atcoder.task("abc0xx", "abc0xx_z")).rejects.toThrow();
-		});
-		test("invalid task id", async()=>{
-			await expect(atcoder.task("abc101", "abc102_a")).rejects.toThrow();
+		const tasks = [["abc101", "abc101_a"], ["abc101", "abc101_b"], ["arc101", "arc101_a"]];
+		describe("task", async () => {
+			test.each(tasks)("%s %s", async (contest_id, task_id) => {
+				expect(await atcoder.task(contest_id, task_id)).toMatchSnapshot();
+			});
+			test("invalid contest id", async () => {
+				await expect(atcoder.task("abc0xx", "abc0xx_z")).rejects.toThrow();
+			});
+			test("invalid task id", async () => {
+				await expect(atcoder.task("abc101", "abc102_a")).rejects.toThrow();
+			});
 		});
 	});
 });
