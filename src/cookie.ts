@@ -1,3 +1,4 @@
+import {name as projectName} from "../package.json";
 // yummy!
 type CookieConf = import("conf")<Array<string>>;
 
@@ -13,7 +14,7 @@ export class Cookie {
 	protected static async getCookieConfig(): Promise<CookieConf> {
 		if (Cookie._cookie_conf !== null) return Cookie._cookie_conf;
 		const Conf = (await import("conf")).default;
-		return Cookie._cookie_conf = new Conf({defaults: {cookies: []}, configName: "session"});
+		return Cookie._cookie_conf = new Conf({defaults: {cookies: []}, configName: "session", projectName});
 	}
 
 	/**

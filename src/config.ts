@@ -1,4 +1,5 @@
 import path from "path";
+import {name as projectName} from "../package.json";
 
 type Conf = import("conf")<string>;
 
@@ -20,7 +21,7 @@ const getConfig: () => Promise<Conf> = (() => {
 	return async () => {
 		if (conf !== null) return conf;
 		const Conf = (await import("conf")).default;
-		return conf = new Conf({defaults});
+		return conf = new Conf({defaults, projectName});
 	}
 })();
 
