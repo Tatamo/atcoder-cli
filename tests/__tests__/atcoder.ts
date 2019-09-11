@@ -20,14 +20,14 @@ test("AtCoder Login", async () => {
 	expect(await atcoder.checkSession(true)).toBe(true);
 });
 
-describe("AtCoder get information", async () => {
+describe("AtCoder get information", () => {
 	const atcoder = new AtCoder();
 	beforeAll(async () => {
 		await mockLogin(atcoder, {username, password});
 	});
-	describe("contest and tasks", async()=> {
+	describe("contest and tasks", ()=> {
 		const contests = ["abc101", "arc101"];
-		describe("contest", async () => {
+		describe("contest", () => {
 			test.each(contests)("%s", async (contest_id) => {
 				expect(await atcoder.contest(contest_id)).toMatchSnapshot();
 			});
@@ -35,7 +35,7 @@ describe("AtCoder get information", async () => {
 				await expect(atcoder.contest("abc0xx")).rejects.toThrow();
 			});
 		});
-		describe("tasks", async () => {
+		describe("tasks", () => {
 			test.each(contests)("%s", async (contest_id) => {
 				expect(await atcoder.tasks(contest_id)).toMatchSnapshot();
 			});
@@ -44,7 +44,7 @@ describe("AtCoder get information", async () => {
 			});
 		});
 		const tasks = [["abc101", "abc101_a"], ["abc101", "abc101_b"], ["arc101", "arc101_a"]];
-		describe("task", async () => {
+		describe("task", () => {
 			test.each(tasks)("%s %s", async (contest_id, task_id) => {
 				expect(await atcoder.task(contest_id, task_id)).toMatchSnapshot();
 			});

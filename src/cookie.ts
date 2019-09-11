@@ -1,5 +1,6 @@
+import {name as projectName} from "../package.json";
 // yummy!
-type Conf = import("conf");
+type CookieConf = import("conf")<Array<string>>;
 
 /**
  * Cookie管理用クラス
@@ -8,12 +9,12 @@ type Conf = import("conf");
  */
 export class Cookie {
 	private cookies: Array<string>;
-	private static _cookie_conf: Conf | null = null;
+	private static _cookie_conf: CookieConf | null = null;
 
-	protected static async getCookieConfig(): Promise<Conf> {
+	protected static async getCookieConfig(): Promise<CookieConf> {
 		if (Cookie._cookie_conf !== null) return Cookie._cookie_conf;
 		const Conf = (await import("conf")).default;
-		return Cookie._cookie_conf = new Conf({defaults: {cookies: []}, configName: "session"});
+		return Cookie._cookie_conf = new Conf({defaults: {cookies: []}, configName: "session", projectName});
 	}
 
 	/**

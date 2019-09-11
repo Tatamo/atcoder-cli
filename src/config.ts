@@ -1,14 +1,15 @@
 import path from "path";
+import {name as projectName} from "../package.json";
 
-type Conf = import("conf");
+type Conf = import("conf")<string>;
 
 export const defaults = {
-	["oj-path"]: undefined,
+	["oj-path"]: "",
 	["default-contest-dirname-format"]: "{ContestID}",
 	["default-task-dirname-format"]: "{tasklabel}",
 	["default-test-dirname-format"]: "tests",
 	["default-task-choice"]: "inquire",
-	["default-template"]: undefined
+	["default-template"]: ""
 };
 
 /**
@@ -20,7 +21,7 @@ const getConfig: () => Promise<Conf> = (() => {
 	return async () => {
 		if (conf !== null) return conf;
 		const Conf = (await import("conf")).default;
-		return conf = new Conf({defaults});
+		return conf = new Conf({defaults, projectName});
 	}
 })();
 
