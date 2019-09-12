@@ -45,6 +45,7 @@ describe("command calls", () => {
 			run("new", "abc104", "-t", "{TASKLABEL}");
 			expect(commands.setup).toBeCalledWith("abc104", expect.objectContaining({taskDirnameFormat: "{TASKLABEL}"}));
 		});
+		// NOTE: not implemented option
 		test("new abc105 -d {ContestTitle}", () => {
 			const commands = require("../../src/commands");
 			run("new", "abc105", "-d", "{ContestTitle}");
@@ -75,13 +76,31 @@ describe("command calls", () => {
 			expect(commands.add).toBeCalledWith(expect.not.objectContaining({choice: expect.anything()}));
 		});
 	});
+	describe("acc submit", () => {
+		test("submit", () => {
+			const commands = require("../../src/commands");
+			run("submit");
+			expect(commands.submit).toBeCalledWith(undefined, expect.anything());
+		});
+		test("s main.cpp", () => {
+			const commands = require("../../src/commands");
+			run("s", "main.cpp");
+			expect(commands.submit).toBeCalledWith("main.cpp", expect.anything());
+			expect(commands.submit).toBeCalledWith("main.cpp", expect.not.objectContaining({contest: expect.anything(), task: expect.anything()}));
+		});
+		test("s -c abc100 -t abc100_a", () => {
+			const commands = require("../../src/commands");
+			run("s", "-c", "abc100", "-t", "abc100_a");
+			expect(commands.submit).toBeCalledWith(undefined, expect.objectContaining({contest: "abc100", task: "abc100_a"}));
+		});
+	});
 	describe("acc tasks", () => {
-		test("tasks [contest-id]", () => {
+		test("tasks abc101", () => {
 			const commands = require("../../src/commands");
 			run("tasks", "abc101");
 			expect(commands.tasks).toBeCalledWith("abc101", expect.not.objectContaining({id: true}));
 		});
-		test("tasks -i [contest-id]", () => {
+		test("tasks -i abc101", () => {
 			const commands = require("../../src/commands");
 			run("tasks", "-i", "abc101");
 			expect(commands.tasks).toBeCalledWith("abc101", expect.objectContaining({id: true}));
