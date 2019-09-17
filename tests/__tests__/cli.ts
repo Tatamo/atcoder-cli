@@ -94,6 +94,61 @@ describe("command calls", () => {
 			expect(commands.submit).toBeCalledWith(undefined, expect.objectContaining({contest: "abc100", task: "abc100_a"}));
 		});
 	});
+	describe("acc login", () => {
+		test("login", () => {
+			const commands = require("../../src/commands");
+			run("login");
+			expect(commands.login).toBeCalledWith(expect.anything());
+		});
+	});
+	describe("acc logout", () => {
+		test("logout", () => {
+			const commands = require("../../src/commands");
+			run("logout");
+			expect(commands.logout).toBeCalledWith(expect.anything());
+		});
+	});
+	describe("acc session", () => {
+		test("session", () => {
+			const commands = require("../../src/commands");
+			run("session");
+			expect(commands.session).toBeCalledWith(expect.anything());
+		});
+	});
+	describe("acc contest", () => {
+		test("contest", () => {
+			const commands = require("../../src/commands");
+			run("contest");
+			expect(commands.contest).toBeCalledWith(undefined, expect.not.objectContaining({id: true}));
+		});
+		test("contest abc100", () => {
+			const commands = require("../../src/commands");
+			run("contest", "abc100");
+			expect(commands.contest).toBeCalledWith("abc100", expect.not.objectContaining({id: true}));
+		});
+		test("contest -i abc101", () => {
+			const commands = require("../../src/commands");
+			run("contest", "-i", "abc101");
+			expect(commands.contest).toBeCalledWith("abc101", expect.objectContaining({id: true}));
+		});
+	});
+	describe("acc task", () => {
+		test("task", () => {
+			const commands = require("../../src/commands");
+			run("task");
+			expect(commands.task).toBeCalledWith(undefined, undefined, expect.not.objectContaining({id: true}));
+		});
+		test("task abc100", () => {
+			const commands = require("../../src/commands");
+			run("task", "abc100");
+			expect(commands.task).toBeCalledWith("abc100", undefined, expect.not.objectContaining({id: true}));
+		});
+		test("task -i abc101 abc101_b", () => {
+			const commands = require("../../src/commands");
+			run("task", "-i", "abc101", "abc101_b");
+			expect(commands.task).toBeCalledWith("abc101", "abc101_b", expect.objectContaining({id: true}));
+		});
+	});
 	describe("acc tasks", () => {
 		test("tasks abc101", () => {
 			const commands = require("../../src/commands");
@@ -104,6 +159,28 @@ describe("command calls", () => {
 			const commands = require("../../src/commands");
 			run("tasks", "-i", "abc101");
 			expect(commands.tasks).toBeCalledWith("abc101", expect.objectContaining({id: true}));
+		});
+	});
+	describe("acc url", () => {
+		test("url", () => {
+			const commands = require("../../src/commands");
+			run("url");
+			expect(commands.url).toBeCalledWith(undefined, undefined, expect.not.objectContaining({check: true}));
+		});
+		test("url abc102", () => {
+			const commands = require("../../src/commands");
+			run("url", "abc102");
+			expect(commands.url).toBeCalledWith("abc102", undefined, expect.not.objectContaining({check: true}));
+		});
+		test("url -c abc102", () => {
+			const commands = require("../../src/commands");
+			run("url", "-c", "abc102");
+			expect(commands.url).toBeCalledWith("abc102", undefined, expect.objectContaining({check: true}));
+		});
+		test("url -c abc102 abc102_a", () => {
+			const commands = require("../../src/commands");
+			run("url", "-c", "abc102", "abc102_a");
+			expect(commands.url).toBeCalledWith("abc102", "abc102_a", expect.objectContaining({check: true}));
 		});
 	});
 });
