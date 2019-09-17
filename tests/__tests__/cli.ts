@@ -183,4 +183,46 @@ describe("command calls", () => {
 			expect(commands.url).toBeCalledWith("abc102", "abc102_a", expect.objectContaining({check: true}));
 		});
 	});
+	describe("acc format", () => {
+		test("format \"{ContestID} - {ContestTitle}\" abc110", () => {
+			const commands = require("../../src/commands");
+			run("format", "{ContestID} - {ContestTitle}", "abc110");
+			expect(commands.format).toBeCalledWith("{ContestID} - {ContestTitle}", "abc110", undefined, expect.anything());
+		});
+		test("format \"{index1} {TaskLabel}: {TaskTitle} ({ContestID})\" abc111 abc111_b", () => {
+			const commands = require("../../src/commands");
+			run("format", "{index1} {TaskLabel}: {TaskTitle} ({ContestID})", "abc111", "abc111_b");
+			expect(commands.format).toBeCalledWith("{index1} {TaskLabel}: {TaskTitle} ({ContestID})", "abc111", "abc111_b", expect.anything());
+		});
+	});
+	describe("acc check-oj", () => {
+		test("check-oj", () => {
+			const commands = require("../../src/commands");
+			run("check-oj");
+			expect(commands.checkOJAvailable).toBeCalledWith(expect.anything());
+		});
+	});
+	describe("acc config", () => {
+		test("config", () => {
+			const commands = require("../../src/commands");
+			run("config");
+			expect(commands.config).toBeCalledWith(undefined, undefined, expect.not.objectContaining({D: true}));
+		});
+		test("config default-template", () => {
+			const commands = require("../../src/commands");
+			run("config", "default-template");
+			expect(commands.config).toBeCalledWith("default-template", undefined, expect.not.objectContaining({D: true}));
+		});
+		// TODO: -d だけでなく --delete も受け付けるようにする
+		test("config -d default-template", () => {
+			const commands = require("../../src/commands");
+			run("config", "-d", "default-template");
+			expect(commands.config).toBeCalledWith("default-template", undefined, expect.objectContaining({D: true}));
+		});
+		test("config default-task-choice next", () => {
+			const commands = require("../../src/commands");
+			run("config", "default-task-choice", "next");
+			expect(commands.config).toBeCalledWith("default-task-choice", "next", expect.not.objectContaining({D: true}));
+		});
+	});
 });
