@@ -372,7 +372,7 @@ export async function add(options: { choice?: Choices, force?: boolean, taskDirn
 		}
 		if (count === 0) {
 			// 問題が何も更新されなかった場合、その旨を通知する
-			console.error(SGR("Skip: no task directories were created. use --force option to overwrite existent directries.", 33));
+			console.error(SGR("Skip: no task directories were created. use --force option to overwrite existent directories.", 33));
 		}
 		// 更新されたContestProjectをファイルに書き出し
 		await saveProjectJSON(Object.assign(data, {tasks}));
