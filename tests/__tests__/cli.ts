@@ -225,4 +225,18 @@ describe("command calls", () => {
 			expect(commands.config).toBeCalledWith("default-task-choice", "next", expect.not.objectContaining({D: true}));
 		});
 	});
+	describe("acc config-dir", () => {
+		test("config-dir", () => {
+			const commands = require("../../src/commands");
+			run("config-dir");
+			expect(commands.configDir).toBeCalledWith(expect.anything());
+		});
+	});
+	describe("acc templates", () => {
+		test("templates", () => {
+			const commands = require("../../src/commands");
+			run("templates");
+			expect(commands.getTemplateList).toBeCalledWith(expect.anything());
+		});
+	});
 });
