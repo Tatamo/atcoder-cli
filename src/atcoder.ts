@@ -1,5 +1,4 @@
 import {SessionInterface} from "./session";
-import {Cookie} from "./cookie";
 import querystring from "query-string";
 import {Contest, Task} from "./project";
 
@@ -65,7 +64,7 @@ export class AtCoder {
 			console.error("you logged-in already");
 			return true;
 		}
-		const {csrf_token, cookies} = await this.getCSRFToken();
+		const {csrf_token} = await this.getCSRFToken();
 
 		// ユーザーネームとパスワードを入力させる
 		const inquirer = await import("inquirer");
@@ -85,19 +84,15 @@ export class AtCoder {
 			{
 				maxRedirects: 0,
 				validateStatus: (status) => (status >= 200 && status < 300) || status === 302,
-				headers: {
-					Cookie: cookies.join("; ")
-				}
 			}
-		).catch(e => e);
+		)
 
 
 		// ログインページ以外にリダイレクトされていればログイン成功とみなす
 		const result = response.headers.location !== "/login";
 		if (result) {
 			// ログインに成功していた場合はセッション情報を保存する
-			const new_cookies = Cookie.convertSetCookies2CookieArray(response.headers["set-cookie"]);
-			await this.session.saveSessionFromCookies(new_cookies);
+			await response.saveSession()
 		}
 		return result;
 	}
@@ -105,14 +100,17 @@ export class AtCoder {
 	/**
 	 * ログインページにアクセスしてCSRFトークンを取得
 	 */
-	private async getCSRFToken(): Promise<{ csrf_token: string, cookies: Array<string> }> {
+	private async getCSRFToken(): Promise<{ csrf_token: string }> {
 		const {JSDOM} = await import("jsdom");
 		// cookieなしでログインページにアクセス
 		const response = await this.session.get(AtCoder.login_url, {headers: {Cookie: ""}});
 
 		const {document} = new JSDOM(response.data).window;
 		const input: HTMLInputElement = (document.getElementsByName("csrf_token")[0]) as HTMLInputElement;
-		return {csrf_token: input.value, cookies: Cookie.convertSetCookies2CookieArray(response.headers["set-cookie"])};
+
+		// TODO: ここでファイル書き込みが走るのは微妙
+		await response.saveSession();
+		return {csrf_token: input.value};
 	}
 
 	/**
