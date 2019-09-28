@@ -29,10 +29,11 @@ export interface SessionResponseInterface {
 	  * レスポンス本文。
 	  */
 	 data: string;
-	 /**
-	  * HTTPヘッダー（TODO：これは消す）
-	  */
+	/**
+	 * HTTPヘッダー
+	 */
 	 headers: {
+		location?: string
 		 "set-cookie": string[]
 	 }
 }

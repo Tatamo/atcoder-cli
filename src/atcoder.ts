@@ -89,7 +89,7 @@ export class AtCoder {
 					Cookie: cookies.join("; ")
 				}
 			}
-		).catch(e => e);
+		)
 
 
 		// ログインページ以外にリダイレクトされていればログイン成功とみなす
