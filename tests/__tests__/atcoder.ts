@@ -1,5 +1,3 @@
-jest.useFakeTimers();
-import {username, password} from "./auth.json";
 import {AtCoder} from "../../src/atcoder";
 import {disableCookieFileIO, mockLoginPrompt} from "../utils";
 import { AtCoderDesign } from "../../src/di";
@@ -18,7 +16,7 @@ const getTestAtCoder = async () => {
 		atcoder,
 		session
 	};
-}
+};
 
 const mockAuth = {username: "TestUser", password: "secret"};
 
