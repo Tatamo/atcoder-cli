@@ -4,7 +4,7 @@ import {AtCoder} from "../../src/atcoder";
 import {disableCookieFileIO, mockLogin} from "../utils";
 import { AtCoderDesign } from "../../src/di";
 import { TestSession } from "../utils/session";
-import { addNonLoggedInCheckMock, addLoginPageMock, addLoggedInCheckMock } from "../utils/responseMock";
+import { addNonLoggedInCheckMock, addLoginPageMock, addLoggedInCheckMock, registerContetstPageMock } from "../utils/responseMock";
 
 // ログイン情報が実際にコンフィグファイルに書き込まれないようにする
 disableCookieFileIO();
@@ -48,11 +48,12 @@ describe("AtCoder get information", () => {
 	beforeAll(async () => {
 		if (!atcoder) {
 			({atcoder, session} = await getTestAtCoder());
+			registerContetstPageMock(session)
 		}
 		await mockLogin(atcoder, {username, password});
 	});
 	describe("contest and tasks", ()=> {
-		const contests = ["abc101", "arc101"];
+		const contests = ["aic987"];
 		describe("contest", () => {
 			test.each(contests)("%s", async (contest_id) => {
 				expect(await atcoder.contest(contest_id)).toMatchSnapshot();
