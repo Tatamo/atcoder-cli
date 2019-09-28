@@ -46,7 +46,7 @@ export interface SessionResponseInterface {
 }
 
 interface Transaction {
-	cookie: CookieInterface
+	cookies: CookieInterface
 }
 
 /**
@@ -75,6 +75,10 @@ export class Session implements SessionInterface {
 	}
 
 	async getCookies(): Promise<CookieInterface> {
+		if (this._currentTransaction !== null) {
+			// if this is inside a transaction, use the temporal cookie.
+			return this._currentTransaction.cookies;
+		}
 		if (this._cookies === null) {
 			return this._cookies = await this.CookieConstructor.createLoadedInstance();
 		}
@@ -103,13 +107,19 @@ export class Session implements SessionInterface {
 		if (this._currentTransaction !== null) {
 			throw new Error("Cannot start a new transaction inside transaction.")
 		}
+		const currentCookies = await this.getCookies();
 		this._currentTransaction = {
-			cookie: (await this.getCookies()).clone()
+			cookies: currentCookies.clone()
 		}
-		const result = await callback();
-		this._cookies = this._currentTransaction.cookie;
-		await this._cookies.saveConfigFile();
-		return result;
+		try {
+			const result = await callback();
+			// If transaction finished successfully, adopt temporal cookie as the new persistent one.
+			this._cookies = this._currentTransaction.cookies;
+			await this._cookies.saveConfigFile();
+			return result;
+		} finally {
+			this._currentTransaction = null;
+		}
 	}
 
 	private makeSessionResponse({status, data, headers}: AxiosResponse): SessionResponseInterface {
