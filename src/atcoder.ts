@@ -113,6 +113,11 @@ export class AtCoder {
 		return {csrf_token: input.value};
 	}
 
+	async logout(): Promise<void> {
+		await this.session.removeSession();
+		this._login = null;
+	}
+
 	/**
 	 * コンテストIDからコンテストの情報を取得
 	 * @param id

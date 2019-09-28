@@ -1,6 +1,5 @@
 import {AtCoder} from "./atcoder";
 import {OnlineJudge} from "./facade/oj";
-import {Cookie} from "./cookie";
 import {Contest, Task, detectTaskByPath, findProjectJSON, formatTaskDirname, saveProjectJSON, init, installTask, formatContestDirname} from "./project";
 import getConfig, {defaults, getConfigDirectory} from "./config";
 import {getTemplate, getTemplates, Template} from "./template";
@@ -12,8 +11,8 @@ export async function login() {
 }
 
 export async function logout() {
-	// 空のcookieで設定ファイルを上書きする
-	await new Cookie().saveConfigFile();
+	const atcoder = await getAtCoder();
+	await atcoder.logout();
 	console.log("login session aborted.");
 }
 
