@@ -1,18 +1,24 @@
-import {Cookie} from "./cookie";
+import {CookieConstructorInterface, CookieInterface} from "./cookie";
 
 type AxiosRequestConfig = import("axios").AxiosRequestConfig;
 type AxiosResponse = import("axios").AxiosResponse;
+
+export interface SessionInterface {
+	get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse>;
+	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>;
+	saveSessionFromCookies(cookies: Array<string>): Promise<void>;
+}
 
 /**
  * セッション管理用クラス
  * こいつでcookieを使いまわしてログイン認証した状態でデータをとってくる
  */
-export class Session {
+export class Session implements SessionInterface {
 	private static _axios: import("axios").AxiosInstance | null = null;
-	private CookieConstructor: typeof Cookie
-	private _cookies: Cookie | null;
+	private CookieConstructor: CookieConstructorInterface
+	private _cookies: CookieInterface | null;
 
-	constructor(CookieConstructor: typeof Cookie) {
+	constructor(CookieConstructor: CookieConstructorInterface) {
 		this.CookieConstructor = CookieConstructor
 		this._cookies = null;
 	}
@@ -27,7 +33,7 @@ export class Session {
 		return Session._axios;
 	}
 
-	async getCookies(): Promise<Cookie> {
+	async getCookies(): Promise<CookieInterface> {
 		if (this._cookies === null) {
 			return this._cookies = await this.CookieConstructor.createLoadedInstance();
 		}
@@ -50,5 +56,11 @@ export class Session {
 			},
 			...options
 		})
+	}
+
+	async saveSessionFromCookies(cookies: Array<string>): Promise<void> {
+		const session_cookies = await this.getCookies();
+		session_cookies.set(cookies);
+		await session_cookies.saveConfigFile();
 	}
 }

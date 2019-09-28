@@ -2,12 +2,43 @@ import {name as projectName} from "../package.json";
 // yummy!
 type CookieConf = import("conf")<Array<string>>;
 
+export interface CookieInterface {
+	/**
+	 * 現在保持しているcookieを取得
+	 */
+	get(): Array<string>;
+	/**
+	 * 現在保持しているcookieを新しいものに置き換える
+	 * @param cookies 新しく保持するcookie全体を表す、"key=value"形式の文字列の配列
+	 */
+	set(cookies: Array<string>): void;
+	/**
+	 * 現在保持しているcookieを捨てる
+	 */
+	empty(): void;
+	/**
+	 * 設定ファイルからcookieを読み込んで保持する
+	 */
+	loadConfigFile(): Promise<void>;
+	/**
+	 * 現在保持しているcookieを設定ファイルに書き出す
+	 */
+	saveConfigFile(): Promise<void>;
+}
+
+export interface CookieConstructorInterface {
+	/**
+	 * 設定ファイルからcookie情報を読み込み済みのインスタンスを生成
+	 */
+	createLoadedInstance(): Promise<CookieInterface>
+}
+
 /**
  * Cookie管理用クラス
  * cookieはHTTPリクエストヘッダにおける Cookie: a=b; c=d
  * の"a=b", "c=d"の部分を文字列の配列として管理する
  */
-export class Cookie {
+export class Cookie implements CookieInterface {
 	private cookies: Array<string>;
 	private static _cookie_conf: CookieConf | null = null;
 

@@ -1,13 +1,13 @@
 import {Design, Injector} from "typesafe-di";
-import { Session } from "../session";
+import { Session, SessionInterface } from "../session";
 import { AtCoder } from "../atcoder";
-import { Cookie } from "../cookie";
+import { CookieConstructorInterface, Cookie } from "../cookie";
 
 interface HasCookieConstructor {
-    CookieConstructor: typeof Cookie;
+    CookieConstructor: CookieConstructorInterface;
 }
 interface HasSession {
-    session: Session;
+    session: SessionInterface;
 }
 
 export const CookieDesign = Design.bind('CookieConstructor', ()=> Cookie)

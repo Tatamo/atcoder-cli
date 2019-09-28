@@ -1,4 +1,4 @@
-import {Session} from "./session";
+import {SessionInterface} from "./session";
 import {Cookie} from "./cookie";
 import querystring from "query-string";
 import {Contest, Task} from "./project";
@@ -22,11 +22,11 @@ export class AtCoder {
 		return `${AtCoder.getContestURL(contest)}/tasks${task === undefined ? "" : `/${task}`}`;
 	}
 
-	private session: Session;
+	private session: SessionInterface;
 	// null:未検査 true/false: ログインしているかどうか
 	private _login: boolean | null;
 
-	constructor(session: Session) {
+	constructor(session: SessionInterface) {
 		this.session = session;
 		this._login = null;
 	}
@@ -97,9 +97,7 @@ export class AtCoder {
 		if (result) {
 			// ログインに成功していた場合はセッション情報を保存する
 			const new_cookies = Cookie.convertSetCookies2CookieArray(response.headers["set-cookie"]);
-			const session_cookies = await this.session.getCookies();
-			session_cookies.set(new_cookies);
-			session_cookies.saveConfigFile();
+			await this.session.saveSessionFromCookies(new_cookies);
 		}
 		return result;
 	}
