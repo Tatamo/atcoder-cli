@@ -31,6 +31,11 @@ export interface CookieConstructorInterface {
 	 * 設定ファイルからcookie情報を読み込み済みのインスタンスを生成
 	 */
 	createLoadedInstance(): Promise<CookieInterface>
+	/**
+	 * Set-Cookieヘッダの配列からこのクラスで管理可能な形式のcookie配列に変換
+	 * @param cookies
+	 */
+	convertSetCookies2CookieArray(cookies: Array<string>): Array<string>;
 }
 
 /**

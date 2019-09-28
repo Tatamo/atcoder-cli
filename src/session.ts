@@ -1,4 +1,4 @@
-import {CookieConstructorInterface, CookieInterface, Cookie} from "./cookie";
+import {CookieConstructorInterface, CookieInterface} from "./cookie";
 
 type AxiosRequestConfig = import("axios").AxiosRequestConfig;
 type AxiosResponse = import("axios").AxiosResponse;
@@ -91,7 +91,7 @@ export class Session implements SessionInterface {
 
 	private makeSessionResponse({status, data, headers}: AxiosResponse): SessionResponseInterface {
 		const saveSession = async ()=>{
-			const new_cookies = Cookie.convertSetCookies2CookieArray(headers["set-cookie"]);
+			const new_cookies = this.CookieConstructor.convertSetCookies2CookieArray(headers["set-cookie"]);
 			await this.saveSessionFromCookies(new_cookies);
 		}
 		return {
