@@ -7,6 +7,10 @@ export interface SessionInterface {
 	get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse>;
 	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>;
 	saveSessionFromCookies(cookies: Array<string>): Promise<void>;
+	/**
+	 * 現在のセッション情報を破棄します
+	 */
+	removeSession(): Promise<void>;
 }
 
 /**
@@ -62,5 +66,11 @@ export class Session implements SessionInterface {
 		const session_cookies = await this.getCookies();
 		session_cookies.set(cookies);
 		await session_cookies.saveConfigFile();
+	}
+
+	async removeSession(): Promise<void> {
+		const session_cooies = (await this.getCookies());
+		session_cooies.empty();
+		await session_cooies.saveConfigFile();
 	}
 }
