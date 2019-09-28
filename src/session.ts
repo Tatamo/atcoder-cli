@@ -149,18 +149,26 @@ export class Session implements SessionInterface {
 	private async saveSessionFromCookies(cookies: Array<string>): Promise<void> {
 		const session_cookies = await this.getCookies();
 		session_cookies.set(cookies);
-		if (this._currentTransaction !== null) {
-			// If this is inside a transaction, do not save cookie to config file.
-			this._currentTransaction.isUpdated = true;
-			return;
-		}
-		await session_cookies.saveConfigFile();
+		await this.saveCookie();
 	}
 
 	async removeSession(): Promise<void> {
 		const session_cooies = (await this.getCookies());
 		session_cooies.empty();
 		// 空のcookieで設定ファイルを上書きする
-		await session_cooies.saveConfigFile();
+		await this.saveCookie();
+	}
+
+	/**
+	 * cookieへの保存を設定ファイルに反映する。
+	 * ただしトランザクション中は保存されない。
+	 */
+	private async saveCookie(): Promise<void> {
+		if (this._currentTransaction !== null) {
+			// If this is inside a transaction, do not save cookie to config file.
+			this._currentTransaction.isUpdated = true;
+			return;
+		}
+		await (await this.getCookies()).saveConfigFile();
 	}
 }
