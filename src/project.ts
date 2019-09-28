@@ -6,6 +6,8 @@ import {promisify} from "util";
 import {OnlineJudge} from "./facade/oj";
 import getConfig from "./config";
 import {installContestTemplate, installTaskTemplate, Template} from "./template";
+import { Session } from "./session";
+import { Cookie } from "./cookie";
 
 export const PROJECT_JSON_FILE_NAME = "contest.acc.json";
 
@@ -145,7 +147,7 @@ export async function validateProjectJSON(data: ContestProject): Promise<[true, 
  * @param options
  */
 export async function init(contest_id: string, template: Template | undefined, options: { force?: boolean, contestDirnameFormat?: string }): Promise<ContestProject> {
-	const atcoder = new AtCoder();
+	const atcoder = new AtCoder(new Session(Cookie));
 	if (!await atcoder.checkSession()) await atcoder.login();
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => {
 		throw new Error("failed to get contest information.");

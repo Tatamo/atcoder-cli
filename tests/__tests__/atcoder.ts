@@ -2,6 +2,8 @@ jest.useFakeTimers();
 import {username, password} from "./auth.json";
 import {AtCoder} from "../../src/atcoder";
 import {disableCookieFileIO, mockLogin} from "../utils";
+import { Session } from "../../src/session.js";
+import { Cookie } from "../../src/cookie.js";
 
 // ログイン情報が実際にコンフィグファイルに書き込まれないようにする
 disableCookieFileIO();
@@ -14,14 +16,14 @@ disableCookieFileIO();
    __tests__/auth.jsonはgit管理に含めないように注意してください
  */
 test("AtCoder Login", async () => {
-	const atcoder = new AtCoder();
+	const atcoder = new AtCoder(new Session(Cookie));
 	expect(await atcoder.checkSession()).toBe(false);
 	expect(await mockLogin(atcoder, {username, password})).toBe(true);
 	expect(await atcoder.checkSession(true)).toBe(true);
 });
 
 describe("AtCoder get information", () => {
-	const atcoder = new AtCoder();
+	const atcoder = new AtCoder(new Session(Cookie));
 	beforeAll(async () => {
 		await mockLogin(atcoder, {username, password});
 	});

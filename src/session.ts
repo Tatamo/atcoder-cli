@@ -9,9 +9,11 @@ type AxiosResponse = import("axios").AxiosResponse;
  */
 export class Session {
 	private static _axios: import("axios").AxiosInstance | null = null;
+	private CookieConstructor: typeof Cookie
 	private _cookies: Cookie | null;
 
-	constructor() {
+	constructor(CookieConstructor: typeof Cookie) {
+		this.CookieConstructor = CookieConstructor
 		this._cookies = null;
 	}
 
@@ -27,7 +29,7 @@ export class Session {
 
 	async getCookies(): Promise<Cookie> {
 		if (this._cookies === null) {
-			return this._cookies = await Cookie.createLoadedInstance();
+			return this._cookies = await this.CookieConstructor.createLoadedInstance();
 		}
 		return this._cookies;
 	}
