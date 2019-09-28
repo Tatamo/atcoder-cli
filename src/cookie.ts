@@ -30,7 +30,7 @@ export interface CookieConstructorInterface {
 	/**
 	 * 設定ファイルからcookie情報を読み込み済みのインスタンスを生成
 	 */
-	createLoadedInstance(): Promise<Cookie>
+	createLoadedInstance(): Promise<CookieInterface>
 }
 
 /**
