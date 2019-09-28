@@ -53,7 +53,7 @@ export function addLoginPageMock(session: TestSession) {
  * Register a contest page response mock.
  */
 export function registerContetstPageMock(session: TestSession) {
-    session.addGetMockResponse(AtCoder.getContestURL('aic987'), {
+    session.addGetMockResponse(AtCoder.getTaskURL('aic987'), {
         status: 200,
         data: `
         <!DOCTYPE html>

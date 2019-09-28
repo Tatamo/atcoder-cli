@@ -80,7 +80,7 @@ describe("AtCoder get information", () => {
 				await expect(atcoder.task("abc0xx", "abc0xx_z")).rejects.toThrow();
 			});
 			test("invalid task id", async () => {
-				await expect(atcoder.task("abc101", "abc102_a")).rejects.toThrow();
+				await expect(atcoder.task("aic987", "aic999_a")).rejects.toThrow();
 			});
 		});
 	});
