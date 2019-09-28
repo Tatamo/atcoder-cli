@@ -1,4 +1,4 @@
-import {Session, SessionInterface} from "./session";
+import {SessionInterface} from "./session";
 import {Cookie} from "./cookie";
 import querystring from "query-string";
 import {Contest, Task} from "./project";

@@ -1,4 +1,4 @@
-import {Cookie, CookieConstructorInterface, CookieInterface} from "./cookie";
+import {CookieConstructorInterface, CookieInterface} from "./cookie";
 
 type AxiosRequestConfig = import("axios").AxiosRequestConfig;
 type AxiosResponse = import("axios").AxiosResponse;
