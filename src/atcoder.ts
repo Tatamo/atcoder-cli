@@ -64,37 +64,39 @@ export class AtCoder {
 			console.error("you logged-in already");
 			return true;
 		}
-		const {csrf_token} = await this.getCSRFToken();
+		return this.session.transaction(async ()=> {
+			const {csrf_token} = await this.getCSRFToken();
 
-		// ユーザーネームとパスワードを入力させる
-		const inquirer = await import("inquirer");
-		const {username, password} = await inquirer.prompt([{
-			type: "input",
-			message: "username:",
-			name: "username"
-		}, {
-			type: "password",
-			message: "password:",
-			name: "password"
-		}]) as { username: string, password: string };
+			// ユーザーネームとパスワードを入力させる
+			const inquirer = await import("inquirer");
+			const {username, password} = await inquirer.prompt([{
+				type: "input",
+				message: "username:",
+				name: "username"
+			}, {
+				type: "password",
+				message: "password:",
+				name: "password"
+			}]) as { username: string, password: string };
 
-		const response = await this.session.post(
-			AtCoder.login_url,
-			querystring.stringify({username, password, csrf_token}),
-			{
-				maxRedirects: 0,
-				validateStatus: (status) => (status >= 200 && status < 300) || status === 302,
+			const response = await this.session.post(
+				AtCoder.login_url,
+				querystring.stringify({username, password, csrf_token}),
+				{
+					maxRedirects: 0,
+					validateStatus: (status) => (status >= 200 && status < 300) || status === 302,
+				}
+			)
+
+
+			// ログインページ以外にリダイレクトされていればログイン成功とみなす
+			const result = response.headers.location !== "/login";
+			if (result) {
+				// ログインに成功していた場合はセッション情報を保存する
+				await response.saveSession()
 			}
-		)
-
-
-		// ログインページ以外にリダイレクトされていればログイン成功とみなす
-		const result = response.headers.location !== "/login";
-		if (result) {
-			// ログインに成功していた場合はセッション情報を保存する
-			await response.saveSession()
-		}
-		return result;
+			return result;
+		});
 	}
 
 	/**
@@ -108,7 +110,6 @@ export class AtCoder {
 		const {document} = new JSDOM(response.data).window;
 		const input: HTMLInputElement = (document.getElementsByName("csrf_token")[0]) as HTMLInputElement;
 
-		// TODO: ここでファイル書き込みが走るのは微妙
 		await response.saveSession();
 		return {csrf_token: input.value};
 	}
