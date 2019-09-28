@@ -1,102 +1,65 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AtCoder get information contest and tasks contest abc101 1`] = `
+exports[`AtCoder get information contest and tasks contest aic987 1`] = `
 Object {
-  "id": "abc101",
-  "title": "AtCoder Beginner Contest 101",
-  "url": "https://atcoder.jp/contests/abc101",
+  "id": "aic987",
+  "title": "AtCoder Imaginary Contest 987",
+  "url": "https://atcoder.jp/contests/aic987",
 }
 `;
 
-exports[`AtCoder get information contest and tasks contest arc101 1`] = `
+exports[`AtCoder get information contest and tasks task aic987 aic987_a 1`] = `
 Object {
-  "id": "arc101",
-  "title": "AtCoder Regular Contest 101",
-  "url": "https://atcoder.jp/contests/arc101",
-}
-`;
-
-exports[`AtCoder get information contest and tasks task abc101 abc101_a 1`] = `
-Object {
-  "id": "abc101_a",
+  "id": "aic987_a",
   "label": "A",
-  "title": "Eating Symbols Easy",
-  "url": "https://atcoder.jp/contests/abc101/tasks/abc101_a",
+  "title": "This is Problem A",
+  "url": "https://atcoder.jp/contests/aic987/tasks/aic987_a",
 }
 `;
 
-exports[`AtCoder get information contest and tasks task abc101 abc101_b 1`] = `
+exports[`AtCoder get information contest and tasks task aic987 aic987_b 1`] = `
 Object {
-  "id": "abc101_b",
+  "id": "aic987_b",
   "label": "B",
-  "title": "Digit Sums",
-  "url": "https://atcoder.jp/contests/abc101/tasks/abc101_b",
+  "title": "Next Problem",
+  "url": "https://atcoder.jp/contests/aic987/tasks/aic987_b",
 }
 `;
 
-exports[`AtCoder get information contest and tasks task arc101 arc101_a 1`] = `
+exports[`AtCoder get information contest and tasks task aic987 aic987_c 1`] = `
 Object {
-  "id": "arc101_a",
+  "id": "aic987_c",
   "label": "C",
-  "title": "Candles",
-  "url": "https://atcoder.jp/contests/arc101/tasks/arc101_a",
+  "title": "The Test Cases",
+  "url": "https://atcoder.jp/contests/aic987/tasks/aic987_c",
 }
 `;
 
-exports[`AtCoder get information contest and tasks tasks abc101 1`] = `
+exports[`AtCoder get information contest and tasks tasks aic987 1`] = `
 Array [
   Object {
-    "id": "abc101_a",
+    "id": "aic987_a",
     "label": "A",
-    "title": "Eating Symbols Easy",
-    "url": "https://atcoder.jp/contests/abc101/tasks/abc101_a",
+    "title": "This is Problem A",
+    "url": "https://atcoder.jp/contests/aic987/tasks/aic987_a",
   },
   Object {
-    "id": "abc101_b",
+    "id": "aic987_b",
     "label": "B",
-    "title": "Digit Sums",
-    "url": "https://atcoder.jp/contests/abc101/tasks/abc101_b",
+    "title": "Next Problem",
+    "url": "https://atcoder.jp/contests/aic987/tasks/aic987_b",
   },
   Object {
-    "id": "arc099_a",
+    "id": "aic987_c",
     "label": "C",
-    "title": "Minimization",
-    "url": "https://atcoder.jp/contests/abc101/tasks/arc099_a",
+    "title": "The Test Cases",
+    "url": "https://atcoder.jp/contests/aic987/tasks/aic987_c",
   },
   Object {
-    "id": "arc099_b",
+    "id": "aic987_d",
     "label": "D",
-    "title": "Snuke Numbers",
-    "url": "https://atcoder.jp/contests/abc101/tasks/arc099_b",
-  },
-]
-`;
-
-exports[`AtCoder get information contest and tasks tasks arc101 1`] = `
-Array [
-  Object {
-    "id": "arc101_a",
-    "label": "C",
-    "title": "Candles",
-    "url": "https://atcoder.jp/contests/arc101/tasks/arc101_a",
-  },
-  Object {
-    "id": "arc101_b",
-    "label": "D",
-    "title": "Median of Medians",
-    "url": "https://atcoder.jp/contests/arc101/tasks/arc101_b",
-  },
-  Object {
-    "id": "arc101_c",
-    "label": "E",
-    "title": "Ribbons on Tree",
-    "url": "https://atcoder.jp/contests/arc101/tasks/arc101_c",
-  },
-  Object {
-    "id": "arc101_d",
-    "label": "F",
-    "title": "Robots and Exits",
-    "url": "https://atcoder.jp/contests/arc101/tasks/arc101_d",
+    "title": "Imaginary Problem",
+    "url": "https://atcoder.jp/contests/aic987/tasks/aic987_d",
   },
 ]
 `;

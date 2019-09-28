@@ -2,15 +2,22 @@ jest.useFakeTimers();
 import {username, password} from "./auth.json";
 import {AtCoder} from "../../src/atcoder";
 import {disableCookieFileIO, mockLogin} from "../utils";
-import { productionAtCoderDesign } from "../../src/di";
+import { AtCoderDesign } from "../../src/di";
+import { TestSession } from "../utils/session";
+import { addNonLoggedInCheckMock, addLoginPageMock, addLoggedInCheckMock, registerContetstPageMock } from "../utils/responseMock";
 
 // ログイン情報が実際にコンフィグファイルに書き込まれないようにする
 disableCookieFileIO();
 
-// テスト用のAtCoderインスタンスを生成（現時点ではまだproduction用と同じ）
+// テスト用のAtCoderインスタンスとTestSessionインスタンスを生成（現時点ではまだproduction用と同じ）
 const getTestAtCoder = async () => {
-	const { container: { atcoder }} = await productionAtCoderDesign.resolve({});
-	return atcoder;
+	const { container: {atcoder, session} } = await AtCoderDesign
+		.bind('session', ()=> new TestSession())
+		.resolve({});
+	return {
+		atcoder,
+		session
+	};
 }
 
 /*
@@ -21,23 +28,33 @@ const getTestAtCoder = async () => {
    __tests__/auth.jsonはgit管理に含めないように注意してください
  */
 test("AtCoder Login", async () => {
-	const atcoder = await getTestAtCoder();
+	const { atcoder, session } = await getTestAtCoder();
+
+	addNonLoggedInCheckMock(session);
+	addLoginPageMock(session);
+
 	expect(await atcoder.checkSession()).toBe(false);
 	expect(await mockLogin(atcoder, {username, password})).toBe(true);
+
+	addLoggedInCheckMock(session);
+
 	expect(await atcoder.checkSession(true)).toBe(true);
 });
 
 describe("AtCoder get information", () => {
 	// 使用前にbeforeAllで代入される
 	let atcoder!: AtCoder;
+	let session!: TestSession;
 	beforeAll(async () => {
 		if (!atcoder) {
-			atcoder = await getTestAtCoder();
+			({atcoder, session} = await getTestAtCoder());
+			addLoggedInCheckMock(session);
+			registerContetstPageMock(session);
 		}
 		await mockLogin(atcoder, {username, password});
 	});
 	describe("contest and tasks", ()=> {
-		const contests = ["abc101", "arc101"];
+		const contests = ["aic987"];
 		describe("contest", () => {
 			test.each(contests)("%s", async (contest_id) => {
 				expect(await atcoder.contest(contest_id)).toMatchSnapshot();
@@ -54,7 +71,7 @@ describe("AtCoder get information", () => {
 				await expect(atcoder.tasks("abc0xx")).rejects.toThrow();
 			});
 		});
-		const tasks = [["abc101", "abc101_a"], ["abc101", "abc101_b"], ["arc101", "arc101_a"]];
+		const tasks = [["aic987", "aic987_a"], ["aic987", "aic987_b"], ["aic987", "aic987_c"]];
 		describe("task", () => {
 			test.each(tasks)("%s %s", async (contest_id, task_id) => {
 				expect(await atcoder.task(contest_id, task_id)).toMatchSnapshot();
@@ -63,7 +80,7 @@ describe("AtCoder get information", () => {
 				await expect(atcoder.task("abc0xx", "abc0xx_z")).rejects.toThrow();
 			});
 			test("invalid task id", async () => {
-				await expect(atcoder.task("abc101", "abc102_a")).rejects.toThrow();
+				await expect(atcoder.task("aic987", "aic999_a")).rejects.toThrow();
 			});
 		});
 	});
