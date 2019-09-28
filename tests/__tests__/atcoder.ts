@@ -48,7 +48,8 @@ describe("AtCoder get information", () => {
 	beforeAll(async () => {
 		if (!atcoder) {
 			({atcoder, session} = await getTestAtCoder());
-			registerContetstPageMock(session)
+			addLoggedInCheckMock(session);
+			registerContetstPageMock(session);
 		}
 		await mockLogin(atcoder, {username, password});
 	});
@@ -70,7 +71,7 @@ describe("AtCoder get information", () => {
 				await expect(atcoder.tasks("abc0xx")).rejects.toThrow();
 			});
 		});
-		const tasks = [["abc101", "abc101_a"], ["abc101", "abc101_b"], ["arc101", "arc101_a"]];
+		const tasks = [["aic987", "aic987_a"], ["aic987", "aic987_b"], ["aic987", "aic987_c"]];
 		describe("task", () => {
 			test.each(tasks)("%s %s", async (contest_id, task_id) => {
 				expect(await atcoder.task(contest_id, task_id)).toMatchSnapshot();

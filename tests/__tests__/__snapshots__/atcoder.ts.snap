@@ -8,29 +8,58 @@ Object {
 }
 `;
 
-exports[`AtCoder get information contest and tasks task abc101 abc101_a 1`] = `
+exports[`AtCoder get information contest and tasks task aic987 aic987_a 1`] = `
 Object {
-  "id": "abc101_a",
+  "id": "aic987_a",
   "label": "A",
-  "title": "Eating Symbols Easy",
-  "url": "https://atcoder.jp/contests/abc101/tasks/abc101_a",
+  "title": "This is Problem A",
+  "url": "https://atcoder.jp/contests/aic987/tasks/aic987_a",
 }
 `;
 
-exports[`AtCoder get information contest and tasks task abc101 abc101_b 1`] = `
+exports[`AtCoder get information contest and tasks task aic987 aic987_b 1`] = `
 Object {
-  "id": "abc101_b",
+  "id": "aic987_b",
   "label": "B",
-  "title": "Digit Sums",
-  "url": "https://atcoder.jp/contests/abc101/tasks/abc101_b",
+  "title": "Next Problem",
+  "url": "https://atcoder.jp/contests/aic987/tasks/aic987_b",
 }
 `;
 
-exports[`AtCoder get information contest and tasks task arc101 arc101_a 1`] = `
+exports[`AtCoder get information contest and tasks task aic987 aic987_c 1`] = `
 Object {
-  "id": "arc101_a",
+  "id": "aic987_c",
   "label": "C",
-  "title": "Candles",
-  "url": "https://atcoder.jp/contests/arc101/tasks/arc101_a",
+  "title": "The Test Cases",
+  "url": "https://atcoder.jp/contests/aic987/tasks/aic987_c",
 }
+`;
+
+exports[`AtCoder get information contest and tasks tasks aic987 1`] = `
+Array [
+  Object {
+    "id": "aic987_a",
+    "label": "A",
+    "title": "This is Problem A",
+    "url": "https://atcoder.jp/contests/aic987/tasks/aic987_a",
+  },
+  Object {
+    "id": "aic987_b",
+    "label": "B",
+    "title": "Next Problem",
+    "url": "https://atcoder.jp/contests/aic987/tasks/aic987_b",
+  },
+  Object {
+    "id": "aic987_c",
+    "label": "C",
+    "title": "The Test Cases",
+    "url": "https://atcoder.jp/contests/aic987/tasks/aic987_c",
+  },
+  Object {
+    "id": "aic987_d",
+    "label": "D",
+    "title": "Imaginary Problem",
+    "url": "https://atcoder.jp/contests/aic987/tasks/aic987_d",
+  },
+]
 `;
