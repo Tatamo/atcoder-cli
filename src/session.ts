@@ -5,13 +5,13 @@ type AxiosResponse = import("axios").AxiosResponse;
 
 export interface SessionInterface {
 	/**
-	 * このセッションを用いてGETリクエストを発行しする。
+	 * このセッションを用いてGETリクエストを発行する。
 	 * @param url リクエスト先のURL
 	 * @param options 
 	 */
 	get(url: string, options?: AxiosRequestConfig): Promise<SessionResponseInterface>;
 	/**
-	 * このセッションを用いてGETリクエストを発行しする。
+	 * このセッションを用いてPOSTリクエストを発行する。
 	 * @param url リクエスト先のURL
 	 * @param data リクエストボディに含めるデータ。 
 	 * @param options 
