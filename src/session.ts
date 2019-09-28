@@ -5,13 +5,13 @@ type AxiosResponse = import("axios").AxiosResponse;
 
 export interface SessionInterface {
 	/**
-	 * このセッションを用いてGETリクエストを発行しする。
+	 * このセッションを用いてGETリクエストを発行する。
 	 * @param url リクエスト先のURL
 	 * @param options 
 	 */
 	get(url: string, options?: AxiosRequestConfig): Promise<SessionResponseInterface>;
 	/**
-	 * このセッションを用いてGETリクエストを発行しする。
+	 * このセッションを用いてPOSTリクエストを発行する。
 	 * @param url リクエスト先のURL
 	 * @param data リクエストボディに含めるデータ。 
 	 * @param options 
@@ -22,6 +22,10 @@ export interface SessionInterface {
 	 * コールバック中に保存されたセッションはトランザクションが成功して終了するまで保存されない。
 	 */
 	transaction<R>(callback: () => Promise<R>): Promise<R>
+	/**
+	 * 現在のセッション情報を破棄します
+	 */
+	removeSession(): Promise<void>;
 }
 
 export interface SessionResponseInterface {
@@ -151,5 +155,12 @@ export class Session implements SessionInterface {
 			return;
 		}
 		await session_cookies.saveConfigFile();
+	}
+
+	async removeSession(): Promise<void> {
+		const session_cooies = (await this.getCookies());
+		session_cooies.empty();
+		// 空のcookieで設定ファイルを上書きする
+		await session_cooies.saveConfigFile();
 	}
 }
