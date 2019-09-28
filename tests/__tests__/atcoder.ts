@@ -2,7 +2,7 @@ jest.useFakeTimers();
 import {username, password} from "./auth.json";
 import {AtCoder} from "../../src/atcoder";
 import {disableCookieFileIO, mockLogin} from "../utils";
-import { productionAtCoderDesign } from "../../src/di/index.js";
+import { productionAtCoderDesign } from "../../src/di";
 
 // ログイン情報が実際にコンフィグファイルに書き込まれないようにする
 disableCookieFileIO();
@@ -34,7 +34,7 @@ describe("AtCoder get information", () => {
 		if (!atcoder) {
 			atcoder = await getTestAtCoder();
 		}
-		await mockLogin(atcoder, {username, password});
+		// await mockLogin(atcoder, {username, password});
 	});
 	describe("contest and tasks", ()=> {
 		const contests = ["abc101", "arc101"];
