@@ -4,13 +4,44 @@ type AxiosRequestConfig = import("axios").AxiosRequestConfig;
 type AxiosResponse = import("axios").AxiosResponse;
 
 export interface SessionInterface {
-	get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-	saveSessionFromCookies(cookies: Array<string>): Promise<void>;
+	/**
+	 * このセッションを用いてGETリクエストを発行する。
+	 * @param url リクエスト先のURL
+	 * @param options 
+	 */
+	get(url: string, options?: AxiosRequestConfig): Promise<SessionResponseInterface>;
+	/**
+	 * このセッションを用いてPOSTリクエストを発行する。
+	 * @param url リクエスト先のURL
+	 * @param data リクエストボディに含めるデータ。 
+	 * @param options 
+	 */
+	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<SessionResponseInterface>;
 	/**
 	 * 現在のセッション情報を破棄します
 	 */
 	removeSession(): Promise<void>;
+}
+
+export interface SessionResponseInterface {
+	/**
+	 * レスポンスのHTTPステータスコード。
+	 */
+	 status: number;
+	 /**
+	  * レスポンス本文。
+	  */
+	 data: string;
+	/**
+	 * HTTPヘッダー
+	 */
+	 headers: {
+		location?: string
+	 }
+	 /**
+	  * このレスポンスの情報を用いてセッションを保存
+	  */
+	 saveSession(): Promise<void>
 }
 
 /**
@@ -44,25 +75,38 @@ export class Session implements SessionInterface {
 		return this._cookies;
 	}
 
-	async get(url: string, options: AxiosRequestConfig = {}): Promise<AxiosResponse> {
-		return await (await Session.importAxios())(url, {
+	async get(url: string, options: AxiosRequestConfig = {}): Promise<SessionResponseInterface> {
+		return this.makeSessionResponse(await (await Session.importAxios())(url, {
 			headers: {
 				Cookie: (await this.getCookies()).get().join("; ")
 			},
 			...options
-		})
+		}))
 	}
 
-	async post(url: string, data?: any, options: AxiosRequestConfig = {}): Promise<AxiosResponse> {
-		return await (await Session.importAxios()).post(url, data, {
+	async post(url: string, data?: any, options: AxiosRequestConfig = {}): Promise<SessionResponseInterface> {
+		return this.makeSessionResponse(await (await Session.importAxios()).post(url, data, {
 			headers: {
 				Cookie: (await this.getCookies()).get().join("; ")
 			},
 			...options
-		})
+		}))
 	}
 
-	async saveSessionFromCookies(cookies: Array<string>): Promise<void> {
+	private makeSessionResponse({status, data, headers}: AxiosResponse): SessionResponseInterface {
+		const saveSession = async ()=>{
+			const new_cookies = this.CookieConstructor.convertSetCookies2CookieArray(headers["set-cookie"]);
+			await this.saveSessionFromCookies(new_cookies);
+		}
+		return {
+			status,
+			data,
+			headers,
+			saveSession
+		}
+	}
+
+	private async saveSessionFromCookies(cookies: Array<string>): Promise<void> {
 		const session_cookies = await this.getCookies();
 		session_cookies.set(cookies);
 		await session_cookies.saveConfigFile();
