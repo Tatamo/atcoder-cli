@@ -1,7 +1,7 @@
 jest.useFakeTimers();
 import {username, password} from "./auth.json";
 import {AtCoder} from "../../src/atcoder";
-import {disableCookieFileIO, mockLogin} from "../utils";
+import {disableCookieFileIO, mockLoginPrompt} from "../utils";
 import { AtCoderDesign } from "../../src/di";
 import { TestSession } from "../utils/session";
 import { addNonLoggedInCheckMock, addLoginPageMock, addLoggedInCheckMock, registerContetstPageMock } from "../utils/responseMock";
@@ -20,6 +20,8 @@ const getTestAtCoder = async () => {
 	};
 }
 
+const mockAuth = {username: "TestUser", password: "secret"};
+
 /*
  このテストが失敗する場合、まず以下の点を確認してください
  - __tests__/auth.json が存在し、正しいユーザー名とパスワードが記述されていること
@@ -32,9 +34,10 @@ test("AtCoder Login", async () => {
 
 	addNonLoggedInCheckMock(session);
 	addLoginPageMock(session);
+	mockLoginPrompt(atcoder, mockAuth);
 
 	expect(await atcoder.checkSession()).toBe(false);
-	expect(await mockLogin(atcoder, {username, password})).toBe(true);
+	expect(await atcoder.login()).toBe(true);
 
 	addLoggedInCheckMock(session);
 
@@ -50,8 +53,9 @@ describe("AtCoder get information", () => {
 			({atcoder, session} = await getTestAtCoder());
 			addLoggedInCheckMock(session);
 			registerContetstPageMock(session);
+			mockLoginPrompt(atcoder, mockAuth);
 		}
-		await mockLogin(atcoder, {username, password});
+		await atcoder.login();
 	});
 	describe("contest and tasks", ()=> {
 		const contests = ["aic987"];
