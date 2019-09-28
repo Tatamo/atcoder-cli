@@ -53,6 +53,58 @@ export function addLoginPageMock(session: TestSession) {
  * Register a contest page response mock.
  */
 export function registerContetstPageMock(session: TestSession) {
+    session.addGetMockResponse(AtCoder.getContestURL('aic987'), {
+        status: 200,
+        data: `
+        <!DOCTYPE html>
+
+        <html>
+        <head>
+            <title>AtCoder Imaginary Contest 987 - AtCoder</title>
+            <script>
+              var contestScreenName = "aic987";
+              var remainingText = "Remaining Time";
+              var countDownText = "Contest begins in";
+              var startTime = moment("2020-01-01T21:00:00+09:00");
+              var endTime = moment("2020-01-01T23:59:59+09:00");
+            </script>
+        </head>
+        
+        <body>
+        <div id="modal-contest-start" class="modal fade" tabindex="-1" role="dialog">
+        </div>
+        <div id="modal-contest-end" class="modal fade" tabindex="-1" role="dialog">
+        </div>
+        <div id="main-div" class="float-container">
+            <nav class="navbar navbar-inverse navbar-fixed-top">
+            </nav>
+            <div id="main-container" class="container" style="padding-top:50px;">
+                <div class="row">
+                    <div id="contest-nav-tabs" class="col-sm-12 mb-2 cnvtb-fixed">
+                    </div>
+                    <div class="col-sm-12">
+                        <div id="contest-statement"><span class="lang">
+                        Contest Description
+                        </span></div>
+                        <script>
+                        </script>
+                    </div>
+                </div>
+                <hr>
+                <div class="a2a_kit a2a_kit_size_20 a2a_default_style pull-right" data-a2a-url="https://atcoder.jp/contests/aic987?lang=ja" data-a2a-title="AtCoder Imaginary Contest 987 - AtCoder">
+                </div>
+            </div>
+            <hr>
+        </div>
+        <div class="container" style="margin-bottom: 80px;">
+            <footer class="footer">
+            </footer>
+        </div>
+        </body>
+        </html>
+`
+    })
+
     session.addGetMockResponse(AtCoder.getTaskURL('aic987'), {
         status: 200,
         data: `
