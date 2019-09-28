@@ -6,7 +6,7 @@ type AxiosResponse = import("axios").AxiosResponse;
 export interface SessionInterface {
 	get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse>;
 	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-	getCookies(): Promise<CookieInterface>;
+	saveSessionFromCookies(cookies: Array<string>): Promise<void>;
 }
 
 /**
@@ -56,5 +56,11 @@ export class Session implements SessionInterface {
 			},
 			...options
 		})
+	}
+
+	async saveSessionFromCookies(cookies: Array<string>): Promise<void> {
+		const session_cookies = await this.getCookies();
+		session_cookies.set(cookies);
+		await session_cookies.saveConfigFile();
 	}
 }

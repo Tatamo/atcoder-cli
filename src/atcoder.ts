@@ -97,9 +97,7 @@ export class AtCoder {
 		if (result) {
 			// ログインに成功していた場合はセッション情報を保存する
 			const new_cookies = Cookie.convertSetCookies2CookieArray(response.headers["set-cookie"]);
-			const session_cookies = await this.session.getCookies();
-			session_cookies.set(new_cookies);
-			session_cookies.saveConfigFile();
+			await this.session.saveSessionFromCookies(new_cookies);
 		}
 		return result;
 	}
