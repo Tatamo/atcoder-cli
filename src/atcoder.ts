@@ -26,8 +26,8 @@ export class AtCoder {
 	// null:未検査 true/false: ログインしているかどうか
 	private _login: boolean | null;
 
-	constructor() {
-		this.session = new Session();
+	constructor(session: Session) {
+		this.session = session;
 		this._login = null;
 	}
 

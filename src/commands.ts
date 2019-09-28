@@ -4,9 +4,10 @@ import {Cookie} from "./cookie";
 import {Contest, Task, detectTaskByPath, findProjectJSON, formatTaskDirname, saveProjectJSON, init, installTask, formatContestDirname} from "./project";
 import getConfig, {defaults, getConfigDirectory} from "./config";
 import {getTemplate, getTemplates, Template} from "./template";
+import { getAtCoder } from "./di";
 
 export async function login() {
-	const atcoder = new AtCoder();
+	const atcoder = await getAtCoder();
 	console.log(await atcoder.login() ? "OK" : "login failed");
 }
 
@@ -17,7 +18,7 @@ export async function logout() {
 }
 
 export async function session() {
-	const atcoder = new AtCoder();
+	const atcoder = await getAtCoder();
 	console.log("check login status...");
 	console.log(await atcoder.checkSession() ? "OK" : "not login");
 }
@@ -36,7 +37,7 @@ export async function contest(contest_id: string | undefined, options: { id?: bo
 	}
 	else {
 		try {
-			const atcoder = new AtCoder();
+			const atcoder = await getAtCoder();
 			if (!await atcoder.checkSession()) await atcoder.login();
 			const contest = await atcoder.contest(contest_id);
 			console.log(format(contest));
@@ -64,7 +65,7 @@ export async function task(contest_id: string | undefined, task_id: string | und
 	}
 	else if (contest_id !== undefined && task_id !== undefined) {
 		try {
-			const atcoder = new AtCoder();
+			const atcoder = await getAtCoder();
 			if (!await atcoder.checkSession()) await atcoder.login();
 			const task = await atcoder.task(contest_id, task_id);
 			console.log(format(task));
@@ -91,7 +92,7 @@ export async function tasks(contest_id: string | undefined, options: { id?: bool
 	}
 	else {
 		try {
-			const atcoder = new AtCoder();
+			const atcoder = await getAtCoder();
 			if (!await atcoder.checkSession()) await atcoder.login();
 			const tasks = await atcoder.tasks(contest_id);
 			console.log(format(tasks));
@@ -105,7 +106,7 @@ export async function url(contest_id: string | undefined, task_id: string | unde
 	const f_check = options.check === true;
 	if (contest_id !== undefined && task_id !== undefined) {
 		if (f_check) {
-			const atcoder = new AtCoder();
+			const atcoder = await getAtCoder();
 			try {
 				const tasks = await atcoder.tasks(contest_id);
 				// Task一覧から一致するURLを探す
@@ -128,7 +129,7 @@ export async function url(contest_id: string | undefined, task_id: string | unde
 	}
 	else if (contest_id !== undefined && task_id === undefined) {
 		if (f_check) {
-			const atcoder = new AtCoder();
+			const atcoder = await getAtCoder();
 			try {
 				// コンテストページの存在確認
 				const {url} = await atcoder.contest(contest_id);
@@ -148,7 +149,7 @@ export async function url(contest_id: string | undefined, task_id: string | unde
 }
 
 export async function format(format_string: string, contest_id: string, task_id?: string) {
-	const atcoder = new AtCoder();
+	const atcoder = await getAtCoder();
 	if (!await atcoder.checkSession()) await atcoder.login();
 	if (task_id === undefined) {
 		// コンテスト情報のみを使用
@@ -215,7 +216,8 @@ export async function submit(filename: string | undefined, options: { task?: str
 	}
 
 	// URLの妥当性をチェック
-	const url: string | null = (await new AtCoder().task(contest_id, task_id).catch(() => ({url: null}))).url;
+	const atcoder = await getAtCoder();
+	const url: string | null = (await atcoder.task(contest_id, task_id).catch(() => ({url: null}))).url;
 	if (url === null) {
 		console.error(`Task ${AtCoder.getTaskURL(contest_id, task_id)} not found.`);
 		return;
