@@ -17,7 +17,7 @@ export class TestSession implements SessionInterface {
             saveSession: async ()=>{}
         };
     }
-    async post(url: string, data?: any, options?: AxiosRequestConfig): Promise<SessionResponseInterface> {
+    async post(url: string, _data?: any, options?: AxiosRequestConfig): Promise<SessionResponseInterface> {
         return this.get(url, options);
     }
     transaction<R>(callback: ()=> Promise<R>): Promise<R> {

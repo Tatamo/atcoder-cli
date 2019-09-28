@@ -2,15 +2,21 @@ jest.useFakeTimers();
 import {username, password} from "./auth.json";
 import {AtCoder} from "../../src/atcoder";
 import {disableCookieFileIO, mockLogin} from "../utils";
-import { productionAtCoderDesign } from "../../src/di";
+import { AtCoderDesign } from "../../src/di";
+import { TestSession } from "../utils/session";
 
 // ログイン情報が実際にコンフィグファイルに書き込まれないようにする
 disableCookieFileIO();
 
-// テスト用のAtCoderインスタンスを生成（現時点ではまだproduction用と同じ）
+// テスト用のAtCoderインスタンスとTestSessionインスタンスを生成（現時点ではまだproduction用と同じ）
 const getTestAtCoder = async () => {
-	const { container: { atcoder }} = await productionAtCoderDesign.resolve({});
-	return atcoder;
+	const { container: {atcoder, session} } = await AtCoderDesign
+		.bind('session', ()=> new TestSession())
+		.resolve({});
+	return {
+		atcoder,
+		session
+	};
 }
 
 /*
@@ -21,7 +27,7 @@ const getTestAtCoder = async () => {
    __tests__/auth.jsonはgit管理に含めないように注意してください
  */
 test("AtCoder Login", async () => {
-	const atcoder = await getTestAtCoder();
+	const { atcoder, session } = await getTestAtCoder();
 	expect(await atcoder.checkSession()).toBe(false);
 	expect(await mockLogin(atcoder, {username, password})).toBe(true);
 	expect(await atcoder.checkSession(true)).toBe(true);
@@ -30,9 +36,10 @@ test("AtCoder Login", async () => {
 describe("AtCoder get information", () => {
 	// 使用前にbeforeAllで代入される
 	let atcoder!: AtCoder;
+	let session!: TestSession;
 	beforeAll(async () => {
 		if (!atcoder) {
-			atcoder = await getTestAtCoder();
+			({atcoder, session} = await getTestAtCoder());
 		}
 		await mockLogin(atcoder, {username, password});
 	});
