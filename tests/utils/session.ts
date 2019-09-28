@@ -26,7 +26,6 @@ export class TestSession implements SessionInterface {
     }
     async post(url: string, _data?: any, options?: AxiosRequestConfig): Promise<SessionResponseInterface> {
         const responseObj = this.postMockResponses.get(url);
-        console.log(url, responseObj)
         if (responseObj === undefined) {
             throw new Error("TestSession: network error");
         }
