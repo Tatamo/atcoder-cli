@@ -1,6 +1,5 @@
 import {AtCoder} from "./atcoder";
 import {OnlineJudge} from "./facade/oj";
-import {Cookie} from "./cookie";
 import {Contest, Task, detectTaskByPath, findProjectJSON, formatTaskDirname, saveProjectJSON, init, installTask, formatContestDirname} from "./project";
 import getConfig, {defaults, getConfigDirectory} from "./config";
 import {getTemplate, getTemplates, Template} from "./template";
