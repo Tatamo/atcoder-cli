@@ -18,6 +18,11 @@ export interface SessionInterface {
 	 */
 	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<SessionResponseInterface>;
 	/**
+	 * トランザクションを実行する。
+	 * コールバック中に保存されたセッションはトランザクションが成功して終了するまで保存されない。
+	 */
+	transaction<R>(callback: () => Promise<R>): Promise<R>
+	/**
 	 * 現在のセッション情報を破棄します
 	 */
 	removeSession(): Promise<void>;
@@ -44,6 +49,14 @@ export interface SessionResponseInterface {
 	 saveSession(): Promise<void>
 }
 
+interface Transaction {
+	cookies: CookieInterface;
+	/**
+	 * cookieをセーブする必要があるか
+	 */
+	isUpdated: boolean;
+}
+
 /**
  * セッション管理用クラス
  * こいつでcookieを使いまわしてログイン認証した状態でデータをとってくる
@@ -52,6 +65,7 @@ export class Session implements SessionInterface {
 	private static _axios: import("axios").AxiosInstance | null = null;
 	private CookieConstructor: CookieConstructorInterface
 	private _cookies: CookieInterface | null;
+	private _currentTransaction: Transaction | null = null;
 
 	constructor(CookieConstructor: CookieConstructorInterface) {
 		this.CookieConstructor = CookieConstructor
@@ -69,6 +83,10 @@ export class Session implements SessionInterface {
 	}
 
 	async getCookies(): Promise<CookieInterface> {
+		if (this._currentTransaction !== null) {
+			// if this is inside a transaction, use the temporal cookie.
+			return this._currentTransaction.cookies;
+		}
 		if (this._cookies === null) {
 			return this._cookies = await this.CookieConstructor.createLoadedInstance();
 		}
@@ -93,6 +111,28 @@ export class Session implements SessionInterface {
 		}))
 	}
 
+	async transaction<R>(callback: () => Promise<R>): Promise<R> {
+		if (this._currentTransaction !== null) {
+			throw new Error("Cannot start a new transaction inside transaction.")
+		}
+		const currentCookies = await this.getCookies();
+		this._currentTransaction = {
+			cookies: currentCookies.clone(),
+			isUpdated: false
+		}
+		try {
+			const result = await callback();
+			// If transaction finished successfully, adopt temporal cookie as the new persistent one.
+			this._cookies = this._currentTransaction.cookies;
+			if (this._currentTransaction.isUpdated) {
+				await this._cookies.saveConfigFile();
+			}
+			return result;
+		} finally {
+			this._currentTransaction = null;
+		}
+	}
+
 	private makeSessionResponse({status, data, headers}: AxiosResponse): SessionResponseInterface {
 		const saveSession = async ()=>{
 			const new_cookies = this.CookieConstructor.convertSetCookies2CookieArray(headers["set-cookie"]);
@@ -109,13 +149,26 @@ export class Session implements SessionInterface {
 	private async saveSessionFromCookies(cookies: Array<string>): Promise<void> {
 		const session_cookies = await this.getCookies();
 		session_cookies.set(cookies);
-		await session_cookies.saveConfigFile();
+		await this.saveCookie();
 	}
 
 	async removeSession(): Promise<void> {
 		const session_cooies = (await this.getCookies());
 		session_cooies.empty();
 		// 空のcookieで設定ファイルを上書きする
-		await session_cooies.saveConfigFile();
+		await this.saveCookie();
+	}
+
+	/**
+	 * cookieへの保存を設定ファイルに反映する。
+	 * ただしトランザクション中は保存されない。
+	 */
+	private async saveCookie(): Promise<void> {
+		if (this._currentTransaction !== null) {
+			// If this is inside a transaction, do not save cookie to config file.
+			this._currentTransaction.isUpdated = true;
+			return;
+		}
+		await (await this.getCookies()).saveConfigFile();
 	}
 }
