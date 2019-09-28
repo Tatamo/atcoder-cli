@@ -9,18 +9,18 @@ export interface SessionInterface {
 	 * @param url リクエスト先のURL
 	 * @param options 
 	 */
-	get(url: string, options?: AxiosRequestConfig): Promise<SessionResponse>;
+	get(url: string, options?: AxiosRequestConfig): Promise<SessionResponseInterface>;
 	/**
 	 * このセッションを用いてGETリクエストを発行しする。
 	 * @param url リクエスト先のURL
 	 * @param data リクエストボディに含めるデータ。 
 	 * @param options 
 	 */
-	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<SessionResponse>;
+	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<SessionResponseInterface>;
 	saveSessionFromCookies(cookies: Array<string>): Promise<void>;
 }
 
-export interface SessionResponse {
+export interface SessionResponseInterface {
 	/**
 	 * レスポンスのHTTPステータスコード。
 	 */
