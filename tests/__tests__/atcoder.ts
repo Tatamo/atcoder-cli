@@ -34,7 +34,7 @@ describe("AtCoder get information", () => {
 		if (!atcoder) {
 			atcoder = await getTestAtCoder();
 		}
-		// await mockLogin(atcoder, {username, password});
+		await mockLogin(atcoder, {username, password});
 	});
 	describe("contest and tasks", ()=> {
 		const contests = ["abc101", "arc101"];
