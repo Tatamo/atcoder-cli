@@ -1,4 +1,4 @@
-import {Session} from "./session";
+import {Session, SessionInterface} from "./session";
 import {Cookie} from "./cookie";
 import querystring from "query-string";
 import {Contest, Task} from "./project";
@@ -22,11 +22,11 @@ export class AtCoder {
 		return `${AtCoder.getContestURL(contest)}/tasks${task === undefined ? "" : `/${task}`}`;
 	}
 
-	private session: Session;
+	private session: SessionInterface;
 	// null:未検査 true/false: ログインしているかどうか
 	private _login: boolean | null;
 
-	constructor(session: Session) {
+	constructor(session: SessionInterface) {
 		this.session = session;
 		this._login = null;
 	}
