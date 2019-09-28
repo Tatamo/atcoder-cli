@@ -7,7 +7,7 @@ import { addNonLoggedInCheckMock, addLoginPageMock, addLoggedInCheckMock, regist
 // ログイン情報が実際にコンフィグファイルに書き込まれないようにする
 disableCookieFileIO();
 
-// テスト用のAtCoderインスタンスとTestSessionインスタンスを生成（現時点ではまだproduction用と同じ）
+// テスト用のAtCoderインスタンスとTestSessionインスタンスを生成
 const getTestAtCoder = async () => {
 	const { container: {atcoder, session} } = await AtCoderDesign
 		.bind('session', ()=> new TestSession())
