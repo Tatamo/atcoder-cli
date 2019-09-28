@@ -4,6 +4,7 @@ import {AtCoder} from "../../src/atcoder";
 import {disableCookieFileIO, mockLogin} from "../utils";
 import { AtCoderDesign } from "../../src/di";
 import { TestSession } from "../utils/session";
+import { addNonLoggedInCheckMock, addLoginPageMock, addLoggedInCheckMock } from "../utils/responseMock";
 
 // ログイン情報が実際にコンフィグファイルに書き込まれないようにする
 disableCookieFileIO();
@@ -28,8 +29,15 @@ const getTestAtCoder = async () => {
  */
 test("AtCoder Login", async () => {
 	const { atcoder, session } = await getTestAtCoder();
+
+	addNonLoggedInCheckMock(session);
+	addLoginPageMock(session);
+
 	expect(await atcoder.checkSession()).toBe(false);
 	expect(await mockLogin(atcoder, {username, password})).toBe(true);
+
+	addLoggedInCheckMock(session);
+
 	expect(await atcoder.checkSession(true)).toBe(true);
 });
 
