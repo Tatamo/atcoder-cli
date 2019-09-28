@@ -12,8 +12,8 @@ export async function login() {
 }
 
 export async function logout() {
-	// 空のcookieで設定ファイルを上書きする
-	await new Cookie().saveConfigFile();
+	const atcoder = await getAtCoder();
+	await atcoder.logout();
 	console.log("login session aborted.");
 }
 

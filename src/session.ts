@@ -71,6 +71,7 @@ export class Session implements SessionInterface {
 	async removeSession(): Promise<void> {
 		const session_cooies = (await this.getCookies());
 		session_cooies.empty();
+		// 空のcookieで設定ファイルを上書きする
 		await session_cooies.saveConfigFile();
 	}
 }
