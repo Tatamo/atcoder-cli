@@ -17,6 +17,10 @@ export interface CookieInterface {
 	 */
 	empty(): void;
 	/**
+	 * 同じ内容を持った新しいCookieオブジェクトを返す
+	 */
+	clone(): CookieInterface
+	/**
 	 * 設定ファイルからcookieを読み込んで保持する
 	 */
 	loadConfigFile(): Promise<void>;
@@ -79,6 +83,12 @@ export class Cookie implements CookieInterface {
 	 */
 	set(cookies: Array<string>) {
 		this.cookies = cookies;
+	}
+
+	clone(): Cookie {
+		const result = new Cookie();
+		result.set(this.cookies.slice());
+		return result;
 	}
 
 	/**
