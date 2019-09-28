@@ -46,7 +46,11 @@ export interface SessionResponseInterface {
 }
 
 interface Transaction {
-	cookies: CookieInterface
+	cookies: CookieInterface;
+	/**
+	 * cookieをセーブする必要があるか
+	 */
+	isUpdated: boolean;
 }
 
 /**
@@ -109,13 +113,16 @@ export class Session implements SessionInterface {
 		}
 		const currentCookies = await this.getCookies();
 		this._currentTransaction = {
-			cookies: currentCookies.clone()
+			cookies: currentCookies.clone(),
+			isUpdated: false
 		}
 		try {
 			const result = await callback();
 			// If transaction finished successfully, adopt temporal cookie as the new persistent one.
 			this._cookies = this._currentTransaction.cookies;
-			await this._cookies.saveConfigFile();
+			if (this._currentTransaction.isUpdated) {
+				await this._cookies.saveConfigFile();
+			}
 			return result;
 		} finally {
 			this._currentTransaction = null;
@@ -140,7 +147,8 @@ export class Session implements SessionInterface {
 		session_cookies.set(cookies);
 		if (this._currentTransaction !== null) {
 			// If this is inside a transaction, do not save cookie to config file.
-			return
+			this._currentTransaction.isUpdated = true;
+			return;
 		}
 		await session_cookies.saveConfigFile();
 	}
