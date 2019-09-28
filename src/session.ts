@@ -17,6 +17,11 @@ export interface SessionInterface {
 	 * @param options 
 	 */
 	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<SessionResponseInterface>;
+	/**
+	 * トランザクションを実行する。
+	 * コールバック中に保存されたセッションはトランザクションが成功して終了するまで保存されない。
+	 */
+	transaction<R>(callback: () => Promise<R>): Promise<R>
 }
 
 export interface SessionResponseInterface {
@@ -40,6 +45,10 @@ export interface SessionResponseInterface {
 	 saveSession(): Promise<void>
 }
 
+interface Transaction {
+	cookie: CookieInterface
+}
+
 /**
  * セッション管理用クラス
  * こいつでcookieを使いまわしてログイン認証した状態でデータをとってくる
@@ -48,6 +57,7 @@ export class Session implements SessionInterface {
 	private static _axios: import("axios").AxiosInstance | null = null;
 	private CookieConstructor: CookieConstructorInterface
 	private _cookies: CookieInterface | null;
+	private _currentTransaction: Transaction | null = null;
 
 	constructor(CookieConstructor: CookieConstructorInterface) {
 		this.CookieConstructor = CookieConstructor
@@ -87,6 +97,19 @@ export class Session implements SessionInterface {
 			},
 			...options
 		}))
+	}
+
+	async transaction<R>(callback: () => Promise<R>): Promise<R> {
+		if (this._currentTransaction !== null) {
+			throw new Error("Cannot start a new transaction inside transaction.")
+		}
+		this._currentTransaction = {
+			cookie: (await this.getCookies()).clone()
+		}
+		const result = await callback();
+		this._cookies = this._currentTransaction.cookie;
+		await this._cookies.saveConfigFile();
+		return result;
 	}
 
 	private makeSessionResponse({status, data, headers}: AxiosResponse): SessionResponseInterface {
