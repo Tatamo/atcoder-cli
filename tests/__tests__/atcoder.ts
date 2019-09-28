@@ -49,11 +49,13 @@ describe("AtCoder get information", () => {
 	beforeAll(async () => {
 		if (!atcoder) {
 			({atcoder, session} = await getTestAtCoder());
-			addLoggedInCheckMock(session);
-			registerContetstPageMock(session);
-			mockLoginPrompt(atcoder, mockAuth);
 		}
+		addNonLoggedInCheckMock(session);
+		addLoginPageMock(session);
+		mockLoginPrompt(atcoder, mockAuth);
 		await atcoder.login();
+		addLoggedInCheckMock(session);
+		registerContetstPageMock(session);
 	});
 	describe("contest and tasks", ()=> {
 		const contests = ["aic987"];
