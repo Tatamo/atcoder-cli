@@ -4,9 +4,37 @@ type AxiosRequestConfig = import("axios").AxiosRequestConfig;
 type AxiosResponse = import("axios").AxiosResponse;
 
 export interface SessionInterface {
-	get(url: string, options?: AxiosRequestConfig): Promise<AxiosResponse>;
-	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<AxiosResponse>;
+	/**
+	 * このセッションを用いてGETリクエストを発行しする。
+	 * @param url リクエスト先のURL
+	 * @param options 
+	 */
+	get(url: string, options?: AxiosRequestConfig): Promise<SessionResponse>;
+	/**
+	 * このセッションを用いてGETリクエストを発行しする。
+	 * @param url リクエスト先のURL
+	 * @param data リクエストボディに含めるデータ。 
+	 * @param options 
+	 */
+	post(url: string, data?: any, options?: AxiosRequestConfig): Promise<SessionResponse>;
 	saveSessionFromCookies(cookies: Array<string>): Promise<void>;
+}
+
+export interface SessionResponse {
+	/**
+	 * レスポンスのHTTPステータスコード。
+	 */
+	 status: number;
+	 /**
+	  * レスポンス本文。
+	  */
+	 data: string;
+	 /**
+	  * HTTPヘッダー（TODO：これは消す）
+	  */
+	 headers: {
+		 "set-cookie": string[]
+	 }
 }
 
 /**
