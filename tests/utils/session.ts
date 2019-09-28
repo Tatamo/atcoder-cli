@@ -10,13 +10,13 @@ interface MockResponse {
  * Mocked Session whose response can be predefined.
  */
 export class TestSession implements SessionInterface {
-    private getMockResponses: Map<string, MockResponse> = new Map()
-    private postMockResponses: Map<string, MockResponse> = new Map()
+    private getMockResponses: Map<string, MockResponse> = new Map();
+    private postMockResponses: Map<string, MockResponse> = new Map();
 
     async get(url: string, _options?: AxiosRequestConfig): Promise<SessionResponseInterface> {
         const responseObj = this.getMockResponses.get(url);
         if (responseObj === undefined) {
-            throw new Error("TestSession: network error");
+            throw new Error(`TestSession: network error to GET ${url}`);
         }
         return {
             headers: {},
@@ -27,7 +27,7 @@ export class TestSession implements SessionInterface {
     async post(url: string, _data?: any, options?: AxiosRequestConfig): Promise<SessionResponseInterface> {
         const responseObj = this.postMockResponses.get(url);
         if (responseObj === undefined) {
-            throw new Error("TestSession: network error");
+            throw new Error(`TestSession: network error to POST ${url}`);
         }
         return {
             headers: {},
