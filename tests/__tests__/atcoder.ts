@@ -20,13 +20,6 @@ const getTestAtCoder = async () => {
 
 const mockAuth = {username: "TestUser", password: "secret"};
 
-/*
- このテストが失敗する場合、まず以下の点を確認してください
- - __tests__/auth.json が存在し、正しいユーザー名とパスワードが記述されていること
-   すべてのテストを開始する前に、__tests__/auth.example.jsonをコピーして__tests__/auth.json を作成し、
-   有効なAtCoderアカウントのユーザー名とパスワードを記述してください
-   __tests__/auth.jsonはgit管理に含めないように注意してください
- */
 test("AtCoder Login", async () => {
 	const { atcoder, session } = await getTestAtCoder();
 
