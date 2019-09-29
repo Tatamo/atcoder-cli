@@ -8,7 +8,7 @@ import {AtCoder} from "../../src/atcoder";
 // mock axios
 jest.mock("axios");
 // axios.createで作成されるインスタンスもモックに差し替える
-axios.create = jest.fn(()=>axios);
+axios.create = jest.fn(() => axios);
 
 const getTestSession = async (): Promise<SessionInterface> => {
 	const {container: {session}} = await SessionDesign
@@ -21,10 +21,9 @@ const getTestSession = async (): Promise<SessionInterface> => {
 };
 
 describe("session", () => {
-	test("get", async () => {
-		const session = await getTestSession();
+	beforeAll(()=>{
 		// @ts-ignore: dynamically added method for test
-		axios.mockResolvedValueOnce({
+		axios.mockResolvedValue({
 			status: 200,
 			statusText: "OK",
 			headers: {
@@ -36,13 +35,8 @@ describe("session", () => {
 			},
 			data: `<body><p>empty</p></body>`
 		});
-		const result = await session.get(AtCoder.getContestURL("aic987"));
-		expect(result).toMatchSnapshot();
-	});
-	test("post", async () => {
-		const session = await getTestSession();
 		// @ts-ignore: dynamically added method for test
-		axios.post.mockResolvedValueOnce({
+		axios.post.mockResolvedValue({
 			status: 302,
 			statusText: "Found",
 			location: "/",
@@ -54,7 +48,33 @@ describe("session", () => {
 			},
 			data: `<body><p>empty</p></body>`
 		});
+	});
+	beforeEach(() => {
+		// モック関数の呼び出し履歴をリセット
+		jest.clearAllMocks();
+	});
+	test("get", async () => {
+		const session = await getTestSession();
+		const result = await session.get(AtCoder.getContestURL("aic987"));
+		expect(result).toMatchSnapshot();
+	});
+	test("post", async () => {
+		const session = await getTestSession();
 		const result = await session.post(AtCoder.login_url);
 		expect(result).toMatchSnapshot();
 	});
+	test("transaction", async () => {
+		const session = await getTestSession();
+		await session.transaction(async ()=>{
+			await (await session.get(AtCoder.getContestURL("aic987"))).saveSession();
+			await (await session.get(AtCoder.getTaskURL("aic987"))).saveSession();
+			await (await session.post(AtCoder.login_url)).saveSession();
+			// saveSession()を複数回呼び出しても、Cookieのファイルへの保存は行われない
+			// @ts-ignore: dynamically added property for test
+			expect(Cookie.prototype.saveConfigFile.mock.calls.length).toBe(0);
+		});
+		// transaction終了時に一度だけsaveConfigFile()が呼び出される
+		// @ts-ignore: dynamically added property for test
+		expect(Cookie.prototype.saveConfigFile.mock.calls.length).toBe(1);
+	})
 });
