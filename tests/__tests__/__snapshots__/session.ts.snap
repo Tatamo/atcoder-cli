@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`session get 1`] = `
+exports[`Session get 1`] = `
 Object {
   "data": "<body><p>empty</p></body>",
   "headers": Object {
@@ -15,7 +15,7 @@ Object {
 }
 `;
 
-exports[`session post 1`] = `
+exports[`Session post 1`] = `
 Object {
   "data": "<body><p>empty</p></body>",
   "headers": Object {
@@ -27,4 +27,25 @@ Object {
   "saveSession": [Function],
   "status": 302,
 }
+`;
+
+exports[`Session removeSession 1`] = `
+Array [
+  "TEST_COOKIE1=3",
+  "TEST_COOKIE2=xyz",
+]
+`;
+
+exports[`Session transaction saveSession 1`] = `
+Array [
+  "TEST_COOKIE1=3",
+  "TEST_COOKIE2=xyz",
+]
+`;
+
+exports[`Session transaction throw 1`] = `
+Array [
+  "TEST_COOKIE1=3",
+  "TEST_COOKIE2=xyz",
+]
 `;
