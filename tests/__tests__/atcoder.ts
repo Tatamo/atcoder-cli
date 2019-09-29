@@ -12,10 +12,7 @@ const getTestAtCoder = async () => {
 	const { container: {atcoder, session} } = await AtCoderDesign
 		.bind('session', ()=> new TestSession())
 		.resolve({});
-	return {
-		atcoder,
-		session
-	};
+	return { atcoder, session };
 };
 
 const mockAuth = {username: "TestUser", password: "secret"};
