@@ -3,6 +3,7 @@ import {Cookie} from "../../src/cookie";
 import {disableCookieFileIO} from "../utils";
 import axios from "axios";
 import {AtCoder} from "../../src/atcoder";
+import {Session} from "../../src/session";
 
 // mock axios
 jest.mock("axios");
@@ -18,6 +19,10 @@ const getTestSession = async () => {
 		.resolve({});
 	return session;
 };
+
+test("getTestSession", async () => {
+	expect(await getTestSession()).toBeInstanceOf(Session);
+});
 
 describe("Session", () => {
 	beforeAll(() => {
