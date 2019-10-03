@@ -1,4 +1,4 @@
-import {SessionDesign} from "../../src/di/index";
+import {SessionDesign} from "../../src/di";
 import {Cookie} from "../../src/cookie";
 import {disableCookieFileIO} from "../utils";
 import axios from "axios";
