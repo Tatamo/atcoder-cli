@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Session get 1`] = `
+Object {
+  "data": "<body><p>empty</p></body>",
+  "headers": Object {
+    "content-type": "text/html; charset=utf-8",
+    "set-cookie": Array [
+      "TEST_COOKIE1=1; Path=/; HttpOnly",
+      "TEST_COOKIE2=abc; Max-Age=86400; HttpOnly",
+    ],
+  },
+  "saveSession": [Function],
+  "status": 200,
+}
+`;
+
+exports[`Session post 1`] = `
+Object {
+  "data": "<body><p>empty</p></body>",
+  "headers": Object {
+    "set-cookie": Array [
+      "TEST_COOKIE1=3; Path=/; HttpOnly",
+      "TEST_COOKIE2=xyz; Max-Age=86400; HttpOnly",
+    ],
+  },
+  "saveSession": [Function],
+  "status": 302,
+}
+`;
+
+exports[`Session removeSession 1`] = `
+Array [
+  "TEST_COOKIE1=3",
+  "TEST_COOKIE2=xyz",
+]
+`;
+
+exports[`Session transaction saveSession 1`] = `
+Array [
+  "TEST_COOKIE1=3",
+  "TEST_COOKIE2=xyz",
+]
+`;
+
+exports[`Session transaction throw 1`] = `
+Array [
+  "TEST_COOKIE1=3",
+  "TEST_COOKIE2=xyz",
+]
+`;
