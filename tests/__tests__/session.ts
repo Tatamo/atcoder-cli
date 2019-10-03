@@ -69,7 +69,7 @@ describe("Session", () => {
 			await session.transaction(async () => {
 			});
 			// @ts-ignore: dynamically added property for test
-			expect(Cookie.prototype.saveConfigFile.mock.calls.length).toBe(0);
+			expect(Cookie.prototype.saveConfigFile).toBeCalledTimes(0);
 			expect((await session.getCookies()).get()).toEqual([]);
 		});
 		test("saveSession", async () => {
@@ -80,11 +80,11 @@ describe("Session", () => {
 				await (await session.post(AtCoder.login_url)).saveSession();
 				// saveSession()を複数回呼び出しても、Cookieのファイルへの保存は行われない
 				// @ts-ignore: dynamically added property for test
-				expect(Cookie.prototype.saveConfigFile.mock.calls.length).toBe(0);
+				expect(Cookie.prototype.saveConfigFile).toBeCalledTimes(0);
 			});
 			// transaction終了時に一度だけsaveConfigFile()が呼び出される
 			// @ts-ignore: dynamically added property for test
-			expect(Cookie.prototype.saveConfigFile.mock.calls.length).toBe(1);
+			expect(Cookie.prototype.saveConfigFile).toBeCalledTimes(1);
 			expect((await session.getCookies()).get()).toMatchSnapshot();
 		});
 		test("removeSession", async () => {
@@ -93,10 +93,10 @@ describe("Session", () => {
 				await (await session.post(AtCoder.login_url)).saveSession();
 				await session.removeSession();
 				// @ts-ignore: dynamically added property for test
-				expect(Cookie.prototype.saveConfigFile.mock.calls.length).toBe(0);
+				expect(Cookie.prototype.saveConfigFile).toBeCalledTimes(0);
 			});
 			// @ts-ignore: dynamically added property for test
-			expect(Cookie.prototype.saveConfigFile.mock.calls.length).toBe(1);
+			expect(Cookie.prototype.saveConfigFile).toBeCalledTimes(1);
 			expect((await session.getCookies()).get()).toEqual([]);
 		});
 		test("transaction in transaction", async () => {
@@ -130,15 +130,15 @@ describe("Session", () => {
 		const session = await getTestSession();
 		const result = await session.post(AtCoder.login_url);
 		// @ts-ignore: dynamically added property for test
-		expect(Cookie.prototype.saveConfigFile.mock.calls.length).toBe(0);
+		expect(Cookie.prototype.saveConfigFile).toBeCalledTimes(0);
 		await result.saveSession();
 		expect((await session.getCookies()).get()).toMatchSnapshot();
 		// @ts-ignore: dynamically added property for test
-		expect(Cookie.prototype.saveConfigFile.mock.calls.length).toBe(1);
+		expect(Cookie.prototype.saveConfigFile).toBeCalledTimes(1);
 		// removeSession()の呼び出しにより、保存されたCookieが破棄される
 		await session.removeSession();
 		expect((await session.getCookies()).get()).toEqual([]);
 		// @ts-ignore: dynamically added property for test
-		expect(Cookie.prototype.saveConfigFile.mock.calls.length).toBe(2);
+		expect(Cookie.prototype.saveConfigFile).toBeCalledTimes(2);
 	});
 });
