@@ -1,6 +1,8 @@
 import * as template from "../../src/template";
 import {getConfigDirectory} from "../../src/config";
+import {resolve} from "path";
 import mock from "mock-fs";
+
 jest.mock("../../src/config");
 
 const mock_template = {
@@ -13,6 +15,28 @@ const mock_template = {
 	}
 };
 const mock_template_json = JSON.stringify(mock_template);
+const mock_templates = [
+	{
+		name: "cpp",
+		template: mock_template
+	},
+	{
+		name: "ts",
+		template: {
+			contest: {
+				static: ["package.json", ["gitignore", ".gitignore"]],
+				cmd: "npm install"
+			},
+			task: {
+				submit: "{TaskID}.ts",
+				program: ["main.ts", "{TaskID}.ts"],
+				static: ["foo.txt", ["bar.txt", "{alphabet}_{TaskID}"], ["baz.txt", "{CONTESTID}-{index1}.txt"]],
+				cmd: "echo $TASK_ID",
+				testdir: "tests-{TaskLabel}"
+			}
+		}
+	}
+];
 
 const DUMMY_CONFIG_DIRECTORY_PATH = "/config/dir/of/acc";
 
@@ -37,29 +61,49 @@ describe("template", () => {
 			expect(error).toMatchSnapshot();
 		});
 	});
-	describe("getTemplate", ()=>{
+	describe("getTemplate", () => {
 		test("valid template", async () => {
 			mock({
-				[`${DUMMY_CONFIG_DIRECTORY_PATH}/template01`]:{
-					"template.json" : mock_template_json
+				[DUMMY_CONFIG_DIRECTORY_PATH]: {
+					"template01": {
+						"template.json": mock_template_json
+					}
 				}
 			});
-			expect(await template.getTemplate("template01")).toEqual({name:"template01", ...mock_template});
+			expect(await template.getTemplate("template01")).toEqual({name: "template01", ...mock_template});
 			mock.restore();
 		});
-		test("invalid template", async ()=>{
+		test("invalid template", async () => {
 			mock({
-				[`${DUMMY_CONFIG_DIRECTORY_PATH}/template02`]:{
-					/* lack of required property "task" */
-					"template.json" : JSON.stringify({
-						contest:{
-							cmd: "echo hi"
-						}
-					})
+				[DUMMY_CONFIG_DIRECTORY_PATH]: {
+					"template02": {
+						/* lack of required property "task" */
+						"template.json": JSON.stringify({
+							contest: {
+								cmd: "echo hi"
+							}
+						})
+					}
 				}
 			});
-			await expect(template.getTemplate("template02")).rejects.toThrowErrorMatchingSnapshot();
+			await expect(template.getTemplate("template02")).rejects.toThrowError();
 			mock.restore();
 		})
+	});
+	test("getTemplates", async () => {
+		const templates = [];
+		mock({
+			[DUMMY_CONFIG_DIRECTORY_PATH]: mock_templates.reduce(
+				(o, {name, template}) => ({
+					...o,
+					[name]: {"template.json": JSON.stringify(template)}
+				}), {})
+		});
+		const result = await template.getTemplates();
+		// restore mock before toMatchSnapshot()
+		// Otherwise, jest cannot detect the exist snapshot and the test always passes
+		mock.restore();
+		expect(result).toMatchSnapshot();
+		// TODO: add exception case
 	});
 });

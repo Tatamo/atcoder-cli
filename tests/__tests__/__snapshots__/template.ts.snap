@@ -1,5 +1,58 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`template getTemplate invalid template 1`] = `"data should have required property 'task'"`;
+exports[`template getTemplates 1`] = `
+Array [
+  Object {
+    "contest": Object {
+      "static": Array [
+        Array [
+          "gitignore",
+          ".gitignore",
+        ],
+      ],
+    },
+    "name": "cpp",
+    "task": Object {
+      "program": Array [
+        "main.cpp",
+      ],
+      "submit": "main.cpp",
+    },
+  },
+  Object {
+    "contest": Object {
+      "cmd": "npm install",
+      "static": Array [
+        "package.json",
+        Array [
+          "gitignore",
+          ".gitignore",
+        ],
+      ],
+    },
+    "name": "ts",
+    "task": Object {
+      "cmd": "echo $TASK_ID",
+      "program": Array [
+        "main.ts",
+        "{TaskID}.ts",
+      ],
+      "static": Array [
+        "foo.txt",
+        Array [
+          "bar.txt",
+          "{alphabet}_{TaskID}",
+        ],
+        Array [
+          "baz.txt",
+          "{CONTESTID}-{index1}.txt",
+        ],
+      ],
+      "submit": "{TaskID}.ts",
+      "testdir": "tests-{TaskLabel}",
+    },
+  },
+]
+`;
 
 exports[`template validateTemplateJSON invalid 1`] = `"data.task should have required property 'submit'"`;
