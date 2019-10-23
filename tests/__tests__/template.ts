@@ -37,13 +37,29 @@ describe("template", () => {
 			expect(error).toMatchSnapshot();
 		});
 	});
-	test("getTemplate", async () => {
-		mock({
-			[`${DUMMY_CONFIG_DIRECTORY_PATH}/template01`]:{
-				"template.json" : mock_template_json
-			}
+	describe("getTemplate", ()=>{
+		test("valid template", async () => {
+			mock({
+				[`${DUMMY_CONFIG_DIRECTORY_PATH}/template01`]:{
+					"template.json" : mock_template_json
+				}
+			});
+			expect(await template.getTemplate("template01")).toEqual({name:"template01", ...mock_template});
+			mock.restore();
 		});
-		expect(await template.getTemplate("template01")).toEqual({name:"template01", ...mock_template});
-		mock.restore();
+		test("invalid template", async ()=>{
+			mock({
+				[`${DUMMY_CONFIG_DIRECTORY_PATH}/template02`]:{
+					/* lack of required property "task" */
+					"template.json" : JSON.stringify({
+						contest:{
+							cmd: "echo hi"
+						}
+					})
+				}
+			});
+			await expect(template.getTemplate("template02")).rejects.toThrowErrorMatchingSnapshot();
+			mock.restore();
+		})
 	});
 });

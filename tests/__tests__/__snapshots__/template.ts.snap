@@ -1,3 +1,5 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`template getTemplate invalid template 1`] = `"data should have required property 'task'"`;
+
 exports[`template validateTemplateJSON invalid 1`] = `"data.task should have required property 'submit'"`;
