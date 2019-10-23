@@ -1,6 +1,5 @@
 import * as template from "../../src/template";
 import {getConfigDirectory} from "../../src/config";
-import {resolve} from "path";
 import mock from "mock-fs";
 
 jest.mock("../../src/config");
