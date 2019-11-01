@@ -89,20 +89,93 @@ describe("template", () => {
 			mock.restore();
 		})
 	});
-	test("getTemplates", async () => {
-		const templates = [];
-		mock({
-			[DUMMY_CONFIG_DIRECTORY_PATH]: mock_templates.reduce(
-				(o, {name, template}) => ({
-					...o,
-					[name]: {"template.json": JSON.stringify(template)}
-				}), {})
+	describe("getTemplates", () => {
+		test("get all templates", async () => {
+			const templates = [];
+			mock({
+				[DUMMY_CONFIG_DIRECTORY_PATH]: mock_templates.reduce(
+					(o, {name, template}) => ({
+						...o,
+						[name]: {"template.json": JSON.stringify(template)}
+					}), {})
+			});
+			const result = await template.getTemplates();
+			// restore mock before toMatchSnapshot()
+			// Otherwise, jest cannot detect the exist snapshot and the test always passes
+			mock.restore();
+			expect(result).toMatchSnapshot();
 		});
-		const result = await template.getTemplates();
-		// restore mock before toMatchSnapshot()
-		// Otherwise, jest cannot detect the exist snapshot and the test always passes
-		mock.restore();
-		expect(result).toMatchSnapshot();
-		// TODO: add exception case
+		test("no template.json in directory", async () => {
+			const templates = [];
+			mock({
+				[DUMMY_CONFIG_DIRECTORY_PATH]: {
+					...mock_templates.reduce(
+						(o, {name, template}) => ({
+							...o,
+							[name]: {"template.json": JSON.stringify(template)}
+						}), {}),
+					// add directory without template.json
+					"non-template": {
+						"this-is-not-template.json": JSON.stringify({
+							task: {
+								submit: "main.cpp",
+								program: ["main.cpp"]
+							}
+						})
+					}
+				}
+			});
+			const result = await template.getTemplates();
+			mock.restore();
+			// there's no template "non-template"
+			expect(result).toMatchSnapshot();
+		});
+		test("files to be ignored", async () => {
+			// This test fails, but I have no idea why
+			// Production code works, hence is this a problem with mock-fs?
+			const templates = [];
+			mock({
+				[DUMMY_CONFIG_DIRECTORY_PATH]: {
+					...mock_templates.reduce(
+						(o, {name, template}) => ({
+							...o,
+							[name]: {"template.json": JSON.stringify(template)}
+						}), {}),
+					// unrelated files in config directory
+					"foo.txt": "I am a text file, unrelated to templates!",
+					"config.json": JSON.stringify({
+						"default-task-choice": "next"
+					})
+				}
+			});
+
+			const result = await template.getTemplates();
+			mock.restore();
+			// there's no template "non-template"
+			expect(result).toMatchSnapshot();
+		});
+		test("invalid template", async () => {
+			const templates = [];
+			mock({
+				[DUMMY_CONFIG_DIRECTORY_PATH]: {
+					...mock_templates.reduce(
+						(o, {name, template}) => ({
+							...o,
+							[name]: {"template.json": JSON.stringify(template)}
+						}), {}),
+					"invalid": {
+						// add invalid template
+						"template.json": JSON.stringify({
+							contest: {
+								cmd: "echo ho"
+							}
+						})
+					}
+				}
+			});
+			// NOTE: そもそもここでエラーを出すのは正しいのか？ (警告メッセージを出すなどする？)
+			await expect(template.getTemplates()).rejects.toThrowError();
+			mock.restore();
+		});
 	});
 });
