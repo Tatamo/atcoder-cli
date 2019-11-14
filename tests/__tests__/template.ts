@@ -4,7 +4,7 @@ import mock from "mock-fs";
 
 jest.mock("../../src/config");
 
-const mock_template = {
+const mock_template:template.RawTemplate = {
 	contest: {
 		static: [["gitignore", ".gitignore"]]
 	},
@@ -14,7 +14,7 @@ const mock_template = {
 	}
 };
 const mock_template_json = JSON.stringify(mock_template);
-const mock_templates = [
+const mock_templates:Array<{ name: string, template: template.RawTemplate }> = [
 	{
 		name: "cpp",
 		template: mock_template
@@ -36,6 +36,11 @@ const mock_templates = [
 		}
 	}
 ];
+const templates2files = (templates: Array<{ name: string, template: template.RawTemplate }>) => templates.reduce(
+	(o, {name, template}) => ({
+		...o,
+		[name]: {"template.json": JSON.stringify(template)}
+	}), {});
 
 const DUMMY_CONFIG_DIRECTORY_PATH = "/config/dir/of/acc";
 
@@ -93,11 +98,7 @@ describe("template", () => {
 		test("get all templates", async () => {
 			const templates = [];
 			mock({
-				[DUMMY_CONFIG_DIRECTORY_PATH]: mock_templates.reduce(
-					(o, {name, template}) => ({
-						...o,
-						[name]: {"template.json": JSON.stringify(template)}
-					}), {})
+				[DUMMY_CONFIG_DIRECTORY_PATH]: templates2files(mock_templates)
 			});
 			const result = await template.getTemplates();
 			// restore mock before toMatchSnapshot()
@@ -109,11 +110,7 @@ describe("template", () => {
 			const templates = [];
 			mock({
 				[DUMMY_CONFIG_DIRECTORY_PATH]: {
-					...mock_templates.reduce(
-						(o, {name, template}) => ({
-							...o,
-							[name]: {"template.json": JSON.stringify(template)}
-						}), {}),
+					...templates2files(mock_templates),
 					// add directory without template.json
 					"non-template": {
 						"this-is-not-template.json": JSON.stringify({
@@ -136,11 +133,7 @@ describe("template", () => {
 			const templates = [];
 			mock({
 				[DUMMY_CONFIG_DIRECTORY_PATH]: {
-					...mock_templates.reduce(
-						(o, {name, template}) => ({
-							...o,
-							[name]: {"template.json": JSON.stringify(template)}
-						}), {}),
+					...templates2files(mock_templates),
 					// unrelated files in config directory
 					"foo.txt": "I am a text file, unrelated to templates!",
 					"config.json": JSON.stringify({
@@ -159,11 +152,7 @@ describe("template", () => {
 			const templates = [];
 			mock({
 				[DUMMY_CONFIG_DIRECTORY_PATH]: {
-					...mock_templates.reduce(
-						(o, {name, template}) => ({
-							...o,
-							[name]: {"template.json": JSON.stringify(template)}
-						}), {}),
+					...templates2files(mock_templates),
 					"invalid": {
 						// add invalid template
 						"template.json": JSON.stringify({
