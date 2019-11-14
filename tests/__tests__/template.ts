@@ -131,8 +131,8 @@ describe("template", () => {
 			expect(result).toMatchSnapshot();
 		});
 		test("files to be ignored", async () => {
-			// This test fails, but I have no idea why
-			// Production code works, hence is this a problem with mock-fs?
+			// mock console.error to avoid https://github.com/tschaub/mock-fs/issues/234
+			const spy = jest.spyOn(console, "error").mockImplementation(() => null);
 			const templates = [];
 			mock({
 				[DUMMY_CONFIG_DIRECTORY_PATH]: {
@@ -153,6 +153,7 @@ describe("template", () => {
 			mock.restore();
 			// there's no template "non-template"
 			expect(result).toMatchSnapshot();
+			spy.mockRestore();
 		});
 		test("invalid template", async () => {
 			const templates = [];

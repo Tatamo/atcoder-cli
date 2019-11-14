@@ -1,5 +1,60 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`template getTemplates files to be ignored 1`] = `
+Array [
+  Object {
+    "contest": Object {
+      "static": Array [
+        Array [
+          "gitignore",
+          ".gitignore",
+        ],
+      ],
+    },
+    "name": "cpp",
+    "task": Object {
+      "program": Array [
+        "main.cpp",
+      ],
+      "submit": "main.cpp",
+    },
+  },
+  Object {
+    "contest": Object {
+      "cmd": "npm install",
+      "static": Array [
+        "package.json",
+        Array [
+          "gitignore",
+          ".gitignore",
+        ],
+      ],
+    },
+    "name": "ts",
+    "task": Object {
+      "cmd": "echo $TASK_ID",
+      "program": Array [
+        "main.ts",
+        "{TaskID}.ts",
+      ],
+      "static": Array [
+        "foo.txt",
+        Array [
+          "bar.txt",
+          "{alphabet}_{TaskID}",
+        ],
+        Array [
+          "baz.txt",
+          "{CONTESTID}-{index1}.txt",
+        ],
+      ],
+      "submit": "{TaskID}.ts",
+      "testdir": "tests-{TaskLabel}",
+    },
+  },
+]
+`;
+
 exports[`template getTemplates get all templates 1`] = `
 Array [
   Object {
