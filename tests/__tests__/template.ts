@@ -1,10 +1,12 @@
 import * as template from "../../src/template";
 import {getConfigDirectory} from "../../src/config";
 import mock from "mock-fs";
+import {Contest} from "../../src/project";
+import {AtCoder} from "../../src/atcoder";
 
 jest.mock("../../src/config");
 
-const mock_template:template.RawTemplate = {
+const mock_template: template.RawTemplate = {
 	contest: {
 		static: [["gitignore", ".gitignore"]]
 	},
@@ -14,7 +16,7 @@ const mock_template:template.RawTemplate = {
 	}
 };
 const mock_template_json = JSON.stringify(mock_template);
-const mock_templates:Array<{ name: string, template: template.RawTemplate }> = [
+const mock_templates: Array<{ name: string, template: template.RawTemplate }> = [
 	{
 		name: "cpp",
 		template: mock_template
@@ -43,6 +45,14 @@ const templates2files = (templates: Array<{ name: string, template: template.Raw
 	}), {});
 
 const DUMMY_CONFIG_DIRECTORY_PATH = "/config/dir/of/acc";
+const DUMMY_WORKING_DIRECTORY_PATH = "/current/working/directory/to/solve/problems";
+
+// TODO: もっと適当な場所に定義を移す
+const dummy_contest: Contest = {
+	id: "aic987",
+	title: "AtCoder Imaginary Contest 987",
+	url: AtCoder.getContestURL("aic987")
+};
 
 describe("template", () => {
 	beforeAll(async () => {
@@ -166,6 +176,34 @@ describe("template", () => {
 			// NOTE: そもそもここでエラーを出すのは正しいのか？ (警告メッセージを出すなどする？)
 			await expect(template.getTemplates()).rejects.toThrowError();
 			mock.restore();
+		});
+	});
+	describe("installContestTemplate", () => {
+		test("overwrite static files", async () => {
+			// mock console.error to avoid https://github.com/tschaub/mock-fs/issues/234
+			// const spy = jest.spyOn(console, "error").mockImplementation(() => null);
+			mock({
+				[DUMMY_CONFIG_DIRECTORY_PATH]: {
+					"template01": {
+						"template.json": mock_template_json,
+						"gitignore": ".git/"
+					}
+				},
+				[DUMMY_WORKING_DIRECTORY_PATH]: {
+					".gitignore": "this .gitignore will be overwritten by installing of the template"
+				}
+			});
+			// cd to (mocked) current directory
+			process.chdir(DUMMY_WORKING_DIRECTORY_PATH);
+			expect(process.cwd()).toEqual(DUMMY_WORKING_DIRECTORY_PATH);
+
+			// TODO: await importがmock-fs内で使えないのでテストできない
+			const template01 = await template.getTemplate("template01");
+			expect(await template01).toEqual({name: "template01", ...mock_template});
+			await template.installContestTemplate(dummy_contest, template01, DUMMY_WORKING_DIRECTORY_PATH, false);
+
+			mock.restore();
+			// spy.mockRestore();
 		});
 	});
 });
