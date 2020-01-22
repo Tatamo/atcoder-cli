@@ -1,10 +1,13 @@
 import * as template from "../../src/template";
 import {getConfigDirectory} from "../../src/config";
+import {importFsExtra} from "../../src/imports";
+import fs_extra from "fs-extra";
 import mock from "mock-fs";
 import {Contest} from "../../src/project";
 import {AtCoder} from "../../src/atcoder";
 
 jest.mock("../../src/config");
+jest.mock("../../src/imports");
 
 const mock_template: template.RawTemplate = {
 	contest: {
@@ -59,6 +62,10 @@ describe("template", () => {
 		// 常に同じpathを返すようにしておく
 		// @ts-ignore: dynamically added method for test
 		getConfigDirectory.mockResolvedValue(DUMMY_CONFIG_DIRECTORY_PATH);
+
+		// dynamic import in a mocked filesystem causes errors
+		// @ts-ignore: dynamically added method for test
+		importFsExtra.mockResolvedValue(fs_extra);
 
 	});
 	describe("validateTemplateJSON", () => {
@@ -180,8 +187,6 @@ describe("template", () => {
 	});
 	describe("installContestTemplate", () => {
 		test("overwrite static files", async () => {
-			// mock console.error to avoid https://github.com/tschaub/mock-fs/issues/234
-			// const spy = jest.spyOn(console, "error").mockImplementation(() => null);
 			mock({
 				[DUMMY_CONFIG_DIRECTORY_PATH]: {
 					"template01": {
@@ -197,13 +202,11 @@ describe("template", () => {
 			process.chdir(DUMMY_WORKING_DIRECTORY_PATH);
 			expect(process.cwd()).toEqual(DUMMY_WORKING_DIRECTORY_PATH);
 
-			// TODO: await importがmock-fs内で使えないのでテストできない
 			const template01 = await template.getTemplate("template01");
 			expect(await template01).toEqual({name: "template01", ...mock_template});
 			await template.installContestTemplate(dummy_contest, template01, DUMMY_WORKING_DIRECTORY_PATH, false);
 
 			mock.restore();
-			// spy.mockRestore();
 		});
 	});
 });
