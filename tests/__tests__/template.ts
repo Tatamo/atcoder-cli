@@ -1,10 +1,13 @@
 import * as template from "../../src/template";
-import {getConfigDirectory} from "../../src/config";
-import {importFsExtra} from "../../src/imports";
-import fs_extra from "fs-extra";
-import mock from "mock-fs";
 import {Contest} from "../../src/project";
 import {AtCoder} from "../../src/atcoder";
+import {getConfigDirectory} from "../../src/config";
+import {importFsExtra} from "../../src/imports";
+import {resolve} from "path";
+import {promisify} from "util";
+import {readFile, readdir} from "fs";
+import fs_extra from "fs-extra";
+import mock from "mock-fs";
 
 jest.mock("../../src/config");
 jest.mock("../../src/imports");
@@ -204,7 +207,12 @@ describe("template", () => {
 
 			const template01 = await template.getTemplate("template01");
 			expect(await template01).toEqual({name: "template01", ...mock_template});
+
+			expect(await promisify(readdir)(DUMMY_WORKING_DIRECTORY_PATH)).toEqual([".gitignore"]);
+			expect(await promisify(readFile)(resolve(DUMMY_WORKING_DIRECTORY_PATH, ".gitignore"), "utf-8")).toEqual("this .gitignore will be overwritten by installing of the template");
 			await template.installContestTemplate(dummy_contest, template01, DUMMY_WORKING_DIRECTORY_PATH, false);
+			expect(await promisify(readdir)(DUMMY_WORKING_DIRECTORY_PATH)).toEqual([".gitignore"]);
+			expect(await promisify(readFile)(resolve(DUMMY_WORKING_DIRECTORY_PATH, ".gitignore"), "utf-8")).toEqual(".git/");
 
 			mock.restore();
 		});
