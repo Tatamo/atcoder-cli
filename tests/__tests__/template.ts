@@ -8,9 +8,11 @@ import {promisify} from "util";
 import {readFile, readdir} from "fs";
 import fs_extra from "fs-extra";
 import mock from "mock-fs";
+import child_process from "child_process";
 
 jest.mock("../../src/config");
 jest.mock("../../src/imports");
+jest.mock("child_process");
 
 const mock_template: template.RawTemplate = {
 	contest: {
@@ -69,7 +71,10 @@ describe("template", () => {
 		// dynamic import in a mocked filesystem causes errors
 		// @ts-ignore: dynamically added method for test
 		importFsExtra.mockResolvedValue(fs_extra);
-
+	});
+	beforeEach(() => {
+		// clear mock call log
+		jest.clearAllMocks();
 	});
 	describe("validateTemplateJSON", () => {
 		test("valid", async () => {
@@ -215,6 +220,24 @@ describe("template", () => {
 			expect(await promisify(readFile)(resolve(DUMMY_WORKING_DIRECTORY_PATH, ".gitignore"), "utf-8")).toEqual(".git/");
 
 			mock.restore();
+		});
+		test("exec command", async () => {
+			mock({
+				[DUMMY_WORKING_DIRECTORY_PATH]: {}
+			});
+
+			// cd to (mocked) current directory
+			process.chdir(DUMMY_WORKING_DIRECTORY_PATH);
+			expect(process.cwd()).toEqual(DUMMY_WORKING_DIRECTORY_PATH);
+
+			const template02 = {name: "template02", contest: {cmd: "echo $CONTEST_ID"}, task: mock_template.task};
+
+			await template.installContestTemplate(dummy_contest, template02, DUMMY_WORKING_DIRECTORY_PATH, true);
+
+			mock.restore();
+			// TODO: calling of promisified function is not counted
+			expect(child_process.exec).toBeCalledTimes(1);
+
 		});
 	});
 });
