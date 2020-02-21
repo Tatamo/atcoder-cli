@@ -37,7 +37,7 @@ const mock_templates: Array<{ name: string, template: template.RawTemplate }> = 
 			},
 			task: {
 				submit: "{TaskID}.ts",
-				program: ["main.ts", "{TaskID}.ts"],
+				program: [["main.ts", "{TaskID}.ts"]],
 				static: ["foo.txt", ["bar.txt", "{alphabet}_{TaskID}"], ["baz.txt", "{CONTESTID}-{index1}.txt"]],
 				cmd: "echo $TASK_ID",
 				testdir: "tests-{TaskLabel}"

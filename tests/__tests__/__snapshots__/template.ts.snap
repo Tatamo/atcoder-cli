@@ -34,8 +34,10 @@ Array [
     "task": Object {
       "cmd": "echo $TASK_ID",
       "program": Array [
-        "main.ts",
-        "{TaskID}.ts",
+        Array [
+          "main.ts",
+          "{TaskID}.ts",
+        ],
       ],
       "static": Array [
         "foo.txt",
@@ -89,8 +91,10 @@ Array [
     "task": Object {
       "cmd": "echo $TASK_ID",
       "program": Array [
-        "main.ts",
-        "{TaskID}.ts",
+        Array [
+          "main.ts",
+          "{TaskID}.ts",
+        ],
       ],
       "static": Array [
         "foo.txt",
@@ -144,8 +148,10 @@ Array [
     "task": Object {
       "cmd": "echo $TASK_ID",
       "program": Array [
-        "main.ts",
-        "{TaskID}.ts",
+        Array [
+          "main.ts",
+          "{TaskID}.ts",
+        ],
       ],
       "static": Array [
         "foo.txt",
