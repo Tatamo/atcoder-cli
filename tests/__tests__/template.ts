@@ -12,7 +12,6 @@ import child_process from "child_process";
 
 jest.mock("../../src/config");
 jest.mock("../../src/imports");
-jest.mock("child_process");
 
 const mock_template: template.RawTemplate = {
 	contest: {
@@ -222,6 +221,11 @@ describe("template", () => {
 			mock.restore();
 		});
 		test("exec command", async () => {
+			// mock console.error to avoid https://github.com/tschaub/mock-fs/issues/234
+			const spy_console_log = jest.spyOn(console, "log").mockImplementation(() => null);
+			const spy_console_error = jest.spyOn(console, "error").mockImplementation(() => null);
+
+			const spy_exec = jest.spyOn(child_process, "exec");
 			mock({
 				[DUMMY_WORKING_DIRECTORY_PATH]: {}
 			});
@@ -231,13 +235,22 @@ describe("template", () => {
 			expect(process.cwd()).toEqual(DUMMY_WORKING_DIRECTORY_PATH);
 
 			const template02 = {name: "template02", contest: {cmd: "echo $CONTEST_ID"}, task: mock_template.task};
-
 			await template.installContestTemplate(dummy_contest, template02, DUMMY_WORKING_DIRECTORY_PATH, true);
 
 			mock.restore();
-			// TODO: calling of promisified function is not counted
-			expect(child_process.exec).toBeCalledTimes(1);
-
+			expect(spy_exec).toBeCalledTimes(1);
+			const test_env = {
+				TEMPLATE_DIR: resolve(DUMMY_CONFIG_DIRECTORY_PATH, "template02"),
+				// TODO: こちらが正しいのでは？
+				// CONTEST_DIR: resolve(DUMMY_WORKING_DIRECTORY_PATH, dummy_contest.id),
+				CONTEST_DIR: DUMMY_WORKING_DIRECTORY_PATH,
+				CONTEST_ID: dummy_contest.id
+			};
+			expect(spy_exec.mock.calls[0][0]).toEqual("echo $CONTEST_ID");
+			expect(spy_exec.mock.calls[0][1]).toEqual({env: expect.objectContaining(test_env)});
+			spy_console_log.mockRestore();
+			spy_console_error.mockRestore();
+			spy_exec.mockRestore();
 		});
 	});
 });
