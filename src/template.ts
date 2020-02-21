@@ -4,6 +4,7 @@ import {resolve} from "path";
 import {getConfigDirectory} from "./config";
 import child_process from "child_process";
 import {Contest, DetailedTask, formatContestDirname, formatTaskDirname} from "./project";
+import {importFsExtra} from "./imports";
 
 export const TEMPLATE_JSON_FILE_NAME = "template.json";
 
@@ -90,7 +91,7 @@ export async function installContestTemplate(contest: Contest, template: Templat
 	const pwd = process.cwd();
 	process.chdir(contest_path);
 	const template_dir = resolve(await getConfigDirectory(), template.name);
-	const fs = (await import("fs-extra"));
+	const fs = await importFsExtra();
 
 	// 静的ファイルのコピー
 	// 同名ファイルが存在した場合は上書きされる
@@ -140,7 +141,7 @@ export async function installTaskTemplate(detailed_task: DetailedTask, paths: { 
 	const pwd = process.cwd();
 	process.chdir(paths.task);
 	const template_dir = resolve(await getConfigDirectory(), template.name);
-	const fs = (await import("fs-extra"));
+	const fs = await importFsExtra();
 	// プログラムファイルのコピー
 	for (const file of task_template.program) {
 		const source = resolve(template_dir, typeof file === "string" ? file : file[0]);
