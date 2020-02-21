@@ -211,7 +211,9 @@ describe("template", () => {
 					}
 				},
 				[DUMMY_WORKING_DIRECTORY_PATH]: {
-					".gitignore": "this .gitignore will be overwritten by installing of the template"
+					[dummy_contest.id]: {
+						".gitignore": "this .gitignore will be overwritten by installing of the template"
+					}
 				}
 			});
 			// cd to (mocked) current directory
@@ -221,11 +223,14 @@ describe("template", () => {
 			const template01 = await template.getTemplate("template01");
 			expect(await template01).toEqual({name: "template01", ...mock_template_cpp});
 
-			expect(await promisify(readdir)(DUMMY_WORKING_DIRECTORY_PATH)).toEqual([".gitignore"]);
-			expect(await promisify(readFile)(resolve(DUMMY_WORKING_DIRECTORY_PATH, ".gitignore"), "utf-8")).toEqual("this .gitignore will be overwritten by installing of the template");
-			await template.installContestTemplate(dummy_contest, template01, DUMMY_WORKING_DIRECTORY_PATH, false);
-			expect(await promisify(readdir)(DUMMY_WORKING_DIRECTORY_PATH)).toEqual([".gitignore"]);
-			expect(await promisify(readFile)(resolve(DUMMY_WORKING_DIRECTORY_PATH, ".gitignore"), "utf-8")).toEqual(".git/");
+			const contest_dir_path = resolve(DUMMY_WORKING_DIRECTORY_PATH, dummy_contest.id);
+			expect(await promisify(readdir)(contest_dir_path)).toEqual([".gitignore"]);
+			expect(await promisify(readFile)(resolve(contest_dir_path, ".gitignore"), "utf-8")).toEqual("this .gitignore will be overwritten by installing of the template");
+			await template.installContestTemplate(dummy_contest, template01, contest_dir_path, false);
+			expect(await promisify(readdir)(contest_dir_path)).toEqual([".gitignore"]);
+			expect(await promisify(readFile)(resolve(contest_dir_path, ".gitignore"), "utf-8")).toEqual(".git/");
+
+			expect(process.cwd()).toEqual(DUMMY_WORKING_DIRECTORY_PATH);
 
 			mock.restore();
 		});
@@ -236,7 +241,9 @@ describe("template", () => {
 
 			const spy_exec = jest.spyOn(child_process, "exec");
 			mock({
-				[DUMMY_WORKING_DIRECTORY_PATH]: {}
+				[DUMMY_WORKING_DIRECTORY_PATH]: {
+					[dummy_contest.id]: {}
+				}
 			});
 
 			// cd to (mocked) current directory
@@ -244,15 +251,14 @@ describe("template", () => {
 			expect(process.cwd()).toEqual(DUMMY_WORKING_DIRECTORY_PATH);
 
 			const template02 = {name: "template02", contest: {cmd: "echo $CONTEST_ID"}, task: mock_template_cpp.task};
-			await template.installContestTemplate(dummy_contest, template02, DUMMY_WORKING_DIRECTORY_PATH, true);
+			const contest_dir_path = resolve(DUMMY_WORKING_DIRECTORY_PATH, dummy_contest.id);
+			await template.installContestTemplate(dummy_contest, template02, contest_dir_path, true);
 
 			mock.restore();
 			expect(spy_exec).toBeCalledTimes(1);
 			const test_env = {
 				TEMPLATE_DIR: resolve(DUMMY_CONFIG_DIRECTORY_PATH, "template02"),
-				// TODO: こちらが正しいのでは？
-				// CONTEST_DIR: resolve(DUMMY_WORKING_DIRECTORY_PATH, dummy_contest.id),
-				CONTEST_DIR: DUMMY_WORKING_DIRECTORY_PATH,
+				CONTEST_DIR: contest_dir_path,
 				CONTEST_ID: dummy_contest.id
 			};
 			expect(spy_exec.mock.calls[0][0]).toEqual("echo $CONTEST_ID");
@@ -307,6 +313,8 @@ describe("template", () => {
 			expect(await promisify(readFile)(resolve(task_dir_path, "bar.txt"), "utf-8")).toEqual("bar");
 			expect(await promisify(readFile)(resolve(task_dir_path, "a_aic987_a"), "utf-8")).toEqual("BAR");
 			expect(await promisify(readFile)(resolve(task_dir_path, "AIC987-1.txt"), "utf-8")).toEqual("BAZ");
+
+			expect(process.cwd()).toEqual(DUMMY_WORKING_DIRECTORY_PATH);
 
 			mock.restore();
 			spy_console_log.mockRestore();
