@@ -141,7 +141,7 @@ export async function installTaskTemplate(detailed_task: DetailedTask, paths: { 
 	const pwd = process.cwd();
 	process.chdir(paths.task);
 	const template_dir = resolve(await getConfigDirectory(), template.name);
-	const fs = (await import("fs-extra"));
+	const fs = await importFsExtra();
 	// プログラムファイルのコピー
 	for (const file of task_template.program) {
 		const source = resolve(template_dir, typeof file === "string" ? file : file[0]);
