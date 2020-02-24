@@ -25,7 +25,6 @@ export const format_strings = `Supported format strings:
 export const global_config = `Global config options list:
   oj-path                         install path of online-judge-tools (auto detected)
   default-contest-dirname-format  default name of contest directory (created by \`acc new\` command)
-  default-new-contest-cmd         default --cmd option for \`acc new\` command (see also: \`acc new -h\`)
   default-task-dirname-format     default name of task directory (created by \`acc new|add\` command)
   default-test-dirname-format     default name of sample cases directory
   default-task-choice             default --choice option for \`acc new|add\` command (see also: \`acc new|add -h\`)
