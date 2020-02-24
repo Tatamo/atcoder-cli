@@ -1,7 +1,10 @@
 import commander from "commander";
-import {version} from "../../package.json";
+import {name, version} from "../../package.json";
 import * as commands from "../commands";
 import * as help from "../help";
+import updateNotifier from "update-notifier";
+
+updateNotifier({pkg: {name, version}}).notify({isGlobal: true});
 
 commander
 	.version(version, "-v, --version");

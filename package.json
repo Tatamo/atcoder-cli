@@ -43,7 +43,8 @@
     "jsdom": "^15.1.1",
     "mkdirp": "^0.5.1",
     "query-string": "^6.8.3",
-    "typesafe-di": "^0.1.0"
+    "typesafe-di": "^0.1.0",
+    "update-notifier": "^4.1.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
@@ -53,6 +54,7 @@
     "@types/mkdirp": "^0.5.2",
     "@types/mock-fs": "^3.6.30",
     "@types/node": "^12.7.5",
+    "@types/update-notifier": "^4.1.0",
     "jest": "^24.9.0",
     "mock-fs": "^4.10.2",
     "npm-run-all": "^4.1.5",
