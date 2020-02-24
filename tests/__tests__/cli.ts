@@ -45,7 +45,6 @@ describe("command calls", () => {
 			run("new", "abc104", "-t", "{TASKLABEL}");
 			expect(commands.setup).toBeCalledWith("abc104", expect.objectContaining({taskDirnameFormat: "{TASKLABEL}"}));
 		});
-		// NOTE: not implemented option
 		test("new abc105 -d {ContestTitle}", () => {
 			const commands = require("../../src/commands");
 			run("new", "abc105", "-d", "{ContestTitle}");
