@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.0]
+### Added
+- enable to pass arguments to online-judge-tools in submit command and add --skip-filename option
+
+
 ## [2.0.5]
 ### Added
 - This CHANGELOG! ([#21](https://github.com/Tatamo/atcoder-cli/pull/21))
