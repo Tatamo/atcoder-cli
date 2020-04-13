@@ -43,12 +43,17 @@ commander
 	});
 
 commander
-	.command("submit [filename]")
+	.command("submit [filename] [facade-options...]")
 	.alias("s")
 	.option("-c, --contest <contest-id>", "specify contest id to submit")
 	.option("-t, --task <task-id>", "specify task id to submit")
+	.option("-s, --skip-filename", "specify that filename is not given (the first argument will be parsed as not a filename, but a facade option)")
 	.action(commands.submit)
-	.description("submit the program");
+	.description("submit the program")
+	.on("--help", () => {
+		console.log("");
+		console.log(help.submit_facade_options);
+	});
 
 commander
 	.command("login")

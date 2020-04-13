@@ -79,18 +79,39 @@ describe("command calls", () => {
 		test("submit", () => {
 			const commands = require("../../src/commands");
 			run("submit");
-			expect(commands.submit).toBeCalledWith(undefined, expect.anything());
+			expect(commands.submit).toBeCalledWith(undefined, [], expect.anything());
 		});
 		test("s main.cpp", () => {
 			const commands = require("../../src/commands");
 			run("s", "main.cpp");
-			expect(commands.submit).toBeCalledWith("main.cpp", expect.anything());
-			expect(commands.submit).toBeCalledWith("main.cpp", expect.not.objectContaining({contest: expect.anything(), task: expect.anything()}));
+			expect(commands.submit).toBeCalledWith("main.cpp", [], expect.anything());
+			expect(commands.submit).toBeCalledWith("main.cpp", [], expect.not.objectContaining({contest: expect.anything(), task: expect.anything(), skipFilename: expect.anything()}));
+		});
+		test("s main.cpp -- -y", () => {
+			const commands = require("../../src/commands");
+			run("s", "main.cpp", "--", "-y");
+			expect(commands.submit).toBeCalledWith("main.cpp", ["-y"], expect.anything());
+			expect(commands.submit).toBeCalledWith("main.cpp", ["-y"], expect.not.objectContaining({contest: expect.anything(), task: expect.anything(), skipFilename: expect.anything()}));
+		});
+		test("s -s -- -y --no-open -w 10", () => {
+			const commands = require("../../src/commands");
+			run("s", "-s", "--", "-y", "--no-open", "-w", "10");
+			expect(commands.submit).toBeCalledWith("-y", ["--no-open", "-w", "10"], expect.anything());
+			expect(commands.submit).toBeCalledWith("-y", ["--no-open", "-w", "10"], expect.objectContaining({skipFilename: true}));
+			expect(commands.submit).toBeCalledWith("-y", ["--no-open", "-w", "10"], expect.not.objectContaining({contest: expect.anything(), task: expect.anything()}));
+		});
+		test("s -s --", () => {
+			const commands = require("../../src/commands");
+			run("s", "-s", "--");
+			expect(commands.submit).toBeCalledWith(undefined, [], expect.anything());
+			expect(commands.submit).toBeCalledWith(undefined, [], expect.objectContaining({skipFilename: true}));
+			expect(commands.submit).toBeCalledWith(undefined, [], expect.not.objectContaining({contest: expect.anything(), task: expect.anything()}));
 		});
 		test("s -c abc100 -t abc100_a", () => {
 			const commands = require("../../src/commands");
 			run("s", "-c", "abc100", "-t", "abc100_a");
-			expect(commands.submit).toBeCalledWith(undefined, expect.objectContaining({contest: "abc100", task: "abc100_a"}));
+			expect(commands.submit).toBeCalledWith(undefined, [], expect.objectContaining({contest: "abc100", task: "abc100_a"}));
+			expect(commands.submit).toBeCalledWith(undefined, [], expect.not.objectContaining({skipFilename: expect.anything()}));
 		});
 	});
 	describe("acc login", () => {
