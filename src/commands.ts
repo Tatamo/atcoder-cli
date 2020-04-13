@@ -190,6 +190,13 @@ export async function format(format_string: string, contest_id: string, task_id?
 export async function submit(filename: string | undefined, facade_options: Array<string>, options: { task?: string, contest?: string, skipFilename?: boolean }) {
 	let contest_id = options.contest;
 	let task_id = options.task;
+	const f_skip_filename = options.skipFilename === true;
+
+	// treat filename as a first facade option and assume that filename is not given
+	if (f_skip_filename && filename !== undefined) {
+		facade_options.unshift(filename);
+		filename = undefined;
+	}
 	if (filename === undefined || contest_id === undefined || task_id === undefined) {
 		// ファイル名、タスク、コンテストのいずれかが未指定の場合、カレントディレクトリのパスから提出先を調べる
 		const {contest, task} = await detectTaskByPath();
@@ -223,7 +230,7 @@ export async function submit(filename: string | undefined, facade_options: Array
 	}
 	console.log(`submit to: ${url}`);
 	// 提出
-	await OnlineJudge.call(["s", url, filename]);
+	await OnlineJudge.call(["s", url, filename, ...facade_options]);
 }
 
 export async function checkOJAvailable() {
