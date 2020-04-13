@@ -100,6 +100,13 @@ describe("command calls", () => {
 			expect(commands.submit).toBeCalledWith("-y", ["--no-open", "-w", "10"], expect.objectContaining({skipFilename: true}));
 			expect(commands.submit).toBeCalledWith("-y", ["--no-open", "-w", "10"], expect.not.objectContaining({contest: expect.anything(), task: expect.anything()}));
 		});
+		test("s -s --", () => {
+			const commands = require("../../src/commands");
+			run("s", "-s", "--");
+			expect(commands.submit).toBeCalledWith(undefined, [], expect.anything());
+			expect(commands.submit).toBeCalledWith(undefined, [], expect.objectContaining({skipFilename: true}));
+			expect(commands.submit).toBeCalledWith(undefined, [], expect.not.objectContaining({contest: expect.anything(), task: expect.anything()}));
+		});
 		test("s -c abc100 -t abc100_a", () => {
 			const commands = require("../../src/commands");
 			run("s", "-c", "abc100", "-t", "abc100_a");
