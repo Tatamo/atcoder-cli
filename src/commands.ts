@@ -3,7 +3,7 @@ import {OnlineJudge} from "./facade/oj";
 import {Contest, Task, detectTaskByPath, findProjectJSON, formatTaskDirname, saveProjectJSON, init, installTask, formatContestDirname} from "./project";
 import getConfig, {defaults, getConfigDirectory} from "./config";
 import {getTemplate, getTemplates, Template} from "./template";
-import { getAtCoder } from "./di";
+import {getAtCoder} from "./di";
 
 export async function login() {
 	const atcoder = await getAtCoder();
@@ -187,7 +187,7 @@ export async function format(format_string: string, contest_id: string, task_id?
 	}
 }
 
-export async function submit(filename: string | undefined, options: { task?: string, contest?: string }) {
+export async function submit(filename: string | undefined, facade_options: Array<string>, options: { task?: string, contest?: string, skipFilename?: boolean }) {
 	let contest_id = options.contest;
 	let task_id = options.task;
 	if (filename === undefined || contest_id === undefined || task_id === undefined) {
