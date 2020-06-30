@@ -37,7 +37,8 @@ export const online_judge_tools = `Functions of online-judge-tools linkage:
   downloading sample cases  \`acc new|add\` command
   submit code               \`acc submit\` command`;
 
-export const submit_facade_options = `atcoder-cli uses online-judge-tools internally.
+export const submit_facade_options = `** experimental (may be changed in future) **
+atcoder-cli uses online-judge-tools internally.
 pass extra arguments to online-judge-tools:
   \`acc submit main.cpp -- -w 10 --no-open\`
   

@@ -2,7 +2,7 @@
 
 ## [2.1.0]
 ### Added
-- enable to pass arguments to online-judge-tools in submit command and add --skip-filename option ([#26](https://github.com/Tatamo/atcoder-cli/pull/26))
+- enable to pass arguments to online-judge-tools in submit command and add --skip-filename option ([#26](https://github.com/Tatamo/atcoder-cli/pull/26)) **experimental: this feature may be changed in further release**
 ### Security
 - Bump dependencies ([#24](https://github.com/Tatamo/atcoder-cli/pull/24))
 
