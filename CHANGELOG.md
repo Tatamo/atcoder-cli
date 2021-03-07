@@ -1,8 +1,14 @@
 # Changelog
 
+## [2.1.1]
+### Fixed
+- Format strings in `task.submit` parameter in `template.json` did not work ([#37](https://github.com/Tatamo/atcoder-cli/pull/37))
+### Security
+- Bump dependencies ([#31](https://github.com/Tatamo/atcoder-cli/pull/31), [#32](https://github.com/Tatamo/atcoder-cli/pull/32), [#33](https://github.com/Tatamo/atcoder-cli/pull/33), [#34](https://github.com/Tatamo/atcoder-cli/pull/34), [#35](https://github.com/Tatamo/atcoder-cli/pull/35))
+
 ## [2.1.0]
 ### Added
-- enable to pass arguments to online-judge-tools in submit command and add --skip-filename option ([#26](https://github.com/Tatamo/atcoder-cli/pull/26)) **experimental: this feature may be changed in further release**
+- Enable to pass arguments to online-judge-tools in submit command and add --skip-filename option ([#26](https://github.com/Tatamo/atcoder-cli/pull/26)) **experimental: this feature may be changed in further release**
 ### Security
 - Bump dependencies ([#24](https://github.com/Tatamo/atcoder-cli/pull/24))
 

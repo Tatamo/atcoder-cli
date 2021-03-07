@@ -207,7 +207,7 @@ export async function installTask(detailed_task: DetailedTask, dirname: string, 
 	// 新しく情報を付与したTaskオブジェクトを返す
 	const s: any = {directory: {path: dirname}};
 	if (flg_tests) s.directory.testdir = testdir;
-	if (task_template !== undefined && task_template.submit !== undefined) s.directory.submit = task_template.submit;
+	if (task_template !== undefined && task_template.submit !== undefined) s.directory.submit = formatTaskDirname(task_template.submit, task, index, contest);
 	return Object.assign(task, s);
 }
 
