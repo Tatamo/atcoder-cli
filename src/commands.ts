@@ -187,7 +187,7 @@ export async function format(format_string: string, contest_id: string, task_id?
 	}
 }
 
-export async function submit(filename: string | undefined, facade_options: Array<string>, options: { task?: string, contest?: string, skipFilename?: boolean }) {
+export async function submit(filename: string | undefined, facade_options: Array<string>, options: { task?: string, contest?: string, skipFilename?: boolean, ojOptions: Array<string>}) {
 	let contest_id = options.contest;
 	let task_id = options.task;
 	const f_skip_filename = options.skipFilename === true;
@@ -230,7 +230,7 @@ export async function submit(filename: string | undefined, facade_options: Array
 	}
 	console.log(`submit to: ${url}`);
 	// 提出
-	await OnlineJudge.call(["s", url, filename, ...facade_options]);
+	await OnlineJudge.call(["s", url, filename, ...facade_options, ...options.ojOptions]);
 }
 
 export async function checkOJAvailable() {

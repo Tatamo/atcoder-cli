@@ -42,12 +42,16 @@ commander
 		console.log(help.task_choices);
 	});
 
+function collect(value : string, previous : string[]) {
+  return previous.concat([value]);
+};
 commander
 	.command("submit [filename] [facade-options...]")
 	.alias("s")
 	.option("-c, --contest <contest-id>", "specify contest id to submit")
 	.option("-t, --task <task-id>", "specify task id to submit")
 	.option("-s, --skip-filename", "specify that filename is not given (the first argument will be parsed as not a filename, but a facade option)")
+    .option('-j, --oj-options <value>', 'specify oj params to be passed', collect, [])
 	.action(commands.submit)
 	.description("submit the program")
 	.on("--help", () => {
