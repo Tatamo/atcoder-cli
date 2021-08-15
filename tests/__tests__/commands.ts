@@ -22,6 +22,7 @@ describe("login()", () => {
 
             await login();
             expect(log).toMatchSnapshot();
+            expect(atcoder.login).toBeCalledTimes(1);
             spy_console_log.mockRestore();
         })
         test("login fail", async () => {
@@ -31,6 +32,7 @@ describe("login()", () => {
 
             await login();
             expect(log).toMatchSnapshot();
+            expect(atcoder.login).toBeCalledTimes(1);
             spy_console_log.mockRestore();
         })
     });
@@ -42,6 +44,7 @@ describe("login()", () => {
 
             await logout();
             expect(log).toMatchSnapshot();
+            expect(atcoder.logout).toBeCalledTimes(1);
             spy_console_log.mockRestore();
         })
     });
@@ -53,6 +56,7 @@ describe("login()", () => {
 
             await session();
             expect(log).toMatchSnapshot();
+            expect(atcoder.checkSession).toBeCalledTimes(1);
             spy_console_log.mockRestore();
         })
         test("not logged-in", async () => {
@@ -62,6 +66,7 @@ describe("login()", () => {
 
             await session();
             expect(log).toMatchSnapshot();
+            expect(atcoder.checkSession).toBeCalledTimes(1);
             spy_console_log.mockRestore();
         })
     });
