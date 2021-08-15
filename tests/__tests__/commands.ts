@@ -1,4 +1,4 @@
-import { login } from "../../src/commands";
+import { login, logout, session } from "../../src/commands";
 import { AtCoder } from "../../src/atcoder";
 import { getAtCoder } from "../../src/di";
 jest.mock("../../src/di");
@@ -30,6 +30,37 @@ describe("login()", () => {
             atcoder.login = jest.fn(async () => false);
 
             await login();
+            expect(log).toMatchSnapshot();
+            spy_console_log.mockRestore();
+        })
+    });
+    describe("logout()", () => {
+        test("logout", async () => {
+            let log = "";
+            const spy_console_log = jest.spyOn(console, "log").mockImplementation(s => log += `${s}\n`);
+            atcoder.logout = jest.fn();
+
+            await logout();
+            expect(log).toMatchSnapshot();
+            spy_console_log.mockRestore();
+        })
+    });
+    describe("session()", () => {
+        test("logged-in", async () => {
+            let log = "";
+            const spy_console_log = jest.spyOn(console, "log").mockImplementation(s => log += `${s}\n`);
+            atcoder.checkSession = jest.fn(async () => true);
+
+            await session();
+            expect(log).toMatchSnapshot();
+            spy_console_log.mockRestore();
+        })
+        test("not logged-in", async () => {
+            let log = "";
+            const spy_console_log = jest.spyOn(console, "log").mockImplementation(s => log += `${s}\n`);
+            atcoder.checkSession = jest.fn(async () => false);
+
+            await session();
             expect(log).toMatchSnapshot();
             spy_console_log.mockRestore();
         })
