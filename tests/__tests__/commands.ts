@@ -3,7 +3,7 @@ import { AtCoder } from "../../src/atcoder";
 import { getAtCoder } from "../../src/di";
 jest.mock("../../src/di");
 
-describe("login()", () => {
+describe("Commands", () => {
     let atcoder: AtCoder;
     beforeAll(async () => {
         atcoder = jest.genMockFromModule<{ AtCoder: AtCoder }>("../../src/atcoder").AtCoder;

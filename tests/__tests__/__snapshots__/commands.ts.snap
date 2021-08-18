@@ -1,27 +1,27 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`login() login() login fail 1`] = `
+exports[`Commands login() login fail 1`] = `
 "login failed
 "
 `;
 
-exports[`login() login() login success 1`] = `
+exports[`Commands login() login success 1`] = `
 "OK
 "
 `;
 
-exports[`login() logout() logout 1`] = `
+exports[`Commands logout() logout 1`] = `
 "login session aborted.
 "
 `;
 
-exports[`login() session() logged-in 1`] = `
+exports[`Commands session() logged-in 1`] = `
 "check login status...
 OK
 "
 `;
 
-exports[`login() session() not logged-in 1`] = `
+exports[`Commands session() not logged-in 1`] = `
 "check login status...
 not login
 "
