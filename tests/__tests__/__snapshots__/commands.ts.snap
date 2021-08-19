@@ -1,5 +1,47 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Commands contest() contest id is given contest found, with id 1`] = `
+"aic987  AtCoder Imaginary Contest 987  https://atcoder.jp/contests/aic987
+"
+`;
+
+exports[`Commands contest() contest id is given contest found, with id 2`] = `""`;
+
+exports[`Commands contest() contest id is given contest found, without id 1`] = `
+"AtCoder Imaginary Contest 987  https://atcoder.jp/contests/aic987
+"
+`;
+
+exports[`Commands contest() contest id is given contest found, without id 2`] = `""`;
+
+exports[`Commands contest() contest id is given contest not found 1`] = `""`;
+
+exports[`Commands contest() contest id is given contest not found 2`] = `
+"contest \\"aic987654321\\" not found.
+"
+`;
+
+exports[`Commands contest() contest id is not given find project json found, with id 1`] = `
+"aic987  AtCoder Imaginary Contest 987  https://atcoder.jp/contests/aic987
+"
+`;
+
+exports[`Commands contest() contest id is not given find project json found, with id 2`] = `""`;
+
+exports[`Commands contest() contest id is not given find project json found, without id 1`] = `
+"AtCoder Imaginary Contest 987  https://atcoder.jp/contests/aic987
+"
+`;
+
+exports[`Commands contest() contest id is not given find project json found, without id 2`] = `""`;
+
+exports[`Commands contest() contest id is not given project json not found 1`] = `""`;
+
+exports[`Commands contest() contest id is not given project json not found 2`] = `
+"contest.acc.json not found.
+"
+`;
+
 exports[`Commands login() login fail 1`] = `
 "login failed
 "
@@ -21,8 +63,12 @@ OK
 "
 `;
 
+exports[`Commands session() logged-in 2`] = `""`;
+
 exports[`Commands session() not logged-in 1`] = `
 "check login status...
 not login
 "
 `;
+
+exports[`Commands session() not logged-in 2`] = `""`;
