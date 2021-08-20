@@ -1,5 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Commands contest() contest id is given contest found, try login and success 1`] = `
+"AtCoder Imaginary Contest 987  https://atcoder.jp/contests/aic987
+"
+`;
+
+exports[`Commands contest() contest id is given contest found, try login and success 2`] = `""`;
+
 exports[`Commands contest() contest id is given contest found, with id 1`] = `
 "aic987  AtCoder Imaginary Contest 987  https://atcoder.jp/contests/aic987
 "
@@ -20,6 +27,13 @@ exports[`Commands contest() contest id is given contest not found 2`] = `
 "contest \\"aic987654321\\" not found.
 "
 `;
+
+exports[`Commands contest() contest id is given try login and fail, but (public) contest found 1`] = `
+"AtCoder Imaginary Contest 987  https://atcoder.jp/contests/aic987
+"
+`;
+
+exports[`Commands contest() contest id is given try login and fail, but (public) contest found 2`] = `""`;
 
 exports[`Commands contest() contest id is not given find project json found, with id 1`] = `
 "aic987  AtCoder Imaginary Contest 987  https://atcoder.jp/contests/aic987
@@ -72,3 +86,140 @@ not login
 `;
 
 exports[`Commands session() not logged-in 2`] = `""`;
+
+exports[`Commands task() contest id and task id are given contest found, try login and success 1`] = `
+"A  This is Problem  https://atcoder.jp/contests/aic987/tasks/aic987_a
+"
+`;
+
+exports[`Commands task() contest id and task id are given contest found, try login and success 2`] = `""`;
+
+exports[`Commands task() contest id and task id are given contest not found 1`] = `""`;
+
+exports[`Commands task() contest id and task id are given contest not found 2`] = `
+"task \\"aic987_z\\" of contest \\"aic987\\" not found.
+"
+`;
+
+exports[`Commands task() contest id and task id are given task found, with id 1`] = `
+"aic987_a  A  This is Problem  https://atcoder.jp/contests/aic987/tasks/aic987_a
+"
+`;
+
+exports[`Commands task() contest id and task id are given task found, with id 2`] = `""`;
+
+exports[`Commands task() contest id and task id are given task found, without id 1`] = `
+"A  This is Problem  https://atcoder.jp/contests/aic987/tasks/aic987_a
+"
+`;
+
+exports[`Commands task() contest id and task id are given task found, without id 2`] = `""`;
+
+exports[`Commands task() contest id and task id are given try login and fail, but (public) task found 1`] = `
+"A  This is Problem  https://atcoder.jp/contests/aic987/tasks/aic987_a
+"
+`;
+
+exports[`Commands task() contest id and task id are given try login and fail, but (public) task found 2`] = `""`;
+
+exports[`Commands task() contest id and task id are not given error occured in searching path 1`] = `""`;
+
+exports[`Commands task() contest id and task id are not given error occured in searching path 2`] = `
+"something wrong
+"
+`;
+
+exports[`Commands task() contest id and task id are not given task found, with id 1`] = `
+"aic987_a  A  This is Problem  https://atcoder.jp/contests/aic987/tasks/aic987_a
+"
+`;
+
+exports[`Commands task() contest id and task id are not given task found, with id 2`] = `""`;
+
+exports[`Commands task() contest id and task id are not given task found, without id 1`] = `
+"A  This is Problem  https://atcoder.jp/contests/aic987/tasks/aic987_a
+"
+`;
+
+exports[`Commands task() contest id and task id are not given task found, without id 2`] = `""`;
+
+exports[`Commands task() contest id and task id are not given task not found 1`] = `""`;
+
+exports[`Commands task() contest id and task id are not given task not found 2`] = `
+"failed to find the task.
+"
+`;
+
+exports[`Commands tasks() contest id and task id are given contest found, try login and success 1`] = `
+"A  This is Problem    https://atcoder.jp/contests/aic987/tasks/aic987_a
+B  Next Problem       https://atcoder.jp/contests/aic987/tasks/aic987_b
+C  The Test Cases     https://atcoder.jp/contests/aic987/tasks/aic987_c
+D  Imaginary Problem  https://atcoder.jp/contests/aic987/tasks/aic987_d
+"
+`;
+
+exports[`Commands tasks() contest id and task id are given contest found, try login and success 2`] = `""`;
+
+exports[`Commands tasks() contest id and task id are given contest not found 1`] = `""`;
+
+exports[`Commands tasks() contest id and task id are given contest not found 2`] = `
+"contest \\"aic987\\" not found.
+"
+`;
+
+exports[`Commands tasks() contest id and task id are given task found, with id 1`] = `
+"aic987_a  A  This is Problem    https://atcoder.jp/contests/aic987/tasks/aic987_a
+aic987_b  B  Next Problem       https://atcoder.jp/contests/aic987/tasks/aic987_b
+aic987_c  C  The Test Cases     https://atcoder.jp/contests/aic987/tasks/aic987_c
+aic987_d  D  Imaginary Problem  https://atcoder.jp/contests/aic987/tasks/aic987_d
+"
+`;
+
+exports[`Commands tasks() contest id and task id are given task found, with id 2`] = `""`;
+
+exports[`Commands tasks() contest id and task id are given tasks found, without id 1`] = `
+"A  This is Problem    https://atcoder.jp/contests/aic987/tasks/aic987_a
+B  Next Problem       https://atcoder.jp/contests/aic987/tasks/aic987_b
+C  The Test Cases     https://atcoder.jp/contests/aic987/tasks/aic987_c
+D  Imaginary Problem  https://atcoder.jp/contests/aic987/tasks/aic987_d
+"
+`;
+
+exports[`Commands tasks() contest id and task id are given tasks found, without id 2`] = `""`;
+
+exports[`Commands tasks() contest id and task id are given try login and fail, but (public) task found 1`] = `
+"A  This is Problem    https://atcoder.jp/contests/aic987/tasks/aic987_a
+B  Next Problem       https://atcoder.jp/contests/aic987/tasks/aic987_b
+C  The Test Cases     https://atcoder.jp/contests/aic987/tasks/aic987_c
+D  Imaginary Problem  https://atcoder.jp/contests/aic987/tasks/aic987_d
+"
+`;
+
+exports[`Commands tasks() contest id and task id are given try login and fail, but (public) task found 2`] = `""`;
+
+exports[`Commands tasks() contest id and task id are not given tasks found, with id 1`] = `
+"aic987_a  A  This is Problem    https://atcoder.jp/contests/aic987/tasks/aic987_a
+aic987_b  B  Next Problem       https://atcoder.jp/contests/aic987/tasks/aic987_b
+aic987_c  C  The Test Cases     https://atcoder.jp/contests/aic987/tasks/aic987_c
+aic987_d  D  Imaginary Problem  https://atcoder.jp/contests/aic987/tasks/aic987_d
+"
+`;
+
+exports[`Commands tasks() contest id and task id are not given tasks found, with id 2`] = `""`;
+
+exports[`Commands tasks() contest id and task id are not given tasks found, without id 1`] = `
+"A  This is Problem    https://atcoder.jp/contests/aic987/tasks/aic987_a
+B  Next Problem       https://atcoder.jp/contests/aic987/tasks/aic987_b
+C  The Test Cases     https://atcoder.jp/contests/aic987/tasks/aic987_c
+D  Imaginary Problem  https://atcoder.jp/contests/aic987/tasks/aic987_d
+"
+`;
+
+exports[`Commands tasks() contest id and task id are not given tasks found, without id 2`] = `""`;
+
+exports[`Commands tasks() contest id and task id are not given tasks not found 1`] = `""`;
+
+exports[`Commands tasks() contest id and task id are not given tasks not found 2`] = `
+"contest.acc.json not found.
+"
+`;
