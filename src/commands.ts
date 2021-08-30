@@ -22,7 +22,7 @@ export async function session() {
 	console.log(await atcoder.checkSession() ? "OK" : "not login");
 }
 
-export async function contest(contest_id: string | undefined, options: { id?: boolean }) {
+export async function contest(contest_id: string | undefined, options: {id?: boolean}) {
 	const f_id = options.id === true;
 	const format = ({id, title, url}: Contest) => formatAsShellOutput([[f_id ? SGR(id, 37) : null, SGR(title, 32, 1), url].filter(e => e !== null) as Array<string>]);
 	if (contest_id === undefined) {
@@ -46,9 +46,13 @@ export async function contest(contest_id: string | undefined, options: { id?: bo
 	}
 }
 
-export async function task(contest_id: string | undefined, task_id: string | undefined, options: { id?: boolean }) {
+export async function task(contest_id: string | undefined, task_id: string | undefined, options: {id?: boolean, url?: boolean, title?: boolean, label?: boolean}) {
 	const f_id = options.id === true;
-	const format = ({id, label, title, url}: Task) => formatAsShellOutput([[f_id ? SGR(id, 37) : null, SGR(label, 32), SGR(title, 32, 1), url].filter(e => e !== null) as Array<string>]);
+	const f_title = options.title === true;
+	const f_url = options.url === true;
+	const f_label = options.label === true;
+
+	const format = ({id, label, title, url}: Task) => formatAsShellOutput([[f_label ? SGR(label, 32) : null, f_title ? SGR(title, 32) : null, f_id ? SGR(id, 39) : null, f_url ? SGR(url, 37) : null].filter(e => e !== null) as Array<string>]);
 	if (contest_id === undefined && task_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探す
 		try {
@@ -77,7 +81,7 @@ export async function task(contest_id: string | undefined, task_id: string | und
 	}
 }
 
-export async function tasks(contest_id: string | undefined, options: { id?: boolean }) {
+export async function tasks(contest_id: string | undefined, options: {id?: boolean}) {
 	const f_id = options.id === true;
 	const format = (tasks: Array<Task>) => formatAsShellOutput(tasks.map(({id, label, title, url}) => [f_id ? SGR(id, 37) : null, SGR(label, 32), SGR(title, 32, 1), url].filter(e => e !== null) as Array<string>));
 	if (contest_id === undefined) {
@@ -101,7 +105,7 @@ export async function tasks(contest_id: string | undefined, options: { id?: bool
 	}
 }
 
-export async function url(contest_id: string | undefined, task_id: string | undefined, options: { check?: boolean }) {
+export async function url(contest_id: string | undefined, task_id: string | undefined, options: {check?: boolean}) {
 	const f_check = options.check === true;
 	if (contest_id !== undefined && task_id !== undefined) {
 		if (f_check) {
@@ -187,7 +191,7 @@ export async function format(format_string: string, contest_id: string, task_id?
 	}
 }
 
-export async function submit(filename: string | undefined, facade_options: Array<string>, options: { task?: string, contest?: string, skipFilename?: boolean }) {
+export async function submit(filename: string | undefined, facade_options: Array<string>, options: {task?: string, contest?: string, skipFilename?: boolean}) {
 	let contest_id = options.contest;
 	let task_id = options.task;
 	const f_skip_filename = options.skipFilename === true;
@@ -246,7 +250,7 @@ export async function configDir() {
 	console.log(await getConfigDirectory());
 }
 
-export async function config(key: string | undefined, value: string | undefined, options: { D?: boolean }) {
+export async function config(key: string | undefined, value: string | undefined, options: {D?: boolean}) {
 	if (options.D) {
 		await deleteGlobalConfig(key);
 	}
@@ -338,7 +342,7 @@ async function getTemplateFromOption(template?: string | boolean): Promise<Templ
 	});
 }
 
-export async function setup(contest_id: string, options: { choice: Choices, force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string, template?: string | boolean, tests?: boolean }) {
+export async function setup(contest_id: string, options: {choice: Choices, force?: boolean, contestDirnameFormat?: string, taskDirnameFormat?: string, template?: string | boolean, tests?: boolean}) {
 	try {
 		const template = await getTemplateFromOption(options.template);
 		const {contest} = await init(contest_id, template, options);
@@ -349,7 +353,7 @@ export async function setup(contest_id: string, options: { choice: Choices, forc
 	}
 }
 
-export async function add(options: { choice?: Choices, force?: boolean, taskDirnameFormat?: string, template?: string | boolean, tests?: boolean }) {
+export async function add(options: {choice?: Choices, force?: boolean, taskDirnameFormat?: string, template?: string | boolean, tests?: boolean}) {
 	try {
 		const {path, data} = await findProjectJSON();
 		const {contest, tasks} = data;
@@ -389,7 +393,7 @@ export async function add(options: { choice?: Choices, force?: boolean, taskDirn
 	}
 }
 
-export async function selectTasks(tasks: Array<Task>, choice: Choices, force: boolean = false): Promise<Array<{ index: number, task: Task }>> {
+export async function selectTasks(tasks: Array<Task>, choice: Choices, force: boolean = false): Promise<Array<{index: number, task: Task}>> {
 	switch (choice) {
 		case "inquire":
 			return await inquireTasks(tasks, force);
@@ -407,7 +411,7 @@ export async function selectTasks(tasks: Array<Task>, choice: Choices, force: bo
 	}
 }
 
-export async function inquireTasks(tasks: Array<Task>, force: boolean = false): Promise<Array<{ index: number, task: Task }>> {
+export async function inquireTasks(tasks: Array<Task>, force: boolean = false): Promise<Array<{index: number, task: Task}>> {
 	const inquirer = await import("inquirer");
 	// まだディレクトリが作成されていない問題を一つだけ選択状態にしておく
 	const next = getNextTask2Install(tasks);
@@ -422,7 +426,7 @@ export async function inquireTasks(tasks: Array<Task>, force: boolean = false): 
 			disabled: !force && task.directory !== undefined ? () => "already installed" : () => false,
 			checked: next !== null && index === next.index
 		}))
-	}]) as { tasks: Array<{ index: number, task: Task }> }).tasks;
+	}]) as {tasks: Array<{index: number, task: Task}>}).tasks;
 }
 
 /**
@@ -430,7 +434,7 @@ export async function inquireTasks(tasks: Array<Task>, force: boolean = false): 
  * すべての問題のディレクトリが作成済みの場合はnullを返す
  * @param tasks
  */
-function getNextTask2Install(tasks: Array<Task>): { index: number, task: Task } | null {
+function getNextTask2Install(tasks: Array<Task>): {index: number, task: Task} | null {
 	for (let i = 0; i < tasks.length; i++) {
 		if (tasks[i].directory === undefined) {
 			return {index: i, task: tasks[i]};

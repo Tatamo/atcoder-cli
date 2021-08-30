@@ -80,6 +80,9 @@ commander
 	.command("task [contest-id] [task-id]")
 	.action(commands.task)
 	.option("-i, --id", "show task id")
+	.option("-l, --label", "show task label")
+	.option("-t, --title", "show task title")
+	.option("-u, --url", "show task url")
 	.description("get task");
 
 commander
