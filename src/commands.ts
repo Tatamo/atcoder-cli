@@ -52,7 +52,8 @@ export async function task(contest_id: string | undefined, task_id: string | und
 	const f_url = options.url === true;
 	const f_label = options.label === true;
 
-	const format = ({id, label, title, url}: Task) => formatAsShellOutput([[f_label ? SGR(label, 32) : null, f_title ? SGR(title, 32) : null, f_id ? SGR(id, 39) : null, f_url ? SGR(url, 37) : null].filter(e => e !== null) as Array<string>]);
+	//in case all flags are false (no print options specified), the hole (label, title, id, url string) is printed
+	const format = ({id, label, title, url}: Task) => formatAsShellOutput([((f_label || f_id || f_url || f_label) ? [f_label ? SGR(label, 32) : null, f_title ? SGR(title, 32) : null, f_id ? SGR(id, 39) : null, f_url ? SGR(url, 37) : null].filter(e => e !== null) : [SGR(label, 32), SGR(title, 32), SGR(id, 39), SGR(url)]) as Array<string>]);
 	if (contest_id === undefined && task_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探す
 		try {
