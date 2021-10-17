@@ -73,13 +73,18 @@ commander
 commander
 	.command("contest [contest-id]")
 	.action(commands.contest)
+	.option("-t, --title", "show contest id")
 	.option("-i, --id", "show contest id")
+	.option("-u, --url", "show contest id")
 	.description("get contest information");
 
 commander
 	.command("task [contest-id] [task-id]")
 	.action(commands.task)
+	.option("-l, --label", "show task label")
+	.option("-t, --title", "show task title")
 	.option("-i, --id", "show task id")
+	.option("-u, --url", "show task url")
 	.description("get task");
 
 commander
