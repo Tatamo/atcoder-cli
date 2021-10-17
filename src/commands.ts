@@ -26,7 +26,7 @@ export async function contest(contest_id: string | undefined, options: {title?: 
 	const f_id = options.id === true;
 	const f_title = options.title === true;
 	const f_url = options.url === true;
-	const format = ({id, title, url}: Contest) => formatAsShellOutput([((f_id || f_title || f_url) ? [f_id ? SGR(id, 37) : null, SGR(title, 32, 1), url].filter(e => e !== null) : [SGR(id, 37), SGR(title, 32, 1), url]) as Array<string>]);
+	const format = ({ id, title, url }: Contest) => formatAsShellOutput([((f_id || f_title || f_url) ? [f_id ? SGR(id, 37) : null, f_title ? SGR(title, 32, 1) : null, f_url ? url : null].filter(e => e !== null) : [SGR(id, 37), SGR(title, 32, 1), url]) as Array<string>]);
 	if (contest_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探してコンテスト情報を表示
 		try {
