@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.2.0]
+### Added
+- `task` and `contest` commands have some options to filter output ([#41](https://github.com/Tatamo/atcoder-cli/pull/41))
+
 ## [2.1.1]
 ### Fixed
 - Format strings in `task.submit` parameter in `template.json` did not work ([#37](https://github.com/Tatamo/atcoder-cli/pull/37))
