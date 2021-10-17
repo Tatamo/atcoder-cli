@@ -54,8 +54,8 @@ export async function task(contest_id: string | undefined, task_id: string | und
 	const f_url = options.url === true;
 	const f_label = options.label === true;
 
-	// in case all flags are false (no print options specified), the whole (label, title, id, url string) is printed
-	const format = ({id, label, title, url}: Task) => formatAsShellOutput([((f_label || f_id || f_url || f_label) ? [f_label ? SGR(label, 32) : null, f_title ? SGR(title, 32, 1) : null, f_id ? SGR(id, 37) : null, f_url ? url : null].filter(e => e !== null) : [SGR(label, 32), SGR(title, 32, 1), SGR(id, 37), url]) as Array<string>]);
+	// in case all flags are false (no print options specified), the whole (id, label, title, url string) is printed
+	const format = ({id, label, title, url}: Task) => formatAsShellOutput([((f_id || f_label || f_title || f_url) ? [f_id ? SGR(id, 37) : null, f_label ? SGR(label, 32) : null, f_title ? SGR(title, 32, 1) : null, f_url ? url : null].filter(e => e !== null) : [SGR(id, 37), SGR(label, 32), SGR(title, 32, 1), url]) as Array<string>]);
 	if (contest_id === undefined && task_id === undefined) {
 		// idが与えられていない場合、プロジェクトファイルを探す
 		try {
