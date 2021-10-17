@@ -73,9 +73,9 @@ commander
 commander
 	.command("contest [contest-id]")
 	.action(commands.contest)
-	.option("-t, --title", "show contest id")
+	.option("-t, --title", "show contest title")
 	.option("-i, --id", "show contest id")
-	.option("-u, --url", "show contest id")
+	.option("-u, --url", "show contest url")
 	.description("get contest information");
 
 commander
