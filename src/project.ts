@@ -146,7 +146,7 @@ export async function validateProjectJSON(data: ContestProject): Promise<[true, 
  */
 export async function init(contest_id: string, template: Template | undefined, options: { force?: boolean, contestDirnameFormat?: string }): Promise<ContestProject> {
 	const atcoder = await getAtCoder();
-	if (!await atcoder.checkSession()) await atcoder.login();
+	if (!await atcoder.checkSession()) await atcoder.login({});
 	const [contest, tasks] = await Promise.all([atcoder.contest(contest_id), atcoder.tasks(contest_id)]).catch(() => {
 		throw new Error("failed to get contest information.");
 	});

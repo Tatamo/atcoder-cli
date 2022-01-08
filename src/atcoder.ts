@@ -59,25 +59,22 @@ export class AtCoder {
 	 * ログイン処理します
 	 * あまりパスワード文字列を引き回したくないので、この中で標準入力からユーザー名とパスワードを尋ねる
 	 */
-	async login(): Promise<boolean> {
-		if (await this.checkSession()) {
-			console.error("you logged-in already");
-			return true;
-		}
+	async login(options: {username?: string, password?: string}): Promise<boolean> {
 		return this.session.transaction(async ()=> {
 			const {csrf_token} = await this.getCSRFToken();
 
 			// ユーザーネームとパスワードを入力させる
 			const inquirer = await import("inquirer");
-			const {username, password} = await inquirer.prompt([{
+			const username : string = options.username || (await inquirer.prompt([{
 				type: "input",
 				message: "username:",
 				name: "username"
-			}, {
+			}]) as {username: string})["username"];
+			const password : string = options.password || (await inquirer.prompt([{
 				type: "password",
 				message: "password:",
 				name: "password"
-			}]) as { username: string, password: string };
+			}]) as {password: string})["password"];
 
 			const response = await this.session.post(
 				AtCoder.login_url,

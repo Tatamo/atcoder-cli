@@ -5,9 +5,9 @@ import getConfig, {defaults, getConfigDirectory} from "./config";
 import {getTemplate, getTemplates, Template} from "./template";
 import {getAtCoder} from "./di";
 
-export async function login() {
+export async function login(options: {username?: string, password?: string}) {
 	const atcoder = await getAtCoder();
-	console.log(await atcoder.login() ? "OK" : "login failed");
+	console.log(await atcoder.login(options) ? "OK" : "login failed");
 }
 
 export async function logout() {
@@ -39,7 +39,7 @@ export async function contest(contest_id: string | undefined, options: {title?: 
 	else {
 		try {
 			const atcoder = await getAtCoder();
-			if (!await atcoder.checkSession()) await atcoder.login();
+			if (!await atcoder.checkSession()) await atcoder.login({});
 			const contest = await atcoder.contest(contest_id);
 			console.log(format(contest));
 		} catch {
@@ -72,7 +72,7 @@ export async function task(contest_id: string | undefined, task_id: string | und
 	else if (contest_id !== undefined && task_id !== undefined) {
 		try {
 			const atcoder = await getAtCoder();
-			if (!await atcoder.checkSession()) await atcoder.login();
+			if (!await atcoder.checkSession()) await atcoder.login({});
 			const task = await atcoder.task(contest_id, task_id);
 			console.log(format(task));
 		} catch {
@@ -99,7 +99,7 @@ export async function tasks(contest_id: string | undefined, options: {id?: boole
 	else {
 		try {
 			const atcoder = await getAtCoder();
-			if (!await atcoder.checkSession()) await atcoder.login();
+			if (!await atcoder.checkSession()) await atcoder.login({});
 			const tasks = await atcoder.tasks(contest_id);
 			console.log(format(tasks));
 		} catch {
@@ -156,7 +156,7 @@ export async function url(contest_id: string | undefined, task_id: string | unde
 
 export async function format(format_string: string, contest_id: string, task_id?: string) {
 	const atcoder = await getAtCoder();
-	if (!await atcoder.checkSession()) await atcoder.login();
+	if (!await atcoder.checkSession()) await atcoder.login({});
 	if (task_id === undefined) {
 		// コンテスト情報のみを使用
 		try {

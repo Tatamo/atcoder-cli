@@ -57,6 +57,8 @@ commander
 
 commander
 	.command("login")
+	.option("-u, --username <username>", "your username")
+	.option("-p, --password <password>", "your password")
 	.action(commands.login)
 	.description("login to AtCoder");
 
