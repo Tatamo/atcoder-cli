@@ -17,19 +17,49 @@ const getTestAtCoder = async () => {
 
 const mockAuth = {username: "TestUser", password: "secret"};
 
-test("AtCoder Login", async () => {
-	const { atcoder, session } = await getTestAtCoder();
+describe("AtCoder Login", () => {
+	test("login without options", async () => {
+		const { atcoder, session } = await getTestAtCoder();
 
-	addNonLoggedInCheckMock(session);
-	addLoginPageMock(session);
-	mockLoginPrompt(atcoder, mockAuth);
+		addNonLoggedInCheckMock(session);
+		addLoginPageMock(session);
+		mockLoginPrompt(atcoder, mockAuth);
 
-	expect(await atcoder.checkSession()).toBe(false);
-	expect(await atcoder.login()).toBe(true);
+		expect(await atcoder.checkSession()).toBe(false);
+		expect(await atcoder.login({})).toBe(true);
 
-	addLoggedInCheckMock(session);
+		addLoggedInCheckMock(session);
 
-	expect(await atcoder.checkSession(true)).toBe(true);
+		expect(await atcoder.checkSession(true)).toBe(true);
+	});
+	test("login with username", async () => {
+		const { atcoder, session } = await getTestAtCoder();
+
+		addNonLoggedInCheckMock(session);
+		addLoginPageMock(session);
+		mockLoginPrompt(atcoder, {password: mockAuth["password"]});
+
+		expect(await atcoder.checkSession()).toBe(false);
+		expect(await atcoder.login({username: mockAuth["username"]})).toBe(true);
+
+		addLoggedInCheckMock(session);
+
+		expect(await atcoder.checkSession(true)).toBe(true);
+	});
+
+	test("login with username and password", async () => {
+		const { atcoder, session } = await getTestAtCoder();
+
+		addNonLoggedInCheckMock(session);
+		addLoginPageMock(session);
+
+		expect(await atcoder.checkSession()).toBe(false);
+		expect(await atcoder.login(mockAuth)).toBe(true);
+
+		addLoggedInCheckMock(session);
+
+		expect(await atcoder.checkSession(true)).toBe(true);
+	});
 });
 
 describe("AtCoder get information", () => {
@@ -43,7 +73,7 @@ describe("AtCoder get information", () => {
 		addNonLoggedInCheckMock(session);
 		addLoginPageMock(session);
 		mockLoginPrompt(atcoder, mockAuth);
-		await atcoder.login();
+		await atcoder.login({});
 		addLoggedInCheckMock(session);
 		registerContetstPageMock(session);
 	});
