@@ -38,7 +38,7 @@
     "axios": "^0.21.1",
     "commander": "^3.0.1",
     "conf": "^5.0.0",
-    "fs-extra": "^8.1.0",
+    "fs-extra": "^9.0.0",
     "inquirer": "^7.0.0",
     "jsdom": "^15.1.1",
     "mkdirp": "^0.5.1",
