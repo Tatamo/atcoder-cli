@@ -44,7 +44,7 @@
     "mkdirp": "^0.5.1",
     "query-string": "^6.8.3",
     "typesafe-di": "^0.1.0",
-    "update-notifier": "^4.1.0"
+    "update-notifier": "^6.0.2"
   },
   "devDependencies": {
     "@types/fs-extra": "^8.0.0",
